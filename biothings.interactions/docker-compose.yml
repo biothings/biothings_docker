@@ -1,0 +1,43 @@
+version: "3.3"
+
+services:
+    biothings.data:
+        # The dash in the container name is used for a valid hostname
+        container_name: "biothings-data"
+        image: "biothings.data"
+        networks:
+            - biothings
+
+    mongodb:
+        container_name: "mongodb"
+        image: "mongo:3.2"
+        networks:
+            - biothings
+
+    elasticsearch:
+        container_name: "elasticsearch"
+        image: "docker.elastic.co/elasticsearch/elasticsearch:5.6.4"
+        networks:
+            - biothings
+
+    biothings.interactions:
+        container_name: "biothings.interactions"
+        image: "biothings.interactions:0.1.2"
+        ports:
+            - "8022:8022"
+        volumes:
+            - type: bind
+              source: "c:\\dev\\biothings.interactions"
+              target: "/usr/local/biothings.interactions"
+            - "./config.py:/usr/local/biothings.interactions/src/config.py"
+            - "./config_hub.py:/usr/local/biothings.interactions/src/config_hub.py"
+            - "./config_www.py:/usr/local/biothings.interactions/src/config_www.py"
+            - "./ssh_host_key:/usr/local/biothings.interactions/src/bin/ssh_host_key"
+            - "./ssh_host_key.pub:/usr/local/biothings.interactions/src/bin/ssh_host_key.pub"
+              #            - "./bashrc:/root/.bashrc"
+
+        networks:
+            - biothings
+
+networks:
+    biothings:

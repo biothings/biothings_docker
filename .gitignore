@@ -1,0 +1,7 @@
+# Idea
+.idea/*
+
+# Keys
+biothings.interactions/ssh_host_key
+biothings.interactions/ssh_host_key.pub
+
