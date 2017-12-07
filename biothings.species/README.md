@@ -5,6 +5,9 @@ Build a docker image containing the docker.species package.
 Setup a development docker host running all required docker services.
 
 ## Installation
+
+### Copy the biothings.species directory to this local directory
+
 ### Build the biothings.species Docker image
 ```
 docker build --no-cache -t biothings.species .

@@ -166,3 +166,11 @@ RELEASE_PATH = os.path.join(DATA_ARCHIVE_ROOT, "release")
 # Usually inside DATA_ARCHIVE_ROOT                                                                                                                                                                                                     
 #RELEASE_PATH = os.path.join(DATA_ARCHIVE_ROOT,"release")
 
+################################################################################
+# HUB_PASSWD
+################################################################################
+# The format is a dictionary of 'username': 'cryptedpassword'
+# Generate crypted passwords with 'openssl passwd -crypt'
+HUB_PASSWD = {
+        'biothings': 'QXvd5f7LMIoDY',
+        }
