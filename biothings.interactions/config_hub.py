@@ -194,3 +194,13 @@ LOG_FOLDER = os.path.join(DATA_ARCHIVE_ROOT, 'logs')
 # logger = ConfigurationError("Provide a default hub logger instance (use setup_default_log(name,log_folder)")
 # Usually use default setup
 logger = setup_default_log("hub", LOG_FOLDER)
+
+################################################################################
+# HUB_PASSWD
+################################################################################
+# The format is a dictionary of 'username': 'cryptedpassword'
+# Generate crypted passwords with 'openssl passwd -crypt'
+HUB_PASSWD = {
+        'biothings': '9U2fz0kc7Y7VE',
+        }
+
