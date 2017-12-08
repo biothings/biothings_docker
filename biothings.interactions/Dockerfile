@@ -3,7 +3,7 @@
 ################################################################################
 # A Dockerfile that contains biothings.interactions
 
-FROM biothings.api:0.1.2
+FROM biothings.api
 
 MAINTAINER Greg Taylor "greg.k.taylor@gmail.com"
 
@@ -19,6 +19,8 @@ RUN git checkout tags/v0.1.2
 ADD config.py /usr/local/biothings.interactions/src/
 ADD config_hub.py /usr/local/biothings.interactions/src/
 ADD config_www.py /usr/local/biothings.interactions/src/
+ADD ssh_host_key /usr/local/biothings.interactions/src/bin
+ADD ssh_host_key.pub /usr/local/biothings.interactions/src/bin
 
 # Setup the biothings.interactions hub data directory structure
 RUN mkdir /data
