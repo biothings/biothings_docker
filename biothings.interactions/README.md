@@ -4,7 +4,17 @@
 Build a docker image containing the docker.interactions package.
 Setup a development docker host running all required docker services.
 
+
 ## Installation
+### Prerequisites
+Run the following commands to generate the required ssh key pairs.
+The first command generates a key pair for the ssh host and the
+second generates a key pair for an authorized hub user.
+```
+ssh-keygen -P '' -f ssh_host_key
+ssh-keygen -P '' -f biothings
+```
+
 ### Build the biothings.api Docker image
 ```
 docker build --no-cache -t biothings.interactions .

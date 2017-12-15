@@ -1,4 +1,0 @@
-
-# Default bashrc commands for root on biothings.interactions
-alias hub='ssh guest@localhost -p 8022'
-

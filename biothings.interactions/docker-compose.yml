@@ -22,19 +22,9 @@ services:
 
     biothings.interactions:
         container_name: "biothings.interactions"
-        image: "biothings.interactions:0.1.2"
+        image: "biothings.interactions"
         ports:
             - "8022:8022"
-        volumes:
-            - type: bind
-              source: "c:\\dev\\biothings.interactions"
-              target: "/usr/local/biothings.interactions"
-            - "./config.py:/usr/local/biothings.interactions/src/config.py"
-            - "./config_hub.py:/usr/local/biothings.interactions/src/config_hub.py"
-            - "./config_www.py:/usr/local/biothings.interactions/src/config_www.py"
-            - "./ssh_host_key:/usr/local/biothings.interactions/src/bin/ssh_host_key"
-            - "./ssh_host_key.pub:/usr/local/biothings.interactions/src/bin/ssh_host_key.pub"
-              #            - "./bashrc:/root/.bashrc"
 
         networks:
             - biothings
