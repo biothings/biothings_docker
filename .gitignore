@@ -9,6 +9,10 @@ biothings.species/biothings.species
 # Keys
 biothings.interactions/ssh_host_key
 biothings.interactions/ssh_host_key.pub
+biothings.interactions/biothings
+biothings.interactions/biothings.pub
 biothings.species/ssh_host_key
 biothings.species/ssh_host_key.pub
+biothings.species/biothings
+biothings.species/biothings.pub
 

@@ -18,8 +18,12 @@ WORKDIR /usr/local/biothings.species
 ADD config.py /usr/local/biothings.species/src/
 ADD config_hub.py /usr/local/biothings.species/src/
 ADD config_www.py /usr/local/biothings.species/src/
+
+# Install SSH Keys for the image
+# - (they can be overwritten when the container is started)
 ADD ssh_host_key /usr/local/biothings.species/src/bin/
 ADD ssh_host_key.pub /usr/local/biothings.species/src/bin/
+ADD biothings.pub /usr/local/biothings.species/src/bin/authorized_keys/
 
 # Setup the biothings.species hub data directory structure
 RUN mkdir /tmp/run

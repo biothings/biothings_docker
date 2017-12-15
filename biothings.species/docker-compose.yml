@@ -16,6 +16,8 @@ services:
     biothings.species:
         container_name: "biothings.species"
         image: "biothings.species"
+        ports:
+            - 8022:8022
         networks:
             - biothings
 
