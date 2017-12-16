@@ -16,7 +16,7 @@ docker build --no-cache -t biothings.species .
 ### Run the biothings.species evaluation environment
 
 Before you run the docker-compose command you should generate a ssh_host_key file with
-`ssh-keygen -P '' -f ssh_host_key`.  This key file will be mounted into the correct location when
+`ssh-keygen -f ssh_host_key`.  This key file will be mounted into the correct location when
 the collection of containers is started.
 
 ```

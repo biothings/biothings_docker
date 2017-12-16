@@ -11,8 +11,8 @@ Run the following commands to generate the required ssh key pairs.
 The first command generates a key pair for the ssh host and the
 second generates a key pair for an authorized hub user.
 ```
-ssh-keygen -P '' -f ssh_host_key
-ssh-keygen -P '' -f biothings
+ssh-keygen -f ssh_host_key
+ssh-keygen -f biothings
 ```
 
 ### Build the biothings.api Docker image
@@ -23,7 +23,7 @@ docker build --no-cache -t biothings.interactions .
 ### Run the biothings.interactions evaluation environment
 
 Before you run the docker-compose command you should generate a ssh_host_key file with
-`ssh-keygen -P '' -f ssh_host_key`.  This key file will be mounted into the correct location when
+`ssh-keygen -f ssh_host_key`.  This key file will be mounted into the correct location when
 the collection of containers is started.
 
 ```
