@@ -41,10 +41,12 @@ from biothings.utils.hub import schedule, pending, done, CompositeCommand, \
 
 shell = HubShell()
 
+from hub.dataload import __sources__
+
 # will check every 10 seconds for sources to upload
 upload_manager = uploader.UploaderManager(poll_schedule = '* * * * * */10', job_manager=job_manager)
 dmanager = dumper.DumperManager(job_manager=job_manager)
-smanager = source.SourceManager([],dmanager,upload_manager)
+smanager = source.SourceManager(__sources__,dmanager,upload_manager)
 
 dmanager.schedule_all()
 upload_manager.poll('upload',lambda doc: shell.launch(partial(upload_manager.upload_src,doc["_id"])))
