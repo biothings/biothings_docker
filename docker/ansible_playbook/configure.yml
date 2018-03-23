@@ -1,0 +1,187 @@
+######################################################################
+# Update security/limits.conf
+######################################################################
+
+- name: Update /etc/security/limits.conf
+  lineinfile: dest=/etc/security/limits.conf insertbefore="^# End of file" line="{{ item.line }}" mode=0644 owner=root group=root
+  become: yes
+  with_items:
+    - {"line":"elasticsearch soft nofile {{ software.common_configurations.elasticsearch.soft_file_limit }}"}
+    - {"line":"elasticsearch hard nofile {{ software.common_configurations.elasticsearch.hard_file_limit }}"}
+
+##################################################
+# Install java repository
+##################################################
+
+- name: Add Java repository to apt sources
+  apt_repository: repo="{{ software.common_configurations.java.apt_repository }}"
+  become: yes
+
+- name: Make Java installer auto-accept license
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  become: yes
+
+- name: Install Java
+  apt: name=oracle-java8-installer
+  become: yes
+
+##################################################
+# Install elasticsearch
+##################################################
+
+- name: Add elasticsearch public signing key
+  apt_key: url={{ software.common_configurations.elasticsearch.public_signing_key_url }}
+  become: yes
+
+- name: Add elasticsearch repository to apt sources
+  apt_repository: repo={{ software.common_configurations.elasticsearch.apt_repository }}
+  become: yes
+
+- name: Install elasticsearch
+  apt: name=elasticsearch={{ software.common_configurations.elasticsearch.version }}
+  become: yes
+
+##################################################
+# Install mongodb 
+##################################################
+
+- name: Add mongodb public signing key
+  apt_key: keyserver=keyserver.ubuntu.com id=EA312927
+  become: yes
+
+- name: Add mongodb repository to apt sources
+  apt_repository: repo={{ software.common_configurations.mongodb.apt_repository }}
+  become: yes
+
+- name: Install mongodb
+  apt: name=mongodb-org={{ software.common_configurations.mongodb.version }}
+  become: yes
+
+##################################################
+# Install nginx
+##################################################
+
+- name: Add nginx repository to apt sources
+  apt_repository: repo="{{ software.web_node.nginx.apt_repository }}"
+  become: yes
+
+- name: Install nginx
+  apt: name=nginx
+  become: yes
+
+- name: Template out nginx.conf to server
+  template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
+  become: yes
+
+- name: nginx logs directory
+  file: path=/data/logs/nginx state=directory owner=www-data group=www-data
+
+##################################################
+# Install python virtualenv
+##################################################
+
+- name: Install python3
+  apt: name=python3
+  become: yes
+
+- name: Install pip
+  apt: name=python3-pip
+  become: yes
+
+- name: Install virtualenv
+  pip: name=virtualenv executable=pip3
+  become: yes
+
+###################################################
+# Setup home directory, biothings app codebase
+###################################################
+
+- name: biothings group
+  group: name=biothings
+
+- name: biothings user
+  user: name=biothings group=biothings shell=/bin/bash
+
+- name: Create home directory structure
+  file: path=/home/biothings state=directory owner=biothings group=biothings
+  become_user: "biothings"
+  become: true
+
+- name: Manually create the initial virtualenv
+  command: virtualenv /home/biothings/pyenv -p python3 creates="/home/biothings/pyenv"
+  become_user: "biothings"
+  become: true
+
+- name: bashrc
+  lineinfile: path=/home/biothings/.bashrc line='source $HOME/pyenv/bin/activate'
+  become_user: "biothings"
+  become: true
+
+- name: pythonpath
+  lineinfile: path=/home/biothings/.bashrc line='export PYTHONPATH=.:$PYTHONPATH'
+  become_user: "biothings"
+  become: true
+
+- name: logs directory
+  file: path=/data/logs state=directory
+- name: app data directory
+  file: path=/data/{{ app_name }} state=directory owner=biothings group=biothings
+
+- name: run directory
+  file: path=/data/run state=directory
+
+- name: conf directory
+  file: path=/data/conf state=directory
+
+
+- name: Pull biothings app source from github repo
+  git: repo={{ software.web_node.api_git_repository }} dest=/home/biothings/{{ app_name }} version={{ software.web_node.api_version }}
+  become_user: "biothings"
+  become: true
+
+- name: biothings (override requirement_web.txt version)
+  git: repo=https://github.com/biothings/biothings.api.git dest=/home/biothings/biothings.api version={{ software.web_node.biothings_version }}
+  become_user: "biothings"
+  become: true
+
+- name: Install biothings lib requirements into virtualenv
+  shell: "source $HOME/pyenv/bin/activate && pip install .[hub]"
+  args:
+    executable: /bin/bash
+    chdir: /home/biothings/biothings.api
+  become_user: "biothings"
+  become: true
+
+- name: biothings api as subfolder
+  file: src=/home/biothings/biothings.api/biothings dest=/home/biothings/{{ app_name }}/biothings state=link
+  become_user: "biothings"
+  become: true
+
+- name: Create ssh keys
+  shell: echo "y\n" | ssh-keygen -f /home/biothings/{{ app_name }}/bin/ssh_host_key -q -N ""
+  become_user: "biothings"
+  become: true
+
+#- name: Template out config.py file
+#  template: owner=biothings group=biothings mode=0640 src=templates/config.py dest=/home/biothings/{{ app_name }}/src/config.py
+#  become_user: "biothings"
+#  become: true
+
+- name: Template out docker entry point
+  template: mode=0755 src=templates/docker-entrypoint.sh dest=/docker-entrypoint.sh
+
+
+################################################
+# Update elasticsearch.yml
+################################################
+
+- name: Update elasticsearch.yml file
+  lineinfile: dest=/etc/elasticsearch/elasticsearch.yml line="{{ item }}" mode=0644 owner=root group=root insertafter=EOF
+  become: yes
+  with_items:
+    - "#######"
+    - "cluster.name: {{ cluster.name }}"
+    - "{{ software.web_node.elasticsearch.elasticsearch_yml }}"
+    - "{{ software.common_configurations.elasticsearch.elasticsearch_yml }}"
+    - "http.enabled: true"
+

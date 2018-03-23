@@ -1,0 +1,38 @@
+---
+
+app_name: "biothings_studio"
+
+# Variables relating to the whole cluster
+cluster:
+  name: biothings
+  environment: studio
+
+software:
+  web_node:
+    elasticsearch:
+      plugin:
+        head: "mobz/elasticsearch-head"
+        bigdesk: "lukas-vlcek/bigdesk"
+      heap_size: "2g"
+      elasticsearch_yml:
+        - "node.data: true"
+        - "node.master: true"
+    api_git_repository: "https://github.com/biothings/{{ app_name }}.git" 
+    api_version: "{{ api_git_version | default('master')}}"
+    biothings_version: "{{ biothings_git_version | default('master')}}"
+    nginx:
+      apt_repository: "ppa:nginx/stable"
+  common_configurations:
+    elasticsearch:
+      soft_file_limit: "32000"
+      hard_file_limit: "65535"
+      apt_repository: "deb https://artifacts.elastic.co/packages/6.x/apt stable main"
+      version: "6.1.1"
+      public_signing_key_url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+      elasticsearch_yml:
+        - "network.host: 0.0.0.0"
+    mongodb:
+      version: "3.2.18"
+      apt_repository: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+    java:
+      apt_repository: "ppa:webupd8team/java"
