@@ -184,4 +184,7 @@
     - "{{ software.web_node.elasticsearch.elasticsearch_yml }}"
     - "{{ software.common_configurations.elasticsearch.elasticsearch_yml }}"
     - "http.enabled: true"
+    # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
+    # (not suitable for production with a cluster)
+    - "discovery.type: single-node"
 

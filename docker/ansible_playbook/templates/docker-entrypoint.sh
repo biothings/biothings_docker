@@ -59,6 +59,7 @@ else
   if [[ $@ ]]; then 
     eval $@
   fi
-    # here
+  # until it dies
+  top -b
 fi
 
