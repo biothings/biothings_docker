@@ -27,7 +27,6 @@ ADD config_web.py /usr/local/mychem.info/src/
 # - (they can be overwritten when the container is started)
 ADD ssh_host_key /usr/local/mychem.info/src/bin/
 ADD ssh_host_key.pub /usr/local/mychem.info/src/bin/
-ADD biothings.pub /usr/local/mychem.info/src/bin/authorized_keys/
 
 # Setup the mychem.info hub data directory structure
 RUN mkdir /tmp/run
