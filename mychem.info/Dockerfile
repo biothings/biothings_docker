@@ -3,7 +3,7 @@
 ################################################################################
 # A Dockerfile that contains mychem.info
 
-FROM biothings.api
+FROM python
 
 MAINTAINER Greg Taylor "greg.k.taylor@gmail.com"
 
