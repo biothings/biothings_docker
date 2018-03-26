@@ -5,6 +5,7 @@
 biothings.api/biothings.api
 biothings.interactions/biothings.interactions
 biothings.species/biothings.species
+mychem.info/mychem.info
 
 # Keys
 biothings.interactions/ssh_host_key
@@ -15,4 +16,6 @@ biothings.species/ssh_host_key
 biothings.species/ssh_host_key.pub
 biothings.species/biothings
 biothings.species/biothings.pub
+mychem.info/ssh_host_key
+mychem.info/ssh_host_key.pub
 
