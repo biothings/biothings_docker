@@ -131,6 +131,11 @@
   become_user: "biothings"
   become: true
 
+- name: locale
+  lineinfile: path=/home/biothings/.bashrc line='export LC_ALL=C.UTF-8'
+  become_user: "biothings"
+  become: true
+
 - name: logs directory
   file: path=/data/logs state=directory
 - name: app data directory
