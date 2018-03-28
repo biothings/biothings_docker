@@ -57,6 +57,14 @@
   apt: name=mongodb-org={{ software.common_configurations.mongodb.version }}
   become: yes
 
+##############
+# SSH server #
+##############
+
+- name: ssh
+  apt: name=openssh-server
+  become: yes
+
 ##################################################
 # Install nginx
 ##################################################
@@ -100,7 +108,8 @@
   group: name=biothings
 
 - name: biothings user
-  user: name=biothings group=biothings shell=/bin/bash
+  # biothings/biothings
+  user: name=biothings group=biothings shell=/bin/bash password="$6$ErzOioVY$jPVZ68Lb6eUZ3cy5cYvkrHjXJOQqvyUzBxXa7u2QkQxEZtPcSMeZvoVaJ1BTNAqTEr3Kby6lMMd1kZpQNp/0r1"
 
 - name: Create home directory structure
   file: path=/home/biothings state=directory owner=biothings group=biothings

@@ -60,6 +60,7 @@ else
     eval $@
   fi
   # until it dies
-  top -b
+  mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
+  /usr/sbin/sshd -D
 fi
 
