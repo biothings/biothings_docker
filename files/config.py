@@ -27,7 +27,6 @@ LOG_FOLDER = os.path.join(DATA_ARCHIVE_ROOT,'logs')
 logger = setup_default_log("hub", LOG_FOLDER)
 
 RELEASE_PATH = os.path.join(DATA_ARCHIVE_ROOT,"release")
-DIFF_PATH = os.path.join(DATA_ARCHIVE_ROOT,"diff")
 CACHE_FOLDER = os.path.join(DATA_ARCHIVE_ROOT,'cache')
 
 RUN_DIR = './run'
