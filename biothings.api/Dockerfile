@@ -13,5 +13,6 @@ ADD biothings.api /usr/local/biothings.api
 
 # Install the Biothings.api required pip libraries
 WORKDIR /usr/local/biothings.api
-RUN pip install /usr/local/biothings.api[hub,dev,test]
+RUN pip install -r requirements.txt
+RUN pip install /usr/local/biothings.api
 
