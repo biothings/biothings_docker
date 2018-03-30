@@ -57,6 +57,14 @@
   apt: name=mongodb-org={{ software.common_configurations.mongodb.version }}
   become: yes
 
+- name: template out mongod.conf
+  template: src=templates/mongod.conf dest=/etc/mongod.conf owner=root group=root mode=0644
+  become: yes
+
+- name: template out rsconfig
+  template: src=templates/rsconfig.js dest=/tmp/rsconfig.js owner=root group=root mode=0644
+  become: yes
+
 ##############
 # SSH server #
 ##############

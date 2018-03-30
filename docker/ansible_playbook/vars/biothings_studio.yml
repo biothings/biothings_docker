@@ -34,5 +34,10 @@ software:
     mongodb:
       version: "3.2.18"
       apt_repository: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+      port: 27017
+      bindip: "127.0.0.1"
+      oplogsizemb: 50
+      dbpath: "/var/lib/mongodb"
+      replsetname: "monitor"
     java:
       apt_repository: "ppa:webupd8team/java"
