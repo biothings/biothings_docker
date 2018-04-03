@@ -40,7 +40,7 @@ done
 su - biothings -c "
 source ~/pyenv/bin/activate
 cd {{ app_name }}
-cd biothings && git reset --hard && git pull && cd ..
+cd biothings && git reset --hard && git pull && pip install -r requirements.txt && cd ..
 git reset --hard && git pull
 tmux new-session -d -s hub
 tmux send-keys 'python bin/hub.py' C-m
