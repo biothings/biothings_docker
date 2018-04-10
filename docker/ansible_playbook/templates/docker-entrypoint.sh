@@ -20,7 +20,8 @@ do
   ret=$?
 done
 
-mongo < /tmp/rsconfig.js 
+# oplog enabled (not used anymore)
+#mongo < /tmp/rsconfig.js 
 
 service elasticsearch start
 service nginx start
@@ -39,8 +40,8 @@ done
 # Launch hub in a tmux session
 su - biothings -c "
 source ~/pyenv/bin/activate
+cd biothings.api && git reset --hard && git pull && pip install -r requirements.txt && cd ..
 cd {{ app_name }}
-cd biothings && git reset --hard && git pull && pip install -r requirements.txt && cd ..
 git reset --hard && git pull
 tmux new-session -d -s hub
 tmux send-keys 'python bin/hub.py' C-m
