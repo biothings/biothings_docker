@@ -1,7 +1,7 @@
 # Building an image
 docker build --force-rm -t biothings_studio .
 # run image
-docker run --name studio -p 8080:8080 -p 9200:9200 -p 7022:7022 -p 7080:7080 -p 27017:27017 -d biothings_studio
+docker run --rm --name studio -p 8000:8000 -p 8080:8080 -p 7022:7022 -p 7080:7080 -d biothings_studio
 
 # or, using Makefile
 make biothings_studio       # build image
