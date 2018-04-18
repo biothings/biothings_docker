@@ -124,6 +124,7 @@ COMMANDS["inspect"] = inspector.inspect
 # data plugins
 COMMANDS["register_url"] = partial(assistant_manager.register_url)
 COMMANDS["unregister_url"] = partial(assistant_manager.unregister_url)
+COMMANDS["dump_plugin"] = dp_manager.dump_src
 
 # admin/advanced
 from biothings.utils.jsondiff import make as jsondiff
@@ -201,6 +202,7 @@ API_ENDPOINTS = {
         "inspect" : EndpointDefinition(name="inspect",method="put",force_bodyargs=True),
         "dataplugin/register_url" : EndpointDefinition(name="register_url",method="post",force_bodyargs=True),
         "dataplugin/unregister_url" : EndpointDefinition(name="unregister_url",method="delete",force_bodyargs=True),
+        "dataplugin" : [EndpointDefinition(name="dump_plugin",method="put",suffix="dump")],
         "jsondiff" : EndpointDefinition(name="jsondiff",method="post",force_bodyargs=True),
         "mapping/validate" : EndpointDefinition(name="validate_mapping",method="post",force_bodyargs=True),
         "buildconf" : [EndpointDefinition(name="create_build_conf",method="post",force_bodyargs=True),
