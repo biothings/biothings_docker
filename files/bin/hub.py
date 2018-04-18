@@ -39,7 +39,7 @@ from biothings.hub.api.manager import APIManager
 from biothings.utils.hub import schedule, pending, done, CompositeCommand, \
                                 start_server, HubShell, CommandDefinition
 
-shell = HubShell()
+shell = HubShell(job_manager)
 
 from hub.dataload import __sources__
 
@@ -87,6 +87,12 @@ index_manager.configure(config.ES_CONFIG)
 
 # API manager: used to run API instances from the hub
 api_manager = APIManager()
+
+from biothings.utils.hub import HubReloader
+reloader = HubReloader(["hub/dataload/sources","plugins"],
+        [smanager,assistant_manager],
+        reload_func=partial(shell.restart,force=True))
+reloader.monitor()
 
 COMMANDS = OrderedDict()
 # getting info
@@ -206,6 +212,8 @@ API_ENDPOINTS = {
                  EndpointDefinition(name="delete_api",method="delete",force_bodyargs=True),
                  EndpointDefinition(name="create_api",method="post",force_bodyargs=True)],
         "api/list" : EndpointDefinition(name="get_apis",method="get"),
+        "stop" : EndpointDefinition(name="stop",method="put"),
+        "restart" : EndpointDefinition(name="restart",method="put"),
         }
 
 shell.set_commands(COMMANDS,EXTRA_NS)
