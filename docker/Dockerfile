@@ -15,7 +15,10 @@ ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
 WORKDIR /tmp/ansible_playbook
-RUN ansible-playbook biothings_studio.yml -c local
+RUN ansible-playbook biothings_studio.yml \
+                     -e "biothings_version=$BIOTHINGS_VERSION" \
+                     -e "studio_version=$STUDIO_VERSION" \
+                     -c local
 
 # Clean up ansible_playbook
 WORKDIR /tmp

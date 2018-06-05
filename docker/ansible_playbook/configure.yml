@@ -157,7 +157,7 @@
 
 
 - name: Pull biothings app source from github repo
-  git: repo={{ software.web_node.api_git_repository }} dest=/home/biothings/{{ app_name }} version={{ software.web_node.api_version }}
+  git: repo={{ software.web_node.studio_repository }} dest=/home/biothings/{{ app_name }} version={{ software.web_node.studio_version }}
   become_user: "biothings"
   become: true
 

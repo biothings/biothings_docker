@@ -17,9 +17,9 @@ software:
       elasticsearch_yml:
         - "node.data: true"
         - "node.master: true"
-    api_git_repository: "https://github.com/biothings/{{ app_name }}.git" 
-    api_version: "{{ api_git_version | default('master')}}"
-    biothings_version: "{{ biothings_git_version | default('master')}}"
+    studio_repository: "https://github.com/biothings/{{ app_name }}.git" 
+    studio_version: "{{ studio_version | default('master')}}"
+    biothings_version: "{{ biothings_version | default('master')}}"
     nginx:
       apt_repository: "ppa:nginx/stable"
   common_configurations:
