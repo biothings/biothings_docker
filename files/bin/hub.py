@@ -68,19 +68,19 @@ build_manager = builder.BuilderManager(
         job_manager=job_manager)
 build_manager.configure()
 
-differ_manager = differ.DifferManager(job_manager=job_manager)
-differ_manager.configure([differ.SelfContainedJsonDiffer,])
+diff_manager = differ.DifferManager(job_manager=job_manager)
+diff_manager.configure([differ.SelfContainedJsonDiffer,])
 
 inspector = inspector.InspectorManager(upload_manager=upload_manager,
                                        build_manager=build_manager,
                                        job_manager=job_manager)
 
 from biothings.hub.databuild.syncer import ThrottledESJsonDiffSelfContainedSyncer, ESJsonDiffSelfContainedSyncer
-syncer_manager = syncer.SyncerManager(job_manager=job_manager)
-syncer_manager.configure(klasses=[ESJsonDiffSelfContainedSyncer])
+sync_manager = syncer.SyncerManager(job_manager=job_manager)
+sync_manager.configure(klasses=[ESJsonDiffSelfContainedSyncer])
 
-syncer_manager_prod = syncer.SyncerManager(job_manager=job_manager)
-syncer_manager_prod.configure(klasses=[partial(ThrottledESJsonDiffSelfContainedSyncer,config.MAX_SYNC_WORKERS),])
+sync_manager_prod = syncer.SyncerManager(job_manager=job_manager)
+sync_manager_prod.configure(klasses=[partial(ThrottledESJsonDiffSelfContainedSyncer,config.MAX_SYNC_WORKERS),])
 
 index_manager = indexer.IndexerManager(job_manager=job_manager)
 index_manager.configure(config.ES_CONFIG)
@@ -94,9 +94,26 @@ reloader = HubReloader(["hub/dataload/sources","plugins"],
         reload_func=partial(shell.restart,force=True))
 reloader.monitor()
 
+# let's glue everything together
+managers = {
+        "dump_manager" : dmanager,
+        "upload_manager" : upload_manager,
+        "source_manager" : smanager,
+        "build_manager" : build_manager,
+        "diff_manager" : diff_manager,
+        "index_manager" : index_manager,
+        "dataplugin_manager" : dp_manager,
+        "assistant_manager" : assistant_manager,
+        "inspect_manager" : inspector,
+        "sync_manager" : sync_manager,
+        "api_manager" : api_manager,
+        }
+shell.register_managers(managers)
+
 COMMANDS = OrderedDict()
 # getting info
 COMMANDS["source_info"] = CommandDefinition(command=smanager.get_source,tracked=False)
+COMMANDS["status"] = CommandDefinition(command=shell.status,tracked=False)
 # dump commands
 COMMANDS["dump"] = dmanager.dump_src
 COMMANDS["dump_all"] = dmanager.dump_all
@@ -104,17 +121,17 @@ COMMANDS["dump_all"] = dmanager.dump_all
 COMMANDS["upload"] = upload_manager.upload_src
 COMMANDS["upload_all"] = upload_manager.upload_all
 # building/merging
-COMMANDS["whatsnew"] = build_manager.whatsnew
+COMMANDS["whatsnew"] = CommandDefinition(command=build_manager.whatsnew,tracked=False)
 COMMANDS["lsmerge"] = build_manager.list_merge
 COMMANDS["rmmerge"] = build_manager.delete_merge
 COMMANDS["merge"] = build_manager.merge
 COMMANDS["premerge"] = partial(build_manager.merge,steps=["merge","metadata"])
 COMMANDS["es_config"] = config.ES_CONFIG
 # diff
-COMMANDS["diff"] = differ_manager.diff
-COMMANDS["report"] = differ_manager.diff_report
-COMMANDS["release_note"] = differ_manager.release_note
-COMMANDS["publish_diff"] = differ_manager.publish_diff
+COMMANDS["diff"] = diff_manager.diff
+COMMANDS["report"] = diff_manager.diff_report
+COMMANDS["release_note"] = diff_manager.release_note
+COMMANDS["publish_diff"] = diff_manager.publish_diff
 # indexing commands
 COMMANDS["index"] = index_manager.index
 COMMANDS["snapshot"] = index_manager.snapshot
@@ -134,13 +151,13 @@ EXTRA_NS = {
         "am" : CommandDefinition(command=assistant_manager,tracked=False),
         "um" : CommandDefinition(command=upload_manager,tracked=False),
         "bm" : CommandDefinition(command=build_manager,tracked=False),
-        "dim" : CommandDefinition(command=differ_manager,tracked=False),
-        "sm" : CommandDefinition(command=syncer_manager,tracked=False),
+        "dim" : CommandDefinition(command=diff_manager,tracked=False),
+        "sm" : CommandDefinition(command=sync_manager,tracked=False),
         "im" : CommandDefinition(command=index_manager,tracked=False),
         "jm" : CommandDefinition(command=job_manager,tracked=False),
         "ism" : CommandDefinition(command=inspector,tracked=False),
         "api" : CommandDefinition(command=api_manager,tracked=False),
-        "sync" : CommandDefinition(command=syncer_manager.sync),
+        "sync" : CommandDefinition(command=sync_manager.sync),
         "loop" : CommandDefinition(command=loop,tracked=False),
         "pqueue" : CommandDefinition(command=job_manager.process_queue,tracked=False),
         "tqueue" : CommandDefinition(command=job_manager.thread_queue,tracked=False),
@@ -157,7 +174,7 @@ EXTRA_NS = {
         "upload_info" : CommandDefinition(command=upload_manager.upload_info,tracked=False),
         "build_config_info" : CommandDefinition(command=build_manager.build_config_info,tracked=False),
         "index_info" : CommandDefinition(command=index_manager.index_info,tracked=False),
-        "diff_info" : CommandDefinition(command=differ_manager.diff_info,tracked=False),
+        "diff_info" : CommandDefinition(command=diff_manager.diff_info,tracked=False),
         "commands" : CommandDefinition(command=shell.command_info,tracked=False),
         "command" : CommandDefinition(command=lambda id,*args,**kwargs: shell.command_info(id=id,*args,**kwargs),tracked=False),
         "sources" : CommandDefinition(command=smanager.get_sources,tracked=False),
@@ -209,6 +226,8 @@ API_ENDPOINTS = {
                        EndpointDefinition(name="delete_build_conf",method="delete",force_bodyargs=True)],
         "index" : EndpointDefinition(name="index",method="put",force_bodyargs=True),
         "sync" : EndpointDefinition(name="sync",method="post",force_bodyargs=True),
+        "whatsnew" : EndpointDefinition(name="whatsnew",method="get"),
+        "status" : EndpointDefinition(name="status",method="get"),
         "api" : [EndpointDefinition(name="start_api",method="put",suffix="start"),
                  EndpointDefinition(name="stop_api",method="put",suffix="stop"),
                  EndpointDefinition(name="delete_api",method="delete",force_bodyargs=True),
