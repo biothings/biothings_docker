@@ -18,8 +18,8 @@ software:
         - "node.data: true"
         - "node.master: true"
     studio_repository: "https://github.com/biothings/{{ app_name }}.git" 
-    studio_version: "{{ studio_version | default('master')}}"
-    biothings_version: "{{ biothings_version | default('master')}}"
+    studio_git_version: "{{ studio_version | default('master')}}"
+    biothings_git_version: "{{ biothings_version | default('master')}}"
     nginx:
       apt_repository: "ppa:nginx/stable"
   common_configurations:

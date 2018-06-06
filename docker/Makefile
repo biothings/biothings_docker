@@ -1,5 +1,5 @@
 studio:
-	docker build --force-rm --build-arg STUDIO_VERSION=0.1c --build-arg BIOTHINGS_VERSION=master -t biothings_studio .
+	docker build --force-rm --build-arg STUDIO_VERSION=0.1c --build-arg BIOTHINGS_VERSION=0.2.0 -t biothings_studio .
 
 containers:
 	-mkdir containers

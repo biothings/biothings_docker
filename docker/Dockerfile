@@ -1,6 +1,11 @@
 FROM ubuntu
 LABEL maintainer "help@biothings.io"
 
+ARG BIOTHINGS_VERSION
+ARG STUDIO_VERSION
+RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
+RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
+
 RUN apt-get -y update
 RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs-legacy
 # some extra packages for debugging purpose, can be commented out for actual image
