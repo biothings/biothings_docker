@@ -1,3 +1,3 @@
-import re
 __gitversion__ = "$Id$"
-__version__ = re.sub("((\$Id$)|(\$Id\$))","\\3",__gitversion__)
+# don't use key expansion in a regex for instance...
+__version__ = __gitversion__.replace("$","").replace("Id","").replace(":","").strip()
