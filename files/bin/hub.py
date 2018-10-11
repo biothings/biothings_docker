@@ -38,6 +38,7 @@ import biothings.hub.datainspect.inspector as inspector
 from biothings.hub.api.manager import APIManager
 from biothings.utils.hub import schedule, pending, done, CompositeCommand, \
                                 start_server, HubShell, CommandDefinition
+
 import hub.dataload.sources
 
 shell = HubShell(job_manager)
@@ -45,15 +46,15 @@ shell = HubShell(job_manager)
 # will check every 10 seconds for sources to upload
 upload_manager = uploader.UploaderManager(poll_schedule = '* * * * * */10', job_manager=job_manager)
 dmanager = dumper.DumperManager(job_manager=job_manager)
-smanager = source.SourceManager(hub.dataload.sources,dmanager,upload_manager)
+from biothings.hub.dataplugin.manager import DataPluginManager
+dp_manager = DataPluginManager(job_manager=job_manager)
+smanager = source.SourceManager(hub.dataload.sources,dmanager,upload_manager,dp_manager)
 
 dmanager.schedule_all()
 upload_manager.poll('upload',lambda doc: shell.launch(partial(upload_manager.upload_src,doc["_id"])))
 
 # deal with 3rdparty datasources
 import biothings.hub.dataplugin.assistant as assistant
-from biothings.hub.dataplugin.manager import DataPluginManager
-dp_manager = DataPluginManager(job_manager=job_manager)
 assistant_manager = assistant.AssistantManager(data_plugin_manager=dp_manager,
                                                dumper_manager=dmanager,
                                                uploader_manager=upload_manager,
@@ -191,7 +192,7 @@ EXTRA_NS = {
 }
 
 import tornado.web
-from biothings.hub.api import generate_api_routes, EndpointDefinition
+from biothings.hub.api import generate_api_routes, EndpointDefinition, start_api
 
 API_ENDPOINTS = {
         # extra commands for API
@@ -256,9 +257,7 @@ routes.extend(ws_router.urls)
 # register app into current event loop
 app = tornado.web.Application(routes,settings=settings)
 EXTRA_NS["app"] = app
-app_server = tornado.httpserver.HTTPServer(app)
-app_server.listen(config.HUB_API_PORT)
-app_server.start()
+app_server = start_api(app,config.HUB_API_PORT)
 
 server = start_server(loop,"BioThings Studio hub",passwords=config.HUB_PASSWD,
                       port=config.HUB_SSH_PORT,shell=shell)
