@@ -37,6 +37,19 @@ do
   ret=$?
 done
 
+# start Cerebro
+start-stop-daemon --start -c elasticsearch -b --exec /usr/local/cerebro-{{software.common_configurations.cerebro.version}}/bin/cerebro
+netstat -tnlp | grep 9000
+
+ret=$?
+while [ "$ret" != "0" ]
+do
+  echo Waiting for cerebro
+  sleep 5
+  netstat -tnlp | grep 9000
+  ret=$?
+done
+
 # Launch hub in a tmux session
 su - biothings -c "
 source ~/pyenv/bin/activate

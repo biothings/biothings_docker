@@ -31,6 +31,8 @@ software:
       public_signing_key_url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
       elasticsearch_yml:
         - "network.host: 0.0.0.0"
+    cerebro:
+      version: "0.8.1"
     mongodb:
       version: "3.2.18"
       apt_repository: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
