@@ -177,9 +177,10 @@
   file: path=/data/{{ app_name }} state=directory owner=biothings group=biothings
 - name: data plugins directory
   file: path=/data/{{ app_name }}/plugins state=directory owner=biothings group=biothings
-
+- name: data sources directory
+  file: path=/data/{{ app_name }}/datasources state=directory owner=biothings group=biothings
 - name: run directory
-  file: path=/data/run state=directory
+  file: path=/data/run state=directory owner=biothings group=biothings
 
 - name: conf directory
   file: path=/data/conf state=directory

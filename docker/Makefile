@@ -9,7 +9,7 @@ biothings_studio:
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 run:
-	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9000:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
+	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
 
 containers:
 	-mkdir containers
