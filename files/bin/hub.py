@@ -89,7 +89,7 @@ index_manager.configure(config.ES_CONFIG)
 api_manager = APIManager()
 
 from biothings.utils.hub import HubReloader
-reloader = HubReloader(["hub/dataload/sources","plugins"],
+reloader = HubReloader(["hub/dataload/sources",config.DATA_PLUGIN_FOLDER],
         [smanager,assistant_manager],
         reload_func=partial(shell.restart,force=True))
 reloader.monitor()
