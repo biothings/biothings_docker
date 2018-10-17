@@ -1,6 +1,6 @@
 from config_hub import *
 
-DATA_ARCHIVE_ROOT = '/data/biothings_studio'
+DATA_ARCHIVE_ROOT = '/data/biothings_studio/datasources'
 DATA_PLUGIN_FOLDER = '/data/biothings_studio/plugins'
 DATA_SRC_SERVER = 'localhost'
 DATA_SRC_PORT = 27017
@@ -16,17 +16,17 @@ DATA_TARGET_SERVER_PASSWORD = ''
 
 DATA_HUB_DB_DATABASE = DATA_SRC_DATABASE # keep _src db as before
 
-DIFF_PATH = os.path.join(DATA_ARCHIVE_ROOT,"diff")
+DIFF_PATH = "/data/biothings_studio/diff"
 
 HUB_DB_BACKEND = {
 		"module" : "biothings.utils.mongo",
 		"uri" : "mongodb://localhost:27017",
 		}
 
-LOG_FOLDER = os.path.join(DATA_ARCHIVE_ROOT,'logs')
+LOG_FOLDER = "/data/biothings_studio/logs"
 logger = setup_default_log("hub", LOG_FOLDER)
 
-RELEASE_PATH = os.path.join(DATA_ARCHIVE_ROOT,"release")
-CACHE_FOLDER = os.path.join(DATA_ARCHIVE_ROOT,'cache')
+RELEASE_PATH = "/data/biothings_studio/release"
+CACHE_FOLDER = "/data/biothings_studio/cache"
 
 RUN_DIR = '/data/run'
