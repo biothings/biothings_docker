@@ -242,8 +242,9 @@ shell.set_commands(COMMANDS,EXTRA_NS)
 import tornado.platform.asyncio
 tornado.platform.asyncio.AsyncIOMainLoop().install()
 
-settings = {'debug': True}
-routes = generate_api_routes(shell, API_ENDPOINTS,settings=settings)
+routes = generate_api_routes(shell, API_ENDPOINTS)
+from biothings.hub.api.handlers.upload import UploadHandler
+routes.append(("/data/([\w\.-]+)?",UploadHandler,{"shell":shell}))
 # add websocket endpoint
 import biothings.hub.api.handlers.ws as ws
 import sockjs.tornado
@@ -255,9 +256,9 @@ ws_router = sockjs.tornado.SockJSRouter(partial(ws.WebSocketConnection,listener=
 routes.extend(ws_router.urls)
 
 # register app into current event loop
-app = tornado.web.Application(routes,settings=settings)
+app = tornado.web.Application(routes)
 EXTRA_NS["app"] = app
-app_server = start_api(app,config.HUB_API_PORT)
+app_server = start_api(app,config.HUB_API_PORT,settings=config.TORNADO_SETTINGS)
 
 server = start_server(loop,"BioThings Studio hub",passwords=config.HUB_PASSWD,
                       port=config.HUB_SSH_PORT,shell=shell)
