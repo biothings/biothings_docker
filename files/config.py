@@ -2,6 +2,7 @@ from config_hub import *
 
 DATA_ARCHIVE_ROOT = '/data/biothings_studio/datasources'
 DATA_PLUGIN_FOLDER = '/data/biothings_studio/plugins'
+DATA_UPLOAD_FOLDER = '/data/biothings_studio/dataupload'
 DATA_SRC_SERVER = 'localhost'
 DATA_SRC_PORT = 27017
 DATA_SRC_DATABASE = 'biothings_src'
