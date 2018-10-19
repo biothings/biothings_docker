@@ -179,6 +179,8 @@
   file: path=/data/{{ app_name }}/plugins state=directory owner=biothings group=biothings
 - name: data sources directory
   file: path=/data/{{ app_name }}/datasources state=directory owner=biothings group=biothings
+- name: data upload directory
+  file: path=/data/{{ app_name }}/dataupload state=directory owner=biothings group=biothings
 - name: run directory
   file: path=/data/run state=directory owner=biothings group=biothings
 
@@ -213,6 +215,9 @@
   shell: echo "y\n" | ssh-keygen -f /home/biothings/{{ app_name }}/bin/ssh_host_key -q -N ""
   become_user: "biothings"
   become: true
+
+- name: pretty mongo shell
+  lineinfile: dest=/home/biothings/.mongorc.js line="DBQuery.prototype._prettyShell = true" mode=0644 owner=biothings group=biothings insertafter=EOF create=yes
 
 #- name: Template out config.py file
 #  template: owner=biothings group=biothings mode=0640 src=templates/config.py dest=/home/biothings/{{ app_name }}/src/config.py
