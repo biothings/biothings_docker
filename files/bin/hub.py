@@ -244,7 +244,7 @@ tornado.platform.asyncio.AsyncIOMainLoop().install()
 
 routes = generate_api_routes(shell, API_ENDPOINTS)
 from biothings.hub.api.handlers.upload import UploadHandler
-routes.append(("/data/([\w\.-]+)?",UploadHandler,{"upload_root":config.DATA_UPLOAD_FOLDER}))
+routes.append(("/dataupload/([\w\.-]+)?",UploadHandler,{"upload_root":config.DATA_UPLOAD_FOLDER}))
 # add websocket endpoint
 import biothings.hub.api.handlers.ws as ws
 import sockjs.tornado
