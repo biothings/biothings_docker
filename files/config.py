@@ -1,4 +1,4 @@
-from config_hub import *
+from config_studio_hub import *
 
 DATA_ARCHIVE_ROOT = '/data/biothings_studio/datasources'
 DATA_PLUGIN_FOLDER = '/data/biothings_studio/plugins'
@@ -31,3 +31,4 @@ RELEASE_PATH = "/data/biothings_studio/release"
 CACHE_FOLDER = "/data/biothings_studio/cache"
 
 RUN_DIR = '/data/run'
+STANDALONE_VERSION = None
