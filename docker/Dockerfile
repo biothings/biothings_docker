@@ -3,8 +3,8 @@ LABEL maintainer "help@biothings.io"
 
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
-ARG APP_NAME
-ARG APP_VERSION
+ARG API_NAME
+ARG API_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
@@ -24,11 +24,11 @@ ADD inventory /etc/ansible/hosts
 WORKDIR /tmp/ansible_playbook
 RUN if [ -n "APP_NAME" ]; \
     then \
-        ansible-playbook studio4app.yml \
+        ansible-playbook studio4api.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
             -e "studio_version=$STUDIO_VERSION" \
-            -e "app_name=$APP_NAME" \
-            -e "app_version=$APP_VERSION" \
+            -e "api_name=$API_NAME" \
+            -e "api_version=$API_VERSION" \
             -c local; \
     else \
         ansible-playbook biothings_studio.yml \
