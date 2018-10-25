@@ -8,6 +8,14 @@ biothings_studio:
     --build-arg BIOTHINGS_VERSION=master \
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
+studio4mygene:
+	docker build --force-rm \
+    --build-arg STUDIO_VERSION=master \
+    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg APP_REPO=https://github.com/biothings/mygene.info.git \
+    --build-arg APP_VERSION=master \
+    -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
+
 run:
 	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
 

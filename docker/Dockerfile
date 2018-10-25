@@ -3,6 +3,8 @@ LABEL maintainer "help@biothings.io"
 
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
+ARG APP_NAME
+ARG APP_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
@@ -20,10 +22,20 @@ ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
 WORKDIR /tmp/ansible_playbook
-RUN ansible-playbook biothings_studio.yml \
-                     -e "biothings_version=$BIOTHINGS_VERSION" \
-                     -e "studio_version=$STUDIO_VERSION" \
-                     -c local
+RUN if [ -n "APP_NAME" ]; \
+    then \
+        ansible-playbook studio4app.yml \
+            -e "biothings_version=$BIOTHINGS_VERSION" \
+            -e "studio_version=$STUDIO_VERSION" \
+            -e "app_name=$APP_NAME" \
+            -e "app_version=$APP_VERSION" \
+            -c local; \
+    else \
+        ansible-playbook biothings_studio.yml \
+            -e "biothings_version=$BIOTHINGS_VERSION" \
+            -e "studio_version=$STUDIO_VERSION" \
+            -c local; \
+fi
 
 # Clean up ansible_playbook
 WORKDIR /tmp
@@ -31,6 +43,6 @@ RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
 
-EXPOSE 8080 9200 7022 7080 27017 22
+EXPOSE 8080 9200 7022 7080 27017 22 9000
 VOLUME ["/data"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
