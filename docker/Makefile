@@ -16,6 +16,22 @@ studio4mygene:
     --build-arg API_VERSION=master \
     -t studio4mygene:$$(git branch | grep ^\* | sed "s#\* ##") .
 
+studio4myvariant:
+	docker build --force-rm \
+    --build-arg STUDIO_VERSION=master \
+    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg API_NAME=myvariant.info \
+    --build-arg API_VERSION=master \
+    -t studio4myvariant:$$(git branch | grep ^\* | sed "s#\* ##") .
+
+studio4mychem:
+	docker build --force-rm \
+    --build-arg STUDIO_VERSION=master \
+    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg API_NAME=mychem.info \
+    --build-arg API_VERSION=master \
+    -t studio4mychem:$$(git branch | grep ^\* | sed "s#\* ##") .
+
 run:
 	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
 

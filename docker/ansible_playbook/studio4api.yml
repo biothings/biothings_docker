@@ -1,0 +1,13 @@
+# Main playbook to set up mytaxonomy cluster
+
+- name: Setup biothings studio
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars_files:
+    - vars/{{ varfile | default('biothings_studio.yml') }}
+
+  tasks:
+    - include: configure.yml
+    - include: configure_api.yml
+

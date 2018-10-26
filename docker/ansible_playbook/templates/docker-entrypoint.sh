@@ -54,11 +54,26 @@ done
 su - biothings -c "
 source ~/pyenv/bin/activate
 cd biothings.api && git reset --hard && git pull && pip install -r requirements.txt && cd ..
+cd {{ app_name }} && git reset --hard && git pull && cd ..
+"
+if [ "X{{ api_name }}" = "X" ]
+then
+     # pristine studio
+    su - biothings -c "
+source ~/pyenv/bin/activate
 cd {{ app_name }}
-git reset --hard && git pull
 tmux new-session -d -s hub
 tmux send-keys 'python bin/hub.py' C-m
 tmux detach -s hub"
+else
+    su - biothings -c "
+source ~/pyenv/bin/activate
+cd {{ api_name }} && git reset --hard && git pull && pip install -r requirements_hub.txt 
+cd src && find hub/dataload/sources -name requirement*.txt -exec pip install -r {} \;
+tmux new-session -d -s hub
+tmux send-keys 'python ~/{{ app_name}}/bin/hub.py' C-m
+tmux detach -s hub"
+fi
 
 if [ "$?" != "0" ]
 then

@@ -1,0 +1,47 @@
+######################################################################
+# Update security/limits.conf
+######################################################################
+
+- name: Pull API app source from github repo
+  git: repo=https://github.com/biothings/{{api_name}}.git dest=/home/biothings/{{ api_name }} version={{api_version}}
+  become_user: "biothings"
+  become: true
+
+- name: Install API requirements
+  shell: "source $HOME/pyenv/bin/activate && pip install -r requirements_hub.txt"
+  args:
+    executable: /bin/bash
+    chdir: /home/biothings/{{ api_name }}
+  become_user: "biothings"
+  become: true
+
+- name: Copy studio config to API
+  copy:
+    # Ex: app_name = "biothings_studio" and api_name = "mygene.info"
+    src: /home/biothings/{{ app_name }}/config.py
+    dest: /home/biothings/{{ api_name }}/src/
+  become_user: "biothings"
+  become: true
+
+- name: Symlink studio's default config
+  file:
+    src: /home/biothings/{{ app_name }}/config_studio_hub.py
+    dest: /home/biothings/{{ api_name }}/src/config_studio_hub.py
+    state: link
+  become_user: "biothings"
+  become: true
+
+- name: Inject API config_hub
+  # at the very begining so the studio's config will overwrite some params like ports, etc...
+  # so we have the same app (studio or api) working the same
+  lineinfile: dest=/home/biothings/{{ api_name }}/src/config.py line="from config_hub import *" insertbefore=BOF
+
+- name: biothings api as subfolder
+  file: src=/home/biothings/biothings.api/biothings dest=/home/biothings/{{ api_name }}/src/biothings state=link
+  become_user: "biothings"
+  become: true
+
+- name: Generate RSA host key
+  command : ssh-keygen -q -t rsa -f /home/biothings/{{ api_name }}/src/bin/ssh_host_key -C "" -N "" creates=/home/biothings/{{ api_name }}/src/bin/ssh_host_key
+  become_user: "biothings"
+  become: true
