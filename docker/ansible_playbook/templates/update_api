@@ -1,0 +1,5 @@
+#!/bin/bash
+source ~/pyenv/bin/activate
+pushd ~/{{ api_name }} && git reset --hard && git pull && pip install -r requirements_hub.txt 
+cd src && find hub/dataload/sources -name requirement*.txt -exec pip install -r {} \;
+popd

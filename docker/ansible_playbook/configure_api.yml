@@ -15,6 +15,11 @@
   become_user: "biothings"
   become: true
 
+- name: Template out update_api
+  template: mode=0755 src=templates/update_api dest=/home/biothings/bin/update_api
+- name: Template out run_studio
+  template: mode=0755 src=templates/run_api dest=/home/biothings/bin/run_api
+
 - name: Copy studio config to API
   copy:
     # Ex: app_name = "biothings_studio" and api_name = "mygene.info"

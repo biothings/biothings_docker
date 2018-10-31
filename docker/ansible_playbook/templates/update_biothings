@@ -1,0 +1,3 @@
+#!/bin/bash
+source ~/pyenv/bin/activate
+pushd ~/biothings.api && git reset --hard && git pull && pip install -r requirements.txt && popd

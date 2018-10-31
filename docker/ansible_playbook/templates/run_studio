@@ -1,0 +1,7 @@
+#!/bin/bash
+source ~/pyenv/bin/activate
+cd ~/{{ app_name }}
+tmux kill-session -t hub 2> /dev/null
+tmux new-session -d -s hub
+tmux send-keys 'python bin/hub.py' C-m
+tmux detach -s hub

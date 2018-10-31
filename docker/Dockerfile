@@ -22,7 +22,7 @@ ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
 WORKDIR /tmp/ansible_playbook
-RUN if [ -n "APP_NAME" ]; \
+RUN if [ -n "$API_NAME" ]; \
     then \
         ansible-playbook studio4api.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
