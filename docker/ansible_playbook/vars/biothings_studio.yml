@@ -39,7 +39,8 @@ software:
       port: 27017
       bindip: "127.0.0.1"
       oplogsizemb: 50
-      dbpath: "/var/lib/mongodb"
+      dbpath: "/data/mongodb"
+      logpath: "/data/logs/mongodb"
       replsetname: "monitor"
     java:
       apt_repository: "ppa:webupd8team/java"

@@ -1,8 +1,13 @@
 #!/bin/bash
 
-#set -e
-set -u
 
+echo ARG $@
+# manuall stora arg before "set -u"
+# if no arg is passed, $1 is unbound and raise
+# an error after "set -u"
+arg1="$1"
+
+set -u
 
 # mongodb only uses systemd but using docker,
 # process 1 can be /bin/bash, not sysctl, so it would
@@ -51,19 +56,24 @@ do
 done
 
 # Launch hub in a tmux session
-su - biothings -c "
-./bin/update_biothings && ./bin/update_studio
-"
+if [ "X$arg1" = "Xno-update" ]
+then
+    echo "Skipping biothings.api and biothings_studio self-update"
+else
+    su - biothings -c "./bin/update_biothings && ./bin/update_studio"
+fi
+
 if [ "X{{ api_name | default('') }}" = "X" ]
 then
      # pristine studio
-    su - biothings -c "
-./bin/run_studio
-"
+    su - biothings -c "./bin/run_studio"
 else
-    su - biothings -c "
-./bin/update_api && ./bin/run_api
-"
+    if [ "X$arg1" = "Xno-update" ]
+    then
+        echo "Skipping {{ api_name }} self-update"
+    else
+        su - biothings -c "./bin/update_api && ./bin/run_api"
+    fi
 fi
 
 if [ "$?" != "0" ]
@@ -90,9 +100,6 @@ if test -t 0; then
 # Detached mode
 else
   echo "not interactive"
-  if [[ $@ ]]; then 
-    eval $@
-  fi
   # until it dies
   mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
   /usr/sbin/sshd -D

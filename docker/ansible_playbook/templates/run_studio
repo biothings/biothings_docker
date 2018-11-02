@@ -4,4 +4,5 @@ cd ~/{{ app_name }}
 tmux kill-session -t hub 2> /dev/null
 tmux new-session -d -s hub
 tmux send-keys 'python bin/hub.py' C-m
-tmux detach -s hub
+# not needed with tmux 2.6 ? if left, gives "no current client"
+#tmux detach -s hub

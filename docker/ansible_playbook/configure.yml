@@ -171,8 +171,18 @@
   become_user: "biothings"
   become: true
 
+# Logs folder
 - name: logs directory
   file: path=/data/logs state=directory
+- name: nginx logs directory
+  file: path=/data/logs/nginx state=directory owner=www-data group=www-data
+- name: supervisor logs directory
+  file: path=/data/logs/supervisor state=directory owner=www-data group=www-data
+- name: elasticsearch logs directory
+  file: path=/data/logs/elasticsearch state=directory owner=elasticsearch group=elasticsearch
+- name: mongodb logs directory
+  file: path="{{ software.common_configurations.mongodb.logpath }}" state=directory owner=mongodb group=mongodb
+# studio/api folder
 - name: app data directory
   file: path=/data/{{ app_name }} state=directory owner=biothings group=biothings
 - name: data plugins directory
@@ -181,11 +191,17 @@
   file: path=/data/{{ app_name }}/datasources state=directory owner=biothings group=biothings
 - name: data upload directory
   file: path=/data/{{ app_name }}/dataupload state=directory owner=biothings group=biothings
+# misc
 - name: run directory
   file: path=/data/run state=directory owner=biothings group=biothings
-
 - name: conf directory
   file: path=/data/conf state=directory
+# database data folders
+- name: elasticsearch data directory
+  file: path=/data/elasticsearch state=directory owner=elasticsearch group=elasticsearch
+- name: mongodb data directory
+  file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
+
 
 
 - name: Pull studio app source from github repo
@@ -252,4 +268,11 @@
     # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
     # (not suitable for production with a cluster)
     - "discovery.type: single-node"
+
+- name: update elasticsearch.yml again replacing some values
+  replace: dest=/etc/elasticsearch/elasticsearch.yml replace="{{ item.line }}" regexp="{{ item.re }}"
+  become: yes
+  with_items:
+    - {"line": "path.data: /data/elasticsearch", "re": "^path.data.*$"}
+    - {"line": "path.logs: /data/logs/elasticsearch", "re": "^path.logs.*$"}
 

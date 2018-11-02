@@ -46,6 +46,19 @@
   become_user: "biothings"
   become: true
 
+- stat: path=/home/biothings/{{ api_name }}/src/plugins
+  register: plugins_exists
+# plugins in the studio originally are in /data/biothings_studio/plugins
+# but there could be plugins defined directly in the API folder, so instead
+# of dealing with multiple plugin folders, symlink the API one to /data/...
+# First delete directory then symlink
+- name: delete plugins dir
+  file: state=absent path=/data/{{ app_name }}/plugins
+  when: plugins_exists.stat.exists == True
+- name: symlink APIs plugins
+  file: src=/home/biothings/{{ api_name }}/src/plugins dest=/data/{{ app_name }}/plugins state=link
+  when: plugins_exists.stat.exists == True
+
 - name: Generate RSA host key
   command : ssh-keygen -q -t rsa -f /home/biothings/{{ api_name }}/src/bin/ssh_host_key -C "" -N "" creates=/home/biothings/{{ api_name }}/src/bin/ssh_host_key
   become_user: "biothings"
