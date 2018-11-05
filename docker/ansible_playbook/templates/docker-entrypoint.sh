@@ -70,7 +70,7 @@ then
 else
     if [ "X$arg1" = "Xno-update" ]
     then
-        echo "Skipping {{ api_name }} self-update"
+        echo "Skipping {{ api_name | default('') }} self-update"
     else
         su - biothings -c "./bin/update_api && ./bin/run_api"
     fi
