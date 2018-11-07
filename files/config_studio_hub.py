@@ -218,3 +218,11 @@ LOG_FOLDER = ConfigurationError("Define path to folder which will contain log fi
 logger = ConfigurationError("Provider a default hub logger instance (use setup_default_log(name,log_folder)")
 # Usually use default setup
 #logger = setup_default_log("hub", LOG_FOLDER)
+
+import logging
+# shut some mouths...
+logging.getLogger("elasticsearch").setLevel(logging.ERROR)
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+logging.getLogger("requests").setLevel(logging.ERROR)
+logging.getLogger("boto").setLevel(logging.ERROR)
+
