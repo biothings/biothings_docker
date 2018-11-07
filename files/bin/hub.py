@@ -8,8 +8,5 @@ logging.info("Hub database: %s" % biothings.config.DATA_HUB_DB_DATABASE)
 
 from biothings.utils.hub import HubServer
 import hub.dataload.sources
-server = HubServer(hub.dataload.sources,name="BioThings Studio",
-        websocket_config=False,
-        api_config=False,
-        reloader_config=False)
+server = HubServer(hub.dataload.sources,name="BioThings Studio")
 server.start()
