@@ -3,6 +3,6 @@ source ~/pyenv/bin/activate
 cd ~/{{ api_name }}/src
 tmux kill-session -t hub 2> /dev/null
 tmux new-session -d -s hub 
-tmux send-keys 'python ~/{{ app_name}}/bin/hub.py' C-m
+tmux send-keys 'python ~/{{ app_name}}/bin/hub.py -a .' C-m
 # not needed with tmux 2.6 ? if left, gives "no current client"
 #tmux detach -s hub

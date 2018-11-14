@@ -20,6 +20,10 @@
 - name: Template out run_studio
   template: mode=0755 src=templates/run_api dest=/home/biothings/bin/run_api
 
+# next tasks are about adjusting the config files
+# - config.py comes from biothings_studio
+# - but we want to use config_hub from the API, instead of biothings_studio's
+# - and then we want to override some values with a config_api file
 - name: Copy studio config to API
   copy:
     # Ex: app_name = "biothings_studio" and api_name = "mygene.info"
@@ -28,18 +32,22 @@
   become_user: "biothings"
   become: true
 
-- name: Symlink studio's default config
-  file:
-    src: /home/biothings/{{ app_name }}/config_studio_hub.py
-    dest: /home/biothings/{{ api_name }}/src/config_studio_hub.py
-    state: link
+- name: Template out config_api.py file
+  template: owner=biothings group=biothings mode=0640 src=templates/config_api.py dest=/home/biothings/{{ api_name }}/src/config_api.py
   become_user: "biothings"
   become: true
 
-- name: Inject API config_hub
-  # at the very begining so the studio's config will overwrite some params like ports, etc...
-  # so we have the same app (studio or api) working the same
-  lineinfile: dest=/home/biothings/{{ api_name }}/src/config.py line="from config_hub import *" insertbefore=BOF
+- name: Remove config_studio_hub
+  lineinfile: dest=/home/biothings/{{ api_name }}/src/config.py line="from config_studio_hub import *" state=absent
+  become_user: "biothings"
+  become: true
+
+- name: Inject config_hub and config_api
+  # overwrite some config variable, such as port, name, reloader, etc...
+  lineinfile: dest=/home/biothings/{{ api_name }}/src/config.py  line="{{ item.line }}" insertbefore=BOF
+  with_items:
+    - {"line":"from config_api import *"}
+    - {"line":"from config_hub import *"}
 
 - name: biothings api as subfolder
   file: src=/home/biothings/biothings.api/biothings dest=/home/biothings/{{ api_name }}/src/biothings state=link
