@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import config, biothings, logging
+import config, biothings
 biothings.config_for_app(config)
+logging = config.logger
 
 from biothings.hub import HubServer
 import hub.dataload.sources
