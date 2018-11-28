@@ -9,7 +9,7 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
 RUN apt-get -y update
-RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs
+RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs dirmngr
 # install timezone info, avoid config
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 # some extra packages for debugging purpose, can be commented out for actual image
