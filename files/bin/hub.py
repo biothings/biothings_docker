@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import config, biothings
+from biothings.utils.version import set_versions
+app_folder,_src = os.path.split(os.path.split(os.path.abspath(__file__))[0])
+set_versions(config,app_folder)
 biothings.config_for_app(config)
 logging = config.logger
 
