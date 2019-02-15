@@ -6,3 +6,12 @@ docker run --rm --name studio -p 8000:8000 -p 8080:8080 -p 7022:7022 -p 7080:708
 # or, using Makefile
 make biothings_studio       # build image
 make biothings_studio save  # save image
+
+## Other Targets:
+
+prerequisite:  docker, make
+
+- `make studio4mygene`
+- `make studio4myvariant`
+- `make studio4mychem`
+
