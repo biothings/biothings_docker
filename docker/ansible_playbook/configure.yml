@@ -73,15 +73,35 @@
 ##################################################
 
 - name: Add mongodb public signing key
-  apt_key: keyserver=keyserver.ubuntu.com id=EA312927
+  apt_key: keyserver=keyserver.ubuntu.com id=9DA31620334BD75D9DCB49F368818C72E52529D4
   become: yes
 
 - name: Add mongodb repository to apt sources
   apt_repository: repo={{ software.common_configurations.mongodb.apt_repository }}
   become: yes
 
-- name: Install mongodb
+- name: Install libcurl3
+  apt: name=libcurl3
+  become: yes
+
+- name: Install mongodb (server)
+  apt: name=mongodb-org-server={{ software.common_configurations.mongodb.version }}
+  become: yes
+
+- name: Install mongodb (org)
   apt: name=mongodb-org={{ software.common_configurations.mongodb.version }}
+  become: yes
+
+- name: Install mongodb (shell)
+  apt: name=mongodb-org-shell={{ software.common_configurations.mongodb.version }}
+  become: yes
+
+- name: Install mongodb (mongos)
+  apt: name=mongodb-org-mongos={{ software.common_configurations.mongodb.version }}
+  become: yes
+
+- name: Install mongodb (tools)
+  apt: name=mongodb-org-tools={{ software.common_configurations.mongodb.version }}
   become: yes
 
 - name: template out mongod.conf
