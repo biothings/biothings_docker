@@ -18,11 +18,11 @@
   become: yes
 
 - name: Make Java installer auto-accept license
-  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  debconf: name='oracle-java12-installer' question='shared/accepted-oracle-license-v1-2' value='true' vtype='select'
   become: yes
 
 - name: Install Java
-  apt: name=oracle-java8-installer
+  apt: name=oracle-java12-installer
   become: yes
 
 ##################################################

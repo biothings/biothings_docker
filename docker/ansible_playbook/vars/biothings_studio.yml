@@ -34,7 +34,7 @@ software:
     cerebro:
       version: "0.8.1"
     mongodb:
-      version: "4.0.6"
+      version: "4.0.10"
       apt_repository: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse"
       port: 27017
       bindip: "127.0.0.1"
@@ -43,4 +43,4 @@ software:
       logpath: "/data/logs/mongodb"
       replsetname: "monitor"
     java:
-      apt_repository: "ppa:webupd8team/java"
+      apt_repository: "ppa:linuxuprising/java"

@@ -1,3 +1,5 @@
+#FROM adoptopenjdk/openjdk11
+#java:oracle-java8
 FROM ubuntu:18.04
 LABEL maintainer "help@biothings.io"
 
