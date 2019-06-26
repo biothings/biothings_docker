@@ -2,7 +2,7 @@
 # make studio save
 # makz studio sends3
 
-biothings_studio:
+studio:
 	docker build --force-rm \
     --build-arg STUDIO_VERSION=master \
     --build-arg BIOTHINGS_VERSION=master \

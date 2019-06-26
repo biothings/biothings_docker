@@ -1,6 +1,6 @@
-######################################################################
+#####################################################################
 # Update security/limits.conf
-######################################################################
+#####################################################################
 
 - name: Update /etc/security/limits.conf
   lineinfile: dest=/etc/security/limits.conf insertbefore="^# End of file" line="{{ item.line }}" mode=0644 owner=root group=root
@@ -58,7 +58,7 @@
 - name: Configure Cerebro
   lineinfile: dest=/usr/local/cerebro-{{software.common_configurations.cerebro.version}}/conf/application.conf line="{{ item }}" mode=0644 owner=root group=root insertafter="^hosts ="
   with_items:
-    - '}'
+    - '},'
     - '  name = "BioThings Studio"'
     - '  host = "http://localhost:9200"'
     - '{'

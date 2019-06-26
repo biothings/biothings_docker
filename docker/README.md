@@ -15,3 +15,9 @@ prerequisite:  docker, make
 - `make studio4myvariant`
 - `make studio4mychem`
 
+
+# Testing
+- Follow tutorial http://docs.biothings.io/en/latest/doc/studio_tutorial.html
+  (using https://github.com/sirloon/mvcgi datasource). Tests the whole process
+- https://github.com/sirloon/gwascatalog for dumper custom release
+- https://github.com/sirloon/FIRE for parallelization
