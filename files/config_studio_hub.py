@@ -183,7 +183,7 @@ RELEASE_CONFIG = {
 # elasticsearch.yml value, param "path.repo"
 # If using "fs" type repository with post-step "archive",
 # this folder must have permissions set for user/group running the hub
-ES_BACKUPS_FOLDER = "/opt/es_backups"
+ES_BACKUPS_FOLDER = "/data/es_backups"
 
 import logging
 
