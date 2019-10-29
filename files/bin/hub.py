@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-import os
+import os, logging
+# shut some mouths
+logging.getLogger("botocore").setLevel(logging.ERROR)
+logging.getLogger("boto").setLevel(logging.ERROR)
+logging.getLogger("s3transfer").setLevel(logging.ERROR)
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+
+
 import config, biothings
 from biothings.utils.version import set_versions
 app_folder,_src = os.path.split(os.path.split(os.path.abspath(__file__))[0])

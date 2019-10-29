@@ -32,3 +32,5 @@ CACHE_FOLDER = "/data/biothings_studio/cache"
 
 RUN_DIR = '/data/run'
 STANDALONE_VERSION = None
+CONFIG_READONLY = False
+
