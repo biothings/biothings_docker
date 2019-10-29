@@ -188,6 +188,9 @@
 # Update elasticsearch.yml
 ################################################
 
+- name: es backups data directory (repo type fs)
+  file: path=/data/es_backups mode=0777 state=directory owner=elasticsearch group=elasticsearch
+
 - name: Update elasticsearch.yml file
   lineinfile: dest=/etc/elasticsearch/elasticsearch.yml line="{{ item }}" mode=0644 owner=root group=root insertafter=EOF
   become: yes
@@ -200,6 +203,7 @@
     # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
     # (not suitable for production with a cluster)
     - "discovery.type: single-node"
+    - 'cluster.name: ["/data/es_backups"]'
 
 - name: update elasticsearch.yml again replacing some values
   replace: dest=/etc/elasticsearch/elasticsearch.yml replace="{{ item.line }}" regexp="{{ item.re }}"
