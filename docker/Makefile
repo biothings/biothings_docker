@@ -3,9 +3,9 @@
 # makz biothings_studio sends3
 
 biothings_studio:
-	docker build --force-rm \
+	docker build  \
     --build-arg STUDIO_VERSION=master \
-    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg BIOTHINGS_VERSION=release_manager \
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4mygene:
@@ -40,9 +40,9 @@ containers:
 
 save: containers
 	$(eval CONTAINER := $(firstword $(MAKECMDGOALS)))
-	docker save $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##") > containers/$(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##").docker$ 
+	docker save $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##") | xz > ../containers/$(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##").docker.xz 
 
 sends3:
 	$(eval CONTAINERFILE := $(firstword $(MAKECMDGOALS)))
 	#aws s3 cp $(CONTAINERFILE) s3://biothings-containers/biothings_studio/
-	aws s3 cp containers/$(CONTAINERFILE):$$(git branch | grep ^\* | sed "s#\* ##").docker s3://biothings-containers/biothings_studio/
+	aws s3 cp containers/$(CONTAINERFILE):$$(git branch | grep ^\* | sed "s#\* ##").docker.xz s3://biothings-containers/biothings_studio/

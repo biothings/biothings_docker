@@ -10,12 +10,27 @@ ARG API_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
+# base
 RUN apt-get -y update
-RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs dirmngr
+RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs dirmngr apt-transport-https openjdk-8-jre-headless openssh-server python3 python3-pip software-properties-common
+
 # install timezone info, avoid config
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 # some extra packages for debugging purpose, can be commented out for actual image
 RUN if [ -z "$PROD" ]; then apt-get install -y htop ne wget net-tools; fi
+
+# elastic
+RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+RUN apt-add-repository "deb https://artifacts.elastic.co/packages/6.x/apt stable main"
+RUN apt-get install -y elasticsearch=6.1.1
+# mongo
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+RUN apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"
+RUN apt-get install -y mongodb-org-server=4.0.13 mongodb-org=4.0.13 mongodb-org-shell=4.0.13 mongodb-org-mongos=4.0.13 mongodb-org-tools=4.0.13
+# nginx
+RUN apt-add-repository "ppa:nginx/stable"
+RUN apt-get install -y nginx
+
 RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
 WORKDIR /tmp/ansible
 ENV PATH /tmp/ansible/bin:/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin

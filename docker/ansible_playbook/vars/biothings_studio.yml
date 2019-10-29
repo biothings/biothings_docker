@@ -20,27 +20,18 @@ software:
     studio_repository: "https://github.com/biothings/{{ app_name }}.git" 
     studio_git_version: "{{ studio_version | default('master')}}"
     biothings_git_version: "{{ biothings_version | default('master')}}"
-    nginx:
-      apt_repository: "ppa:nginx/stable"
   common_configurations:
     elasticsearch:
       soft_file_limit: "32000"
       hard_file_limit: "65535"
-      apt_repository: "deb https://artifacts.elastic.co/packages/6.x/apt stable main"
-      version: "6.1.1"
-      public_signing_key_url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
       elasticsearch_yml:
         - "network.host: 0.0.0.0"
     cerebro:
       version: "0.8.1"
     mongodb:
-      version: "4.0.10"
-      apt_repository: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse"
       port: 27017
       bindip: "127.0.0.1"
       oplogsizemb: 50
       dbpath: "/data/mongodb"
       logpath: "/data/logs/mongodb"
       replsetname: "monitor"
-    java:
-      apt_repository: "ppa:linuxuprising/java"

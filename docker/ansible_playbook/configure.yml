@@ -9,38 +9,6 @@
     - {"line":"elasticsearch soft nofile {{ software.common_configurations.elasticsearch.soft_file_limit }}"}
     - {"line":"elasticsearch hard nofile {{ software.common_configurations.elasticsearch.hard_file_limit }}"}
 
-##################################################
-# Install java repository
-##################################################
-
-- name: Add Java repository to apt sources
-  apt_repository: repo="{{ software.common_configurations.java.apt_repository }}"
-  become: yes
-
-- name: Make Java installer auto-accept license
-  debconf: name='oracle-java12-installer' question='shared/accepted-oracle-license-v1-2' value='true' vtype='select'
-  become: yes
-
-- name: Install Java
-  apt: name=oracle-java12-installer
-  become: yes
-
-##################################################
-# Install elasticsearch
-##################################################
-
-- name: Add elasticsearch public signing key
-  apt_key: url={{ software.common_configurations.elasticsearch.public_signing_key_url }}
-  become: yes
-
-- name: Add elasticsearch repository to apt sources
-  apt_repository: repo={{ software.common_configurations.elasticsearch.apt_repository }}
-  become: yes
-
-- name: Install elasticsearch
-  apt: name=elasticsearch={{ software.common_configurations.elasticsearch.version }}
-  become: yes
-
 ###################
 # Install Cerebro #
 ###################
@@ -72,38 +40,6 @@
 # Install mongodb 
 ##################################################
 
-- name: Add mongodb public signing key
-  apt_key: keyserver=keyserver.ubuntu.com id=9DA31620334BD75D9DCB49F368818C72E52529D4
-  become: yes
-
-- name: Add mongodb repository to apt sources
-  apt_repository: repo={{ software.common_configurations.mongodb.apt_repository }}
-  become: yes
-
-- name: Install libcurl3
-  apt: name=libcurl3
-  become: yes
-
-- name: Install mongodb (server)
-  apt: name=mongodb-org-server={{ software.common_configurations.mongodb.version }}
-  become: yes
-
-- name: Install mongodb (org)
-  apt: name=mongodb-org={{ software.common_configurations.mongodb.version }}
-  become: yes
-
-- name: Install mongodb (shell)
-  apt: name=mongodb-org-shell={{ software.common_configurations.mongodb.version }}
-  become: yes
-
-- name: Install mongodb (mongos)
-  apt: name=mongodb-org-mongos={{ software.common_configurations.mongodb.version }}
-  become: yes
-
-- name: Install mongodb (tools)
-  apt: name=mongodb-org-tools={{ software.common_configurations.mongodb.version }}
-  become: yes
-
 - name: template out mongod.conf
   template: src=templates/mongod.conf dest=/etc/mongod.conf owner=root group=root mode=0644
   become: yes
@@ -112,25 +48,9 @@
   template: src=templates/rsconfig.js dest=/tmp/rsconfig.js owner=root group=root mode=0644
   become: yes
 
-##############
-# SSH server #
-##############
-
-- name: ssh
-  apt: name=openssh-server
-  become: yes
-
 ##################################################
 # Install nginx
 ##################################################
-
-- name: Add nginx repository to apt sources
-  apt_repository: repo="{{ software.web_node.nginx.apt_repository }}"
-  become: yes
-
-- name: Install nginx
-  apt: name=nginx
-  become: yes
 
 - name: Template out nginx.conf to server
   template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
@@ -142,14 +62,6 @@
 ##################################################
 # Install python virtualenv
 ##################################################
-
-- name: Install python3
-  apt: name=python3
-  become: yes
-
-- name: Install pip
-  apt: name=python3-pip
-  become: yes
 
 - name: Install virtualenv
   pip: name=virtualenv executable=pip3
