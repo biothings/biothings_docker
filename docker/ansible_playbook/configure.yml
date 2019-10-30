@@ -203,7 +203,7 @@
     # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
     # (not suitable for production with a cluster)
     - "discovery.type: single-node"
-    - 'cluster.name: ["/data/es_backups"]'
+    - 'path.repo: ["/data/es_backups"]'
 
 - name: update elasticsearch.yml again replacing some values
   replace: dest=/etc/elasticsearch/elasticsearch.yml replace="{{ item.line }}" regexp="{{ item.re }}"
