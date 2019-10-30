@@ -43,7 +43,7 @@ do
 done
 
 # start Cerebro
-start-stop-daemon --start -c elasticsearch -b --exec /usr/local/cerebro-{{software.common_configurations.cerebro.version}}/bin/cerebro
+start-stop-daemon --start -c elasticsearch -b --exec /usr/local/cerebro/bin/cerebro
 netstat -tnlp | grep 9000
 
 ret=$?

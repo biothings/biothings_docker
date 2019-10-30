@@ -13,27 +13,17 @@
 # Install Cerebro #
 ###################
 
-- name: Download Cerebro
-  get_url:
-    url: https://github.com/lmenezes/cerebro/releases/download/v{{software.common_configurations.cerebro.version}}/cerebro-{{software.common_configurations.cerebro.version}}.tgz
-    dest: /tmp/cerebro-{{software.common_configurations.cerebro.version}}.tgz
-
-- name: Install Cerebro
-  unarchive:
-    src: /tmp/cerebro-{{software.common_configurations.cerebro.version}}.tgz
-    dest: /usr/local/
-
 - name: Configure Cerebro
-  lineinfile: dest=/usr/local/cerebro-{{software.common_configurations.cerebro.version}}/conf/application.conf line="{{ item }}" mode=0644 owner=root group=root insertafter="^hosts ="
+  lineinfile: dest=/usr/local/cerebro/conf/application.conf line="{{ item }}" mode=0644 owner=root group=root insertafter="^hosts ="
   with_items:
     - '},'
     - '  name = "BioThings Studio"'
     - '  host = "http://localhost:9200"'
     - '{'
 
-- name: make sure Cerebro
+- name: make sure Cerebro (make sure what??)
   file:
-    path: /usr/local/cerebro-{{software.common_configurations.cerebro.version}}
+    path: /usr/local/cerebro
     owner: elasticsearch
 
 ##################################################

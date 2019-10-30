@@ -30,6 +30,11 @@ RUN apt-get install -y mongodb-org-server=4.0.13 mongodb-org=4.0.13 mongodb-org-
 # nginx
 RUN apt-add-repository "ppa:nginx/stable"
 RUN apt-get install -y nginx
+# cerebro
+WORKDIR /tmp
+RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.1/cerebro-0.8.1.tgz
+RUN tar xzf cerebro-0.8.1.tgz -C /usr/local
+RUN ln -s /usr/local/cerebro-0.8.1 /usr/local/cerebro
 
 RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
 WORKDIR /tmp/ansible
@@ -40,6 +45,8 @@ ENV PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
 ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
+ARG GITHASH
+RUN echo "GITHASH = $GITHASH"
 WORKDIR /tmp/ansible_playbook
 RUN if [ -n "$API_NAME" ]; \
     then \

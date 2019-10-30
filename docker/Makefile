@@ -3,7 +3,8 @@
 # makz biothings_studio sends3
 
 biothings_studio:
-	docker build  \
+	docker build \
+    --build-arg GITHASH=$$(git rev-parse --short HEAD) \
     --build-arg STUDIO_VERSION=master \
     --build-arg BIOTHINGS_VERSION=release_manager \
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .

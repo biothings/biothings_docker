@@ -26,8 +26,6 @@ software:
       hard_file_limit: "65535"
       elasticsearch_yml:
         - "network.host: 0.0.0.0"
-    cerebro:
-      version: "0.8.1"
     mongodb:
       port: 27017
       bindip: "127.0.0.1"
