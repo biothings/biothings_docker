@@ -60,7 +60,9 @@ HUB_PASSWD = {"guest":"9RKfd8gDuNf0Q"}
 # Webhook to publish notifications to a Slack channel
 SLACK_WEBHOOK = None
 
-#* 5. Release *#
+# When code changes in plugins or "manual" datasources, Hub automatically restarts
+# to reflect those changes
+USE_RELOADER = True
 
 #* 4. Index & Diff *#
 # Pre-prod/test ES definitions
@@ -177,6 +179,15 @@ RELEASE_CONFIG = {
             }
         }
 
+# Default targeted standalone version
+# (once published, data is fetched and deployed by what's called 
+# a standalone instance). Modify thorougly (ie. don't modify it)
+STANDALONE_VERSION = {"branch" : "standalone_v2", "commit": None, "date" : None}
+
+# Don't check used versions, just propagate them when publishing.
+# That is, Hub won't ensure that all version information is
+# properly set)
+SKIP_CHECK_VERSIONS = False
 
 # Root folder containing ElasticSearch backups, created
 # by snapshots with repo type "fs". This setting must match
