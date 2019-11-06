@@ -179,6 +179,25 @@ RELEASE_CONFIG = {
             }
         }
 
+# Standalone configuration, relates to how the Hub
+# install data releases. You can specify, per data release name,
+# which ES host/index to address, or use the default for all data
+# releases.
+# Note: if data release name doesn't any key here, a _default will be
+# used (it must then exist, key = "_default")
+STANDALONE_CONFIG = { 
+        # default config
+        "_default": {
+            "es_host" : "localhost:9200",
+            "index" : "biotings_current",
+            },  
+		## custom definition
+        #"release_name" : { 
+        #    "es_host" : "anotherhost:9200",
+        #    "index" : "specical_index_name",
+        #    }   
+        #}   
+
 # Default targeted standalone version
 # (once published, data is fetched and deployed by what's called 
 # a standalone instance). Modify thorougly (ie. don't modify it)
