@@ -37,13 +37,13 @@ run:
 	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
 
 containers:
-	-mkdir containers
+	-mkdir ../containers
 
 save: containers
 	$(eval CONTAINER := $(firstword $(MAKECMDGOALS)))
-	docker save $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##") | xz > ../containers/$(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##").docker.xz 
+	docker save $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##") | xz > ../containers/$(CONTAINER)-$$(git branch | grep ^\* | sed "s#\* ##").docker.xz 
 
 sends3:
 	$(eval CONTAINERFILE := $(firstword $(MAKECMDGOALS)))
 	#aws s3 cp $(CONTAINERFILE) s3://biothings-containers/biothings_studio/
-	aws s3 cp containers/$(CONTAINERFILE):$$(git branch | grep ^\* | sed "s#\* ##").docker.xz s3://biothings-containers/biothings_studio/
+	aws s3 cp ../containers/$(CONTAINERFILE)-$$(git branch | grep ^\* | sed "s#\* ##").docker.xz s3://biothings-containers/biothings_studio/
