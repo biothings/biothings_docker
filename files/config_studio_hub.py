@@ -186,17 +186,17 @@ RELEASE_CONFIG = {
 # Note: if data release name doesn't any key here, a _default will be
 # used (it must then exist, key = "_default")
 STANDALONE_CONFIG = { 
-        # default config
-        "_default": {
-            "es_host" : "localhost:9200",
-            "index" : "biotings_current",
-            },  
-		## custom definition
-        #"release_name" : { 
-        #    "es_host" : "anotherhost:9200",
-        #    "index" : "specical_index_name",
-        #    }   
-        #}   
+    # default config
+    "_default": {
+        "es_host" : "localhost:9200",
+        "index" : "biotings_current",
+    },  
+    ## custom definition
+    #"release_name" : { 
+    #    "es_host" : "anotherhost:9200",
+    #    "index" : "specical_index_name",
+    #    }   
+}   
 
 # Default targeted standalone version
 # (once published, data is fetched and deployed by what's called 
