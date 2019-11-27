@@ -4,9 +4,11 @@
 
 biothings_studio:
 	docker build \
+    --squash \
     --build-arg GITHASH=$$(git rev-parse --short HEAD) \
     --build-arg STUDIO_VERSION=master \
-    --build-arg BIOTHINGS_VERSION=release_manager \
+    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg PROD=1 \
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4mygene:

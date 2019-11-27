@@ -12,7 +12,7 @@ RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VER
 
 # base
 RUN apt-get -y update
-RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 apt-transport-https curl bash vim tmux sudo npm nodejs dirmngr apt-transport-https openjdk-8-jre-headless openssh-server python3 python3-pip software-properties-common
+RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 curl bash vim tmux sudo apt-transport-https openjdk-8-jre-headless openssh-server python3-pip software-properties-common
 
 # install timezone info, avoid config
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
@@ -26,7 +26,7 @@ RUN apt-get install -y elasticsearch=6.1.1
 # mongo
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
 RUN apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"
-RUN apt-get install -y mongodb-org-server=4.0.13 mongodb-org=4.0.13 mongodb-org-shell=4.0.13 mongodb-org-mongos=4.0.13 mongodb-org-tools=4.0.13
+RUN apt-get install -y mongodb-org-server=4.0.13 mongodb-org=4.0.13 mongodb-org-shell=4.0.13 mongodb-org-tools=4.0.13
 # nginx
 RUN apt-add-repository "ppa:nginx/stable"
 RUN apt-get install -y nginx
@@ -65,8 +65,11 @@ fi
 
 # Clean up ansible_playbook
 WORKDIR /tmp
+ARG PROD
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
+RUN if [ -n "$PROD" ]; then apt-get clean; fi
+RUN if [ -n "$PROD" ]; then rm -fr /tmp/cerebro*; fi
 
 
 EXPOSE 8080 9200 7022 7080 27017 22 9000
