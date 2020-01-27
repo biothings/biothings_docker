@@ -6,8 +6,8 @@ biothings_studio:
 	docker build \
     --squash \
     --build-arg GITHASH=$$(git rev-parse --short HEAD) \
-    --build-arg STUDIO_VERSION=master \
-    --build-arg BIOTHINGS_VERSION=master \
+    --build-arg STUDIO_VERSION=0.2a \
+    --build-arg BIOTHINGS_VERSION=0.6.0 \
     --build-arg PROD=1 \
     -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
