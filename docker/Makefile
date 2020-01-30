@@ -1,15 +1,17 @@
 # make biothings_studio
-# make biothings_studio save
-# makz biothings_studio sends3
+# make biothings_studio push
 
-biothings_studio:
+# uses docker-squash to reduce/prune docker layers and reduce image size
+# pip install docker-squash
+
+biothings-studio:
 	docker build \
     --squash \
     --build-arg GITHASH=$$(git rev-parse --short HEAD) \
-    --build-arg STUDIO_VERSION=0.2a \
-    --build-arg BIOTHINGS_VERSION=0.6.0 \
+    --build-arg STUDIO_VERSION=master \
+    --build-arg BIOTHINGS_VERSION=master \
     --build-arg PROD=1 \
-    -t biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##") .
+    -t biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4mygene:
 	docker build --force-rm \
@@ -36,16 +38,16 @@ studio4mychem:
     -t studio4mychem:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 run:
-	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings_studio:$$(git branch | grep ^\* | sed "s#\* ##")
+	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##")
 
-containers:
-	-mkdir ../containers
-
-save: containers
+squash:
 	$(eval CONTAINER := $(firstword $(MAKECMDGOALS)))
-	docker save $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##") | xz > ../containers/$(CONTAINER)-$$(git branch | grep ^\* | sed "s#\* ##").docker.xz 
+	docker-squash $(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##")
 
-sends3:
-	$(eval CONTAINERFILE := $(firstword $(MAKECMDGOALS)))
-	#aws s3 cp $(CONTAINERFILE) s3://biothings-containers/biothings_studio/
-	aws s3 cp ../containers/$(CONTAINERFILE)-$$(git branch | grep ^\* | sed "s#\* ##").docker.xz s3://biothings-containers/biothings_studio/
+push:
+	$(eval CONTAINER := $(firstword $(MAKECMDGOALS)))
+	@echo "First tag existing image to match docker hub repo:"
+	@echo "    $$ docker images # get the image ID"
+	@echo "    $$ docker tag <image_id> biothings/$(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##")"
+	@echo "Push the image:"
+	@echo "    $$ docker push biothings/$(CONTAINER):$$(git branch | grep ^\* | sed "s#\* ##")"
