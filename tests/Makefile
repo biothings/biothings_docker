@@ -11,7 +11,7 @@ docker_run:
 	while ! curl localhost:7080; do echo waiting for hub api to run; sleep 5; done
 
 npm_install:
-	npm install webapp/tutorial
+	cd webapp/tutorial && npm install
 
 test_api_mvcgi: docker_pull docker_run
 	HUB_API_HOST=http://localhost:7080 py.test hubapi/mvcgi
