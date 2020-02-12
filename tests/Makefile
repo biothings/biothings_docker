@@ -18,7 +18,7 @@ test_api_mvcgi: docker_pull docker_run
 
 test_webapp_tutorial: docker_pull npm_install docker_run
 	# npx is the launcher, not installed globally (no sudo) so use local path explicitely
-	cd webapp/tutorial && ~/node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
+	cd webapp/tutorial && ./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
 
 
 apitest: test_api_mvcgi
