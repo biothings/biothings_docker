@@ -123,6 +123,6 @@ Scenario("Create full data release", (I) => {
   I.click("#newrelease_ok")
   I.wait(1)
   I.dontSee("Select an indexer environment to create the index on")
-  I.wait(5) // indexing
+  I.wait(10) // indexing
   I.see("Index test_index was created on test environment")
 });
