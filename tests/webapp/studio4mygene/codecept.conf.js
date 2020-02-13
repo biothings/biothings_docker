@@ -14,6 +14,9 @@ exports.config = {
       require: '../customHelper.js',
     },
   },
+  plugins: {
+    pauseOnFail: {},
+  },
   include: {
     I: './steps_file.js'
   },

@@ -1,0 +1,10 @@
+UI/end-user tests based on codeceptjs. Few commands to help develop/debug tests
+
+Run the tests with a chromium window, to see what's going on:
+$ npx codeceptjs run --steps
+
+Same but pause when a test fails (super handy to debug):
+npx codeceptjs run --steps -p pauseOnFail
+
+Just run a codeceptjs shell to type commands (developing a test)
+npx codeceptjs shell
