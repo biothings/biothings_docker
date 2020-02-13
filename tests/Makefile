@@ -16,17 +16,16 @@ docker_run_studio4mygene: docker_kill
 docker_wait:
 	while ! curl localhost:7080; do echo waiting for hub api to run; sleep 5; done
 
-npm_install:
-	cd webapp/tutorial && npm install
-
 test_api_mvcgi: docker_pull docker_run docker_wait
 	HUB_API_HOST=http://localhost:7080 py.test hubapi/mvcgi
 
-test_webapp_tutorial: docker_pull npm_install docker_run docker_wait
+test_webapp_tutorial: docker_pull docker_run docker_wait
+	cd webapp/tutorial && npm install
 	# npx is the launcher, not installed globally (no sudo) so use local path explicitely
 	cd webapp/tutorial && ./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
 
-test_studio4mygene: docker_pull_studio4mygene npm_install docker_run_studio4mygene docker_wait
+test_studio4mygene: docker_pull_studio4mygene docker_run_studio4mygene docker_wait
+	cd webapp/studio4mygene && npm install
 	cd webapp/studio4mygene && ./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
 
 
