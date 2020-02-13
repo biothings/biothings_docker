@@ -1,6 +1,6 @@
 Feature('Studio4mygene');
 
-/*Scenario('Check few datasources', (I) => {
+Scenario('Check few datasources', (I) => {
   I.amOnPage('/');
   I.wait(1);
   I.seeTextEquals("27","i.database.icon + span")
@@ -51,7 +51,7 @@ Scenario("Dump/upload pharmgkb", (I) => {
   I.waitForText("clingen",2)
 });
 
-/*Scenario("Create build config", (I) => {
+Scenario("Create build config", (I) => {
   I.amOnPage("/")
   I.wait(1);
   I.click("Builds")
@@ -71,7 +71,7 @@ Scenario("Dump/upload pharmgkb", (I) => {
   I.dontSee("Create/edit build configuration") // form has closed
   I.click("Menu")
   I.see("default") // our conf isn't there yet
-});*/
+});
 
 Scenario("Create build", (I) => {
   I.amOnPage("/")
