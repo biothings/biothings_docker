@@ -125,3 +125,26 @@ Scenario("Create full data release", (I) => {
   I.dontSee("Select an indexer environment to create the index on")
   I.waitForText("Index test_index was created on test environment",60) // indexing
 });
+
+Scenario("Create mygene API", (I) => {
+  I.amOnPage("/")
+  I.wait(1);
+  I.click("API")
+  I.wait(1)
+  I.click("Menu")
+  I.wait(1) // transition
+  I.see("New API")
+  I.click("New API")
+  I.waitForText("Enter a name for the API",2)
+  I.fillField({"name":"api_id"},"my_api")
+  I.fillField({"name":"port"},8000)
+  I.selectOption({"name":"api_backend"},"test (localhost:9200 | test_index)")
+  I.click("#newapi_ok")
+  I.waitForText("ElasticSearch host")
+  I.wait(5)
+  I.click(".play")
+  I.waitForText("running",5)
+  I.see("Query:")
+  I.see(":8000/query?q=*")
+});
+

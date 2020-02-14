@@ -1,34 +1,16 @@
-all: apitest webapptest
+all: api webapp studio4
 
-docker_pull:
-	docker pull biothings/biothings-studio:unstable
-docker_pull_studio4mygene:
-	docker pull biothings/studio4mygene:unstable
+api_mvcgi:
+	cd hubapi/mvcgi && make test
 
-docker_kill:
-	-docker kill test_studio
-	sleep 5
-	while docker ps | grep test_studio; do sleep 1; done
-docker_run: docker_kill
-	docker run --rm --name test_studio -p 8080:8080 -p 7080:7080 -p 8000:8000 -d biothings/biothings-studio:unstable
-docker_run_studio4mygene: docker_kill
-	docker run --rm --name test_studio -p 8080:8080 -p 7080:7080 -p 8000:8000 -d biothings/studio4mygene:unstable
-docker_wait:
-	while ! curl localhost:7080; do echo waiting for hub api to run; sleep 5; done
+webapp_tutorial:
+	cd webapp/tutorial && make test
 
-test_api_mvcgi: docker_pull docker_run docker_wait
-	HUB_API_HOST=http://localhost:7080 py.test hubapi/mvcgi
-
-test_webapp_tutorial: docker_pull docker_run docker_wait
-	cd webapp/tutorial && npm install
-	# npx is the launcher, not installed globally (no sudo) so use local path explicitely
-	cd webapp/tutorial && ./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
-
-test_studio4mygene: docker_pull_studio4mygene docker_run_studio4mygene docker_wait
-	cd webapp/studio4mygene && npm install
-	cd webapp/studio4mygene && ./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
+studio4mygene:
+	cd webapp/studio4mygene && make test
 
 
-apitest: test_api_mvcgi
-webapptest: test_webapp_tutorial test_studio4mygene
+api: api_mvcgi
+webapp: webapp_tutorial
+studio4: studio4mygene
 

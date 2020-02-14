@@ -1,0 +1,85 @@
+---
+test_name: Test small MyGene API
+strict: false
+stages:
+  - name: metadata
+    request:
+      url: "{tavern.env_vars.BT_API_HOST}/metadata"
+      method: GET
+    response:
+      status_code: 200
+      body:
+        biothing_type: gene
+        build_date: !anystr
+        build_version: !anystr
+        src:
+          cpdb:
+            code: !anydict
+            stats:
+              cpdb: !anyint
+            version: !anystr
+          pharmgkb:
+            code: !anydict
+            stats:
+              pharmgkb: !anyint
+            version: !anystr
+        stats:
+            total: !anyint
+            total_ensembl_genes: !anyint
+            total_ensembl_genes_mapped_to_entrez: !anyint
+            total_ensembl_only_genes: !anyint
+            total_entrez_genes: !anyint
+            total_genes: !anyint
+            total_species: !anyint
+
+  - name: query __all__
+    request:
+      url: "{tavern.env_vars.BT_API_HOST}/query?q=__all__&size=3" # limit results to test
+      method: GET
+    response:
+      status_code: 200
+      body:
+        max_score: !anyfloat
+        took: !anything
+        total: !anyint
+        hits:
+          - _id: !anystr
+            _score: !anyfloat
+            pharmgkb: !anystr
+          - _id: !anystr
+            _score: !anyfloat
+            pharmgkb: !anystr
+          - _id: !anystr
+            _score: !anyfloat
+            pharmgkb: !anystr
+
+  - name: query by pharmgkb ID
+    request:
+      url: "{tavern.env_vars.BT_API_HOST}/query?q=PA134956687"
+      method: GET
+    response:
+      status_code: 200
+      body:
+        max_score: !anyfloat
+        took: !anything
+        total: !anyint
+        hits:
+          - _id: "339910"
+            _score: !anyfloat
+            pharmgkb: "PA134956687"
+
+  - name: fetch by ID
+    request:
+      url: "{tavern.env_vars.BT_API_HOST}/gene/995"
+      method: GET
+    response:
+      status_code: 200
+      body:
+        _id: "995"
+        _version: !anyint
+        pathway:
+          biocarta: !anydict
+          kegg: !anylist
+          pid: !anylist
+          wikipathways: !anylist
+        pharmgkb: "PA100"
