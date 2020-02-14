@@ -43,15 +43,9 @@ stages:
         took: !anything
         total: !anyint
         hits:
-          - _id: !anystr
-            _score: !anyfloat
-            pharmgkb: !anystr
-          - _id: !anystr
-            _score: !anyfloat
-            pharmgkb: !anystr
-          - _id: !anystr
-            _score: !anyfloat
-            pharmgkb: !anystr
+          - !anydict
+          - !anydict
+          - !anydict
 
   - name: query by pharmgkb ID
     request:
