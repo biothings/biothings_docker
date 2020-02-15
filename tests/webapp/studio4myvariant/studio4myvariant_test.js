@@ -1,9 +1,9 @@
-Feature('Studio4mygene');
+Feature('Studio4myvariant');
 
 Scenario('Check few datasources', (I) => {
   I.amOnPage('/');
   I.wait(1);
-  I.seeTextEquals("27","i.database.icon + span")
+  I.seeTextEquals("21","i.database.icon + span")
   I.see("NO") // no document yet
   I.see("DOCUMENT (YET)")
   // register
@@ -17,7 +17,7 @@ Scenario('Check few datasources', (I) => {
   I.see("clingen")
 });
 
-Scenario("Dump/upload snpeff", (I) => {
+Scenario("Check snpeff data already there", (I) => {
   // uploaders need this one first
   I.amOnPage('/');
   I.wait(1);
@@ -26,27 +26,29 @@ Scenario("Dump/upload snpeff", (I) => {
   I.click("snpeff")
   I.waitForText("Dumper",2)
   I.see("0 document")
-  I.click("Dump")
-  I.waitForText("success",20)
+  I.see("success")
   I.click("Uploader")
-  I.waitForText("success",30)
-  I.dontSee("0 document")
-  I.click("Sources");
-  I.waitForText("clinvar",2)
+  I.click("snpeff_hg19")
+  I.waitForText("SnpeffHg19Uploader")
+  I.see("success")
+  I.click("snpeff_hg38")
+  I.waitForText("SnpeffHg38Uploader")
+  I.see("success")
+  I.click("snpeff_hg38")
 });
 
-Scenario("Dump/upload pharmgkb", (I) => {
+Scenario("Dump/upload cgi", (I) => {
   I.amOnPage('/');
   I.wait(1);
   I.click("Sources");
   I.waitForText("clingen",2)
-  I.click("pharmgkb")
+  I.click("cgi")
   I.waitForText("Dumper",2)
   I.see("0 document")
   I.click("Dump")
   I.waitForText("success",20)
   I.click("Uploader")
-  I.waitForText("success",30)
+  I.waitForText("success",2*60) // snpeff is long
   I.dontSee("0 document")
   I.click("Sources");
   I.waitForText("clingen",2)
@@ -63,10 +65,14 @@ Scenario("Create build config", (I) => {
   I.wait(1) // transition
   I.see("Create/edit build configuration") // see the form
   I.fillField("#conf_name","default")
-  I.fillField("#doc_type","gene")
-  I.selectOption("#selected_sources","cpdb")
-  I.selectOption("#selected_sources","pharmgkb")
-  I.selectOption("#builders","hub.databuild.builder.MyGeneDataBuilder")
+  I.fillField("#doc_type","variant")
+  I.selectOption("#selected_sources","cgi")
+  I.selectOption("#selected_sources","snpeff_hg19")
+  // TODO: can't find a way to add a root source...
+  // root sources are populated dynamically from selected sources so we need to open the list
+  //I.click("Root sources")
+  //I.click({"css":"div[class=\"item\"][data-value=\"cgi\"]"})
+  I.selectOption("#builders","hub.databuild.builder.MyVariantDataBuilder")
   I.click("#newbuildconf_ok")
   I.wait(1) // transition
   I.dontSee("Create/edit build configuration") // form has closed
@@ -93,16 +99,14 @@ Scenario("Create build", (I) => {
   I.dontSee("Enter a name for the merged data") // closed form
   I.wait(1) // transition
   I.see("test_build")
-  I.wait(10) // building
+  I.wait(20) // building
   I.click("Logs")
   I.see("metadata") // up to the end
   I.click("test_build")
-  I.see("total_genes")
-  I.see("total_entrez_genes")
-  I.see("total_ensembl_genes")
-  I.see("total_ensembl_genes_mapped_to_entrez")
-  I.see("total_ensembl_only_genes")
-  I.see("total_species")
+  I.see("observed")
+  I.see("hg19")
+  I.see("vcf")
+  I.see("total")
 });
 
 Scenario("Create full data release", (I) => {
@@ -127,7 +131,7 @@ Scenario("Create full data release", (I) => {
   I.waitForText("Index test_index was created on test environment",60) // indexing
 });
 
-Scenario("Create mygene API", (I) => {
+Scenario("Create myvariant API", (I) => {
   I.amOnPage("/")
   I.wait(1);
   I.click("API")

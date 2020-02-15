@@ -14,7 +14,7 @@ run: kill
 wait:
 	while ! curl localhost:7080; do echo waiting for hub api to run; sleep 5; done
 
-test: pull run wait
+test: #pull run wait
 	npm install
 	# first we build the API from scratch
 	./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'

@@ -1,5 +1,5 @@
 ---
-test_name: Test small MyGene API
+test_name: Test small MyVariant API
 strict: false
 stages:
   - name: metadata
@@ -9,28 +9,25 @@ stages:
     response:
       status_code: 200
       body:
-        biothing_type: gene
+        biothing_type: variant
         build_date: !anystr
         build_version: !anystr
         src:
-          cpdb:
+          cgi:
             code: !anydict
             stats:
-              cpdb: !anyint
+              cgi: !anyint
             version: !anystr
-          pharmgkb:
+          snpeff:
             code: !anydict
             stats:
-              pharmgkb: !anyint
+              snpeff_hg19: !anyint
             version: !anystr
         stats:
             total: !anyint
-            total_ensembl_genes: !anyint
-            total_ensembl_genes_mapped_to_entrez: !anyint
-            total_ensembl_only_genes: !anyint
-            total_entrez_genes: !anyint
-            total_genes: !anyint
-            total_species: !anyint
+            observed: !anyint
+            hg19: !anyint
+            vcf: !anyint
 
   - name: query __all__
     request:
@@ -47,33 +44,56 @@ stages:
           - !anydict
           - !anydict
 
-  - name: query by pharmgkb ID
-    request:
-      url: "{tavern.env_vars.BT_API_HOST}/query?q=PA134956687"
-      method: GET
-    response:
-      status_code: 200
-      body:
-        max_score: !anyfloat
-        took: !anything
-        total: !anyint
-        hits:
-          - _id: "339910"
-            _score: !anyfloat
-            pharmgkb: "PA134956687"
-
   - name: fetch by ID
     request:
-      url: "{tavern.env_vars.BT_API_HOST}/gene/995"
+      url: "{tavern.env_vars.BT_API_HOST}/variant/chr16:g.81962183A>T"
       method: GET
     response:
       status_code: 200
       body:
-        _id: "995"
+        _id: "chr16:g.81962183A>T"
         _version: !anyint
-        pathway:
-          biocarta: !anydict
-          kegg: !anylist
-          pid: !anylist
-          wikipathways: !anylist
-        pharmgkb: "PA100"
+        cgi:
+          _license: !anystr
+          association: !anystr
+          cdna: !anystr
+          drug: !anystr
+          evidence_level: !anystr
+          gene: !anystr
+          primary_tumor_type: !anystr
+          protein_change: !anystr
+          region: !anystr
+          source: !anystr
+          transcript: !anystr
+        chrom: "16"
+        hg19:
+          end: !anyint
+          start: !anyint
+        observed: true
+        snpeff:
+          _license: !anystr
+          ann:
+            cdna:
+              length: !anystr
+              position: !anystr
+            cds:
+              length: !anystr
+              position: !anystr
+            effect: !anystr
+            feature_id: !anystr
+            feature_type: !anystr
+            gene_id: !anystr
+            genename: !anystr
+            hgvs_c: !anystr
+            hgvs_p: !anystr
+            protein:
+              length: !anystr
+              position: !anystr
+            putative_impact: !anystr
+            rank: !anystr
+            total: !anystr
+            transcript_biotype: !anystr
+        vcf:
+          alt: !anystr
+          position: !anystr
+          ref: !anystr
