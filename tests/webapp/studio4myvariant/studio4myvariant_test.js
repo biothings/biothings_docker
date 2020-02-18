@@ -48,7 +48,7 @@ Scenario("Dump/upload cgi", (I) => {
   I.click("Dump")
   I.waitForText("success",20)
   I.click("Uploader")
-  I.waitForText("success",5*60) // snpeff is long
+  I.waitForText("success",10*60) // snpeff is long
   I.dontSee("0 document")
   I.click("Sources");
   I.waitForText("clingen",2)
@@ -99,7 +99,7 @@ Scenario("Create build", (I) => {
   I.dontSee("Enter a name for the merged data") // closed form
   I.wait(1) // transition
   I.waitForText("test_build",30)
-  I.wait(60) // building
+  I.wait(5*60) // building
   I.click("Logs")
   I.see("metadata") // up to the end
   I.click("test_build")
