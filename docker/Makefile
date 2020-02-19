@@ -28,6 +28,19 @@ studio4myvariant:
     --build-arg API_NAME=myvariant.info \
     --build-arg API_VERSION=master \
     -t studio4myvariant:$$(git branch | grep ^\* | sed "s#\* ##") .
+	# uncomment if snpeff needs to be included in the image
+	# (Seb: I tried that in order to easily run tests, but they're too heavy for travis anyways)
+	### now run the container to download snpeff (easier to test after)
+	##-docker kill tmpstudio && sleep 1
+	##docker run --rm --name tmpstudio -p 7777:7080 -d studio4myvariant:$$(git branch | grep ^\* | sed "s#\* ##")
+	##while ! curl -s localhost:7777; do echo waiting for hub api to run; sleep 5; done
+	##curl -X PUT localhost:7777/source/snpeff/dump
+	##sleep 10 # wait command to start
+	### waiting for no commands running anymore ({} means no commands currently running
+	### {"result":{},"status":"ok"} == no commands
+	##while ! curl -s http://localhost:7777/commands?running=1 | jq '.result' | grep {}; do echo Waiting for Snpeff to dump/upload; sleep 30; done
+	### we'll keep that container including snpeff data
+	##docker commit tmpstudio studio4myvariant:master
 
 studio4mychem:
 	docker build --force-rm \

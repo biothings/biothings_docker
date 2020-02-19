@@ -73,5 +73,5 @@ RUN if [ -n "$PROD" ]; then rm -fr /tmp/cerebro*; fi
 
 
 EXPOSE 8080 9200 7022 7080 27017 22 9000
-VOLUME ["/data"]
+#VOLUME ["/data"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
