@@ -17,7 +17,7 @@ Scenario('Check few datasources', (I) => {
   I.see("clingen")
 });
 
-Scenario("Check snpeff data already there", (I) => {
+Scenario("Dump/upload snpeff", (I) => {
   // uploaders need this one first
   I.amOnPage('/');
   I.wait(1);
@@ -25,16 +25,16 @@ Scenario("Check snpeff data already there", (I) => {
   I.waitForText("clinvar",2)
   I.click("snpeff")
   I.waitForText("Dumper",2)
-  I.see("0 document")
-  I.see("success")
+  I.click("Dump")
+  I.waitForText("success",10*60)
   I.click("Uploader")
+  I.waitForText("success",2*60)
   I.click("snpeff_hg19")
   I.waitForText("SnpeffHg19Uploader")
   I.see("success")
   I.click("snpeff_hg38")
   I.waitForText("SnpeffHg38Uploader")
   I.see("success")
-  I.click("snpeff_hg38")
 });
 
 Scenario("Dump/upload cgi", (I) => {
@@ -53,6 +53,23 @@ Scenario("Dump/upload cgi", (I) => {
   I.click("Sources");
   I.waitForText("clingen",2)
 });
+
+//Scenario("Dump/upload geno2mp", (I) => {
+//  I.amOnPage('/');
+//  I.wait(1);
+//  I.click("Sources");
+//  I.waitForText("clingen",2)
+//  I.click("geno2mp")
+//  I.waitForText("Dumper",2)
+//  I.see("0 document")
+//  I.click("Dump")
+//  I.waitForText("success",3*60)
+//  I.click("Uploader")
+//  I.waitForText("success",30*60) // snpeff is long
+//  I.dontSee("0 document")
+//  I.click("Sources");
+//  I.waitForText("clingen",2)
+//});
 
 Scenario("Create build config", (I) => {
   I.amOnPage("/")
@@ -73,6 +90,7 @@ Scenario("Create build config", (I) => {
   //I.click("Root sources")
   //I.click({"css":"div[class=\"item\"][data-value=\"cgi\"]"})
   I.selectOption("#builders","hub.databuild.builder.MyVariantDataBuilder")
+  I.fillField("#optionals",'{"assembly":"hg19"}')
   I.click("#newbuildconf_ok")
   I.wait(1) // transition
   I.dontSee("Create/edit build configuration") // form has closed
