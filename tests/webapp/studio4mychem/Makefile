@@ -14,10 +14,10 @@ run: kill pull
 wait:
 	while ! curl localhost:7080; do echo waiting for hub api to run; sleep 5; done
 
-test: #run wait
-	#npm install
+test: run wait
+	npm install
 	# first we build the API from scratch
-	#./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
+	./node_modules/.bin/npx codeceptjs run --steps -o '{ "helpers": {"Puppeteer": {"show": false}}}'
 	# then we test it using tavern
 	BT_API_HOST=http://localhost:8000 py.test test_studio4mychem_api.tavern.yml
 
