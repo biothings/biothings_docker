@@ -16,6 +16,9 @@ studio4mygene: info
 studio4myvariant: info
 	cd webapp/studio4myvariant && make test
 
+studio4mychem: info
+	cd webapp/studio4mychem && make test
+
 
 api: api_mvcgi
 webapp: webapp_tutorial
