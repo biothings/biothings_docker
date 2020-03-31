@@ -120,7 +120,7 @@ Scenario("Create full data release", (I) => {
   I.fillField({"name":"index_name"},"test_index")
   I.see("Select an indexer environment to create the index on")
   I.selectOption({"name":"index_env"}, "local (localhost:9200)")
-  pause()
+  //pause()
   I.click("#newrelease_ok")
   I.wait(1)
   I.dontSee("Select an indexer environment to create the index on")
