@@ -6,7 +6,6 @@
 
 biothings-studio:
 	docker build \
-    --squash \
     --build-arg GITHASH=$$(git rev-parse --short HEAD) \
     --build-arg STUDIO_VERSION=master \
     --build-arg BIOTHINGS_VERSION=master \

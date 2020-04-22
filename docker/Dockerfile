@@ -36,6 +36,11 @@ RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.1/cerebro-0.
 RUN tar xzf cerebro-0.8.1.tgz -C /usr/local
 RUN ln -s /usr/local/cerebro-0.8.1 /usr/local/cerebro
 
+# vscode code-server for remote code editing
+RUN wget https://github.com/cdr/code-server/releases/download/3.1.1/code-server-3.1.1-linux-x86_64.tar.gz
+RUN tar xzf code-server-3.1.1-linux-x86_64.tar.gz -C /usr/local
+RUN ln -s /usr/local/code-server-3.1.1-linux-x86_64 /usr/local/code-server
+
 RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
 WORKDIR /tmp/ansible
 ENV PATH /tmp/ansible/bin:/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin
