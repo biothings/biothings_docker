@@ -13,7 +13,7 @@ stages:
         result:
           #name: !int BioThings Hub
           name: !anystr
-          features: ["config","job","dump","upload","dataplugin","source","build","diff","index","snapshot","release","inspect","sync","api","terminal","reloader","dataupload","ws"]
+          features: ["config","job","dump","upload","dataplugin","source","build","diff","index","snapshot","release","inspect","sync","api","terminal","reloader","dataupload","ws","upgrade","autohub"]
           biothings_version: !anydict
           app_version: !anydict
           icon: null
