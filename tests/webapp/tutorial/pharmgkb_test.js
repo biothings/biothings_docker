@@ -35,7 +35,7 @@ Scenario('Register data plugin', (I) => {
   I.click("#restart_yes");
   I.wait(2); // wait to reconnect
   I.moveCursorTo("i.green.power.off") // reconnected
-  I.see("No manifest found")
+  I.see("Never updated")
 });
 
 Scenario('Checkout v1', (I) => {

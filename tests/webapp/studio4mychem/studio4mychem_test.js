@@ -3,7 +3,7 @@ Feature('Studio4mychem');
 Scenario('Check few datasources', (I) => {
   I.amOnPage('/');
   I.wait(1);
-  I.seeTextEquals("10","i.database.icon + span")
+  I.seeTextEquals("11","i.database.icon + span")
   I.see("NO") // no document yet
   I.see("DOCUMENT (YET)")
   // register
@@ -100,19 +100,19 @@ Scenario("Create full data release", (I) => {
   I.wait(1)
   I.see("test_build")
   I.click("test_build")
-  I.waitForText("Releases")
-  I.click("Releases")
+  I.waitForText("Mapping")
+  I.click(locate("a[data-tab=releases]"))
   I.see("New release")
   I.click("New release")
   I.wait(1) // transition
   I.selectOption({"name":"release_type"},"full")
   I.fillField({"name":"index_name"},"test_index")
   I.see("Select an indexer environment to create the index on")
-  I.selectOption({"name":"index_env"}, "test (localhost:9200)")
+  I.selectOption({"name":"index_env"}, "local (localhost:9200)")
   I.click("#newrelease_ok")
   I.wait(1)
   I.dontSee("Select an indexer environment to create the index on")
-  I.waitForText("Index test_index was created on test environment",60) // indexing
+  I.waitForText("Index test_index was created on",60) // indexing
 });
 
 Scenario("Create mychem API", (I) => {
@@ -127,7 +127,7 @@ Scenario("Create mychem API", (I) => {
   I.waitForText("Enter a name for the API",2)
   I.fillField({"name":"api_id"},"my_api")
   I.fillField({"name":"port"},8000)
-  I.selectOption({"name":"api_backend"},"test (localhost:9200 | test_index)")
+  I.selectOption({"name":"api_backend"},"local (localhost:9200 | test_index)")
   I.click("#newapi_ok")
   I.waitForText("ElasticSearch host")
   I.wait(5)

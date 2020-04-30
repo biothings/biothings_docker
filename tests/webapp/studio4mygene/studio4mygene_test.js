@@ -111,8 +111,8 @@ Scenario("Create full data release", (I) => {
   I.wait(1)
   I.see("test_build")
   I.click("test_build")
-  I.waitForText("Releases")
-  I.click("Releases")
+  I.waitForText("Mapping")
+  I.click(locate("a[data-tab=releases]"))
   I.see("New release")
   I.click("New release")
   I.wait(1) // transition
@@ -124,7 +124,7 @@ Scenario("Create full data release", (I) => {
   I.click("#newrelease_ok")
   I.wait(1)
   I.dontSee("Select an indexer environment to create the index on")
-  I.waitForText("Index test_index was created on local environment",60) // indexing
+  I.waitForText("Index test_index was created on",60) // indexing
 });
 
 Scenario("Create mygene API", (I) => {
