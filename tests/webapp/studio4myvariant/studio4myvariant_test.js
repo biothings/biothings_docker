@@ -90,7 +90,8 @@ Scenario("Create build config", (I) => {
   //I.click("Root sources")
   //I.click({"css":"div[class=\"item\"][data-value=\"cgi\"]"})
   I.selectOption("#builders","hub.databuild.builder.MyVariantDataBuilder")
-  I.fillField("#optionals",'{"assembly":"hg19"}')
+  // fake cold collection, MyVariantDataBuilder needs it
+  I.fillField("#optionals",'{"assembly":"hg19","cold_collection": "test_build"}')
   I.click("#newbuildconf_ok")
   I.wait(1) // transition
   I.dontSee("Create/edit build configuration") // form has closed
@@ -117,7 +118,7 @@ Scenario("Create build", (I) => {
   I.dontSee("Enter a name for the merged data") // closed form
   I.wait(1) // transition
   I.waitForText("test_build",30)
-  I.wait(5*60) // building
+  I.wait(2*60) // building
   I.click("Logs")
   I.see("metadata") // up to the end
   I.click("test_build")

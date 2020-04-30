@@ -14,15 +14,23 @@ stages:
         build_version: !anystr
         src:
           cgi:
+            license: !anystr
+            license_url: !anystr
+            license_url_short: !anystr
             code: !anydict
             stats:
               cgi: !anyint
             version: !anystr
-          snpeff:
+            url: !anystr
+          snpeff: !anydict
+            license: !anystr
+            license_url: !anystr
+            license_url_short: !anystr
             code: !anydict
             stats:
               snpeff_hg19: !anyint
             version: !anystr
+            url: !anystr
         stats:
             total: !anyint
             observed: !anyint
