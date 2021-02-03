@@ -10,26 +10,34 @@ ARG API_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
+ARG DEBIAN_FRONTEND=noninteractive
 # base
-RUN apt-get -y update
-RUN apt-get install -y apt-utils python-yaml python-jinja2 git python3 curl bash vim tmux sudo apt-transport-https openjdk-8-jre-headless openssh-server python3-pip software-properties-common
+RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
+    apt-get -y -qq install apt-utils apt-transport-https software-properties-common \
+        bash curl git vim tmux sudo openssh-server tzdata \
+        python3 python-yaml python-jinja2 python3-pip openjdk-8-jre-headless
 
-# install timezone info, avoid config
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 # some extra packages for debugging purpose, can be commented out for actual image
-RUN if [ -z "$PROD" ]; then apt-get install -y htop ne wget net-tools; fi
+RUN if [ -z "$PROD" ]; then apt-get -y -q install htop ne wget net-tools; fi
 
+ARG ELASTICSEARCH_VERSION=6.8.*
 # elastic
-RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-RUN apt-add-repository "deb https://artifacts.elastic.co/packages/6.x/apt stable main"
-RUN apt-get install -y elasticsearch=6.1.1
+RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
+    apt-add-repository "deb https://artifacts.elastic.co/packages/6.x/apt stable main" && \
+    apt-get -y -qq install elasticsearch=${ELASTICSEARCH_VERSION}
 # mongo
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-RUN apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"
-RUN apt-get install -y mongodb-org-server=4.0.13 mongodb-org=4.0.13 mongodb-org-shell=4.0.13 mongodb-org-tools=4.0.13
+# TODO: update the version later
+#  This commit broke installing in a docker container
+#  https://github.com/mongodb/mongo/commit/08e22cf1dbc7f28db4ff0711b2feb166d776c2d8#diff-2c47e73d74099557344473c7c23c11843015cfd12316d1d19ba5b008dfa6ece2
+#  Apparently they made some modifications to not assume systemd that's probably going to be out in the next version
+#  But somehow we have systemd installed (probably pulled in as a dependency of something)
+ARG MONGODB_VERSION=4.0.20
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
+    apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" && \
+    apt-get -y -qq install mongodb-org-server=${MONGODB_VERSION} mongodb-org=${MONGODB_VERSION} \
+        mongodb-org-shell=${MONGODB_VERSION} mongodb-org-tools=${MONGODB_VERSION} mongodb-org-mongos=${MONGODB_VERSION}
 # nginx
-RUN apt-add-repository "ppa:nginx/stable"
-RUN apt-get install -y nginx
+RUN apt-add-repository "ppa:nginx/stable" && apt-get  -y -qq install nginx
 # cerebro
 WORKDIR /tmp
 RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.1/cerebro-0.8.1.tgz
