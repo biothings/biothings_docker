@@ -17,3 +17,9 @@ services:
     build: ./webapp
     ports:
       - "8080:8080"
+  biothings:
+    build:
+      context: ./biothings
+      args:
+        # Temporary workaround
+        BIOTHINGS_GIT: https://github.com/zcqian/biothings.api.git
