@@ -28,6 +28,7 @@ RUN ln -sv /data/biothings/biothings.api/biothings .
 ENV PYTHONPATH=/data/biothings/biothings_studio
 # replace config file
 COPY config.py .
+COPY docker-entrypoint.sh /
 # fix permissions
 RUN chown -R biothings:biothings /data/biothings
 
@@ -37,5 +38,4 @@ RUN mkdir -p /data/biothings/{datasources,plugins,dataupload,diff,logs,release,c
 
 VOLUME [ "/data" ]
 
-# FIXME: now we still need SSH Key
-CMD /data/biothings/biothings_studio/bin/hub.py
+CMD /docker-entrypoint.sh

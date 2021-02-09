@@ -23,3 +23,6 @@ services:
       args:
         # Temporary workaround
         BIOTHINGS_GIT: https://github.com/zcqian/biothings.api.git
+    ports:
+      - "7022:7022"
+      - "7080:7080"
