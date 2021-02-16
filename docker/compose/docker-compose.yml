@@ -13,6 +13,10 @@ services:
         hard: 65535
     ports:
       - "9200:9200"
+  cerebro:
+    image: lmenezes/cerebro:latest
+    ports:
+      - 9000:9000  # 9000 default, it was like this before as well
   webapp:
     build: ./webapp
     ports:
@@ -23,6 +27,12 @@ services:
       args:
         # Temporary workaround
         BIOTHINGS_GIT: https://github.com/zcqian/biothings.api.git
+    environment: 
+      - SRC_URI=mongodb://username:psword@hostname:12345
     ports:
       - "7022:7022"
       - "7080:7080"
+    volumes: 
+      - data:/data
+volumes: 
+  data:
