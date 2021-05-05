@@ -1,6 +1,6 @@
 #FROM adoptopenjdk/openjdk11
 #java:oracle-java8
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 LABEL maintainer "help@biothings.io"
 
 ARG BIOTHINGS_VERSION
@@ -13,9 +13,20 @@ RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VER
 ARG DEBIAN_FRONTEND=noninteractive
 # base
 RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
-    apt-get -y -qq install apt-utils apt-transport-https software-properties-common \
-        bash curl git vim tmux sudo openssh-server tzdata \
-        python3 python-yaml python-jinja2 python3-pip openjdk-8-jre-headless
+    apt-get -y -qq install \
+    apt-utils \
+    apt-transport-https \
+    software-properties-common \
+    bash \
+    curl \
+    git \
+    vim \
+    tmux \
+    sudo \
+    openssh-server \
+    tzdata \
+    python3 \
+    openjdk-8-jre-headless 
 
 # some extra packages for debugging purpose, can be commented out for actual image
 RUN if [ -z "$PROD" ]; then apt-get -y -q install htop ne wget net-tools; fi
@@ -58,6 +69,10 @@ RUN ln -s /usr/local/code-server-3.1.1-linux-x86_64 /usr/local/code-server
 
 RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
 WORKDIR /tmp/ansible
+# workaround for ansible, still invokes python command
+RUN ln -sv /usr/bin/python3 bin/python
+# install ansible deps
+RUN apt install -y python3-yaml python3-jinja2 python3-pip 
 ENV PATH /tmp/ansible/bin:/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin
 ENV ANSIBLE_LIBRARY /tmp/ansible/library
 ENV PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
