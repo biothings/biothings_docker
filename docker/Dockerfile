@@ -39,10 +39,11 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75
 # nginx
 RUN apt-add-repository "ppa:nginx/stable" && apt-get  -y -qq install nginx
 # cerebro
+ARG CEREBRO_VERSION=0.9.4
 WORKDIR /tmp
-RUN wget https://github.com/lmenezes/cerebro/releases/download/v0.8.1/cerebro-0.8.1.tgz
-RUN tar xzf cerebro-0.8.1.tgz -C /usr/local
-RUN ln -s /usr/local/cerebro-0.8.1 /usr/local/cerebro
+RUN wget https://github.com/lmenezes/cerebro/releases/download/v${CEREBRO_VERSION}/cerebro-${CEREBRO_VERSION}.tgz
+RUN tar xzf cerebro-${CEREBRO_VERSION}.tgz -C /usr/local
+RUN ln -s /usr/local/cerebro-${CEREBRO_VERSION} /usr/local/cerebro
 
 # vscode code-server for remote code editing
 RUN wget https://github.com/cdr/code-server/releases/download/3.1.1/code-server-3.1.1-linux-x86_64.tar.gz
