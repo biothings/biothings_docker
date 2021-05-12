@@ -68,6 +68,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F7
     apt-get update && \
     apt-get -y -qq install nginx
 # cerebro
+# In the future, we can get the latest release ver. from GitHub APIs
 ARG CEREBRO_VERSION=0.9.4
 WORKDIR /tmp
 RUN wget https://github.com/lmenezes/cerebro/releases/download/v${CEREBRO_VERSION}/cerebro-${CEREBRO_VERSION}.tgz
