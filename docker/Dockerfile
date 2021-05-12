@@ -23,10 +23,11 @@ RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
     vim \
     tmux \
     sudo \
-    openssh-server \
     tzdata \
     python3 \
     openjdk-8-jre-headless 
+    # openssh-server \
+
 
 # some extra packages for debugging purpose, can be commented out for actual image
 RUN if [ -z "$PROD" ]; then apt-get -y -q install htop ne wget net-tools; fi

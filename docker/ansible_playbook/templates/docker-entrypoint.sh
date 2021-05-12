@@ -112,7 +112,12 @@ if test -t 0; then
 else
   echo "not interactive"
   # until it dies
-  mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
-  /usr/sbin/sshd -D
+  # mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
+  # /usr/sbin/sshd -D
+  echo "use docker exec to connect"
+  # somehow prevent this script from exiting -- for a while
+  # no idea how long "infinity" means, it's actually finite
+  # good enough for dev use
+  sleep infinity
 fi
 
