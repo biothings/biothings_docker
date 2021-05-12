@@ -10,6 +10,9 @@ ARG API_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
+# systemd workaround
+ADD systemd-dummy_1.0_all.deb /tmp
+RUN dpkg -i /tmp/systemd-dummy_1.0_all.deb
 ARG DEBIAN_FRONTEND=noninteractive
 # base
 RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
@@ -49,11 +52,17 @@ RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
 #  (like replacing systemd with some dummpy package)
 #  don't do this:
 #    RUN dpkg -r --force-depends systemd
-ARG MONGODB_VERSION=4.0.20
+ARG MONGODB_VERSION=4.0.*
+# workaround for systemctl
+RUN ln -s /bin/true /usr/sbin/systemctl
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" && \
     apt-get -y -qq install mongodb-org-server=${MONGODB_VERSION} mongodb-org=${MONGODB_VERSION} \
-        mongodb-org-shell=${MONGODB_VERSION} mongodb-org-tools=${MONGODB_VERSION} mongodb-org-mongos=${MONGODB_VERSION}
+        mongodb-org-shell=${MONGODB_VERSION} \
+        mongodb-org-tools=${MONGODB_VERSION} \
+        mongodb-org-mongos=${MONGODB_VERSION}
+# unset workaround for systemctl
+RUN rm -f /usr/sbin/systemctl
 # nginx
 RUN apt-add-repository "ppa:nginx/stable" && apt-get  -y -qq install nginx
 # cerebro
