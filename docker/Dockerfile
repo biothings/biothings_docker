@@ -16,17 +16,22 @@ RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
     apt-get -y -qq install \
     apt-utils \
     apt-transport-https \
-    software-properties-common \
     bash \
     curl \
     git \
+    # gpg1 pulls in less deps, is used by apt-key
+    gnupg1 \
     vim \
     tmux \
     sudo \
     tzdata \
     python3 \
     openjdk-8-jre-headless 
+    # ssh is no longer used
     # openssh-server \
+    # only used to add repo, now we just append to the file
+    # this pulls in dbus and therefore pulls in systemd
+    # software-properties-common \
 
 
 # some extra packages for debugging purpose, can be commented out for actual image
@@ -35,7 +40,8 @@ RUN if [ -z "$PROD" ]; then apt-get -y -q install htop ne wget net-tools; fi
 ARG ELASTICSEARCH_VERSION=6.8.*
 # elastic
 RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
-    apt-add-repository "deb https://artifacts.elastic.co/packages/6.x/apt stable main" && \
+    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-6.list && \
+    apt-get update && \
     apt-get -y -qq install elasticsearch=${ELASTICSEARCH_VERSION}
 # mongo
 # TODO: update the version later
@@ -54,15 +60,26 @@ ARG MONGODB_VERSION=4.0.*
 # workaround for systemctl
 RUN ln -s /bin/true /usr/sbin/systemctl
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
-    apt-add-repository "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" && \
+    echo "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
+    apt-get update && \
     apt-get -y -qq install mongodb-org-server=${MONGODB_VERSION} mongodb-org=${MONGODB_VERSION} \
         mongodb-org-shell=${MONGODB_VERSION} \
         mongodb-org-tools=${MONGODB_VERSION} \
         mongodb-org-mongos=${MONGODB_VERSION}
 # unset workaround for systemctl
 RUN rm -f /usr/sbin/systemctl
+
 # nginx
-RUN apt-add-repository "ppa:nginx/stable" && apt-get  -y -qq install nginx
+# note this is now done manually 
+# NOTES:
+#  - will definetly need to update the repo when base image is updated
+#  - may need to fix the key down the line
+# QUESTIONS:
+#  - Why do we need this? this PPA has the same version as the ubuntu repos
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C && \
+    echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu focal main" >> /etc/apt/sources.list.d/ppa-nginx-stable.list && \
+    apt-get update && \
+    apt-get -y -qq install nginx
 # cerebro
 ARG CEREBRO_VERSION=0.9.4
 WORKDIR /tmp
