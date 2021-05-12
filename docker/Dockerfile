@@ -10,9 +10,6 @@ ARG API_VERSION
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
-# systemd workaround
-ADD systemd-dummy_1.0_all.deb /tmp
-RUN dpkg -i /tmp/systemd-dummy_1.0_all.deb
 ARG DEBIAN_FRONTEND=noninteractive
 # base
 RUN apt-get -y -qq update && apt-get -y -qq upgrade && \
