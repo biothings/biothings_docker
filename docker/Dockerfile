@@ -70,8 +70,8 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75
 RUN rm -f /usr/sbin/systemctl
 
 # nginx
-# note this is now done manually 
 # NOTES:
+#  - adding the PPA repo is now done manually (w/o apt-add-repository)
 #  - will definetly need to update the repo when base image is updated
 #  - may need to fix the key down the line
 # QUESTIONS:
