@@ -44,21 +44,9 @@ RUN curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     apt-get update && \
     apt-get -y -qq install elasticsearch=${ELASTICSEARCH_VERSION}
 # mongo
-# TODO: update the version later
-#  This commit broke installing in a docker container
-#  https://github.com/mongodb/mongo/commit/08e22cf1dbc7f28db4ff0711b2feb166d776c2d8#diff-2c47e73d74099557344473c7c23c11843015cfd12316d1d19ba5b008dfa6ece2
-#  Apparently they made some modifications to not assume systemd that's probably going to be out in the next version
-#  But somehow we have systemd installed (probably pulled in as a dependency of something)
-# FIXME: (Upadted 2021.05) 
-#  Yeah that check indeed does not fix the problem -- because we have systemd
-#  and systemd is pulled in by OpenSSH
-#  so we are more or less stuck on 4.0.20 unless we do hacky workarounds
-#  (like replacing systemd with some dummpy package)
-#  don't do this:
-#    RUN dpkg -r --force-depends systemd
 ARG MONGODB_VERSION=4.0.*
 # workaround for systemctl
-RUN ln -s /bin/true /usr/sbin/systemctl
+
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     echo "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
     apt-get update && \
@@ -66,8 +54,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75
         mongodb-org-shell=${MONGODB_VERSION} \
         mongodb-org-tools=${MONGODB_VERSION} \
         mongodb-org-mongos=${MONGODB_VERSION}
-# unset workaround for systemctl
-RUN rm -f /usr/sbin/systemctl
+
 
 # nginx
 # NOTES:
