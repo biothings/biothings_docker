@@ -4,8 +4,9 @@ cd ~/{{ app_name }}
 tmux kill-session -t hub 2> /dev/null
 tmux new-session -d -s hub
 tmux send-keys 'python bin/hub.py' C-m
-tmux new-window -n code-server
-tmux send-keys '/usr/local/code-server/code-server --port 60080 --auth none --disable-ssh --disable-updates --disable-telemetry --host 0.0.0.0' C-m
-tmux previous-window
+# Commented out on May 12, 2021 -- rm vsc code server
+# tmux new-window -n code-server
+# tmux send-keys '/usr/local/code-server/code-server --port 60080 --auth none --disable-ssh --disable-updates --disable-telemetry --host 0.0.0.0' C-m
+# tmux previous-window
 # not needed with tmux 2.6 ? if left, gives "no current client"
 #tmux detach -s hub
