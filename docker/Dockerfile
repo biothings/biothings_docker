@@ -15,12 +15,11 @@ ARG ELASTICSEARCH_VERSION=6.8.*
 ARG MONGODB_VERSION=4.0.*
 
 # both curl & gpg used by apt-key, gpg1 pulls in less deps than gpg2
-RUN apt-get -qq -y update && apt-get install -y --no-install-recommends \
+RUN apt-get -qq -y update && \
+    apt-get install -y --no-install-recommends \
     gnupg1 \
     curl \
-    ca-certificates
-
-RUN \
+    ca-certificates && \
     # Add repo for MongoDB
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     echo "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
@@ -37,7 +36,10 @@ RUN \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C && \
     echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu focal main" >> /etc/apt/sources.list.d/ppa-nginx-stable.list && \
     apt-get -y -qq update && \
-    apt-get -y upgrade && \
+    # no longer doing upgrades as per:
+    #  - codacy's nagging
+    #  - the base image is actually quite up to date nowadays
+    # apt-get -y upgrade && \
     apt-get -y install --no-install-recommends \
         # base
         apt-utils \
