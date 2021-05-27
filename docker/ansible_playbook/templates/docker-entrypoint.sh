@@ -26,7 +26,7 @@ do
 done
 
 # oplog enabled (not used anymore)
-#mongo < /tmp/rsconfig.js 
+#mongo < /tmp/rsconfig.js
 
 service elasticsearch start
 service nginx start
@@ -42,7 +42,7 @@ do
   ret=$?
 done
 
-# start Cerebro
+# start Cerebro under elasticsearch user
 start-stop-daemon --start -c elasticsearch -b --exec /usr/local/cerebro/bin/cerebro
 netstat -tnlp | grep 9000
 
@@ -98,12 +98,12 @@ echo "now run webapp"
 if test -t 0; then
   echo "probably an interactive container"
     # here
-  
+
   # Some command(s) has been passed to container? Execute them and exit.
   # No commands provided? Run bash.
-  if [[ $@ ]]; then 
+  if [[ $@ ]]; then
     eval $@
-  else 
+  else
     export PS1='[\u@\h : \w]\$ '
     /bin/bash
   fi
