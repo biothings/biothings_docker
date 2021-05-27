@@ -3,6 +3,7 @@
 FROM ubuntu:20.04
 LABEL maintainer "help@biothings.io"
 
+ARG PROD
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
 ARG API_NAME
@@ -11,21 +12,30 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ELASTICSEARCH_VERSION=6.8.*
-ARG MONGODB_VERSION=4.0.*
+ARG ELASTICSEARCH_VERSION=6.8.*          # use to specify a specific Elasticsearch version to install
+ARG ELASTICSEARCH_VERSION_REPO=6.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
+ARG MONGODB_VERSION=4.4.*                # use to specify a specific MongoDB version to install
+ARG MONGODB_VERSION_REPO=4.4             # use to specify a specific MongoDB version repo to load
+# In the future, we can get the latest release ver. from GitHub APIs
+ARG CEREBRO_VERSION=0.9.4
 
 # both curl & gpg used by apt-key, gpg1 pulls in less deps than gpg2
+# lsb-release is used to get the ubuntu code name like focal
 RUN apt-get -qq -y update && \
     apt-get install -y --no-install-recommends \
     gnupg1 \
     curl \
-    ca-certificates && \
+    ca-certificates \
+    lsb-release && \
+    release=`lsb_release -sc` && \
     # Add repo for MongoDB
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
-    echo "deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
+    curl "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
+    # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
+    # echo "deb http://repo.mongodb.org/apt/ubuntu /mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${release}/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
     # Elasticsearch
     curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
-    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-6.list && \
+    echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
     # PPA Nginx
     # NOTES:
     #  - adding the PPA repo is now done manually (w/o apt-add-repository)
@@ -33,8 +43,9 @@ RUN apt-get -qq -y update && \
     #  - may need to fix the key down the line
     # QUESTIONS:
     #  - Why do we need this? this PPA has the same version as the ubuntu repos
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C && \
-    echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu focal main" >> /etc/apt/sources.list.d/ppa-nginx-stable.list && \
+    # Comment out Nginx PPA repo below, can be re-enabled when we need a newer version of Nginx
+    # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C && \
+    # echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu focal main" >> /etc/apt/sources.list.d/ppa-nginx-stable.list && \
     apt-get -y -qq update && \
     # no longer doing upgrades as per:
     #  - codacy's nagging
@@ -46,12 +57,15 @@ RUN apt-get -qq -y update && \
         apt-transport-https \
         bash \
         git \
-        vim \
         tmux \
         sudo \
+        less \
         tzdata \
         python3 \
-        openjdk-8-jre-headless \
+        net-tools \
+        # jdk is no longer needed since Elasticsearch v7, now has
+        # since it has a bundled openjdk included.
+        # openjdk-8-jre-headless \
         # ssh is no longer used
         # openssh-server \
         # client is for ssh-keygen
@@ -70,25 +84,28 @@ RUN apt-get -qq -y update && \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
-        python3-pip \
-    && apt-get install -y \
+        python3-pip && \
+    # install JDK only when ES < v7
+    if [ `echo $ELASTICSEARCH_VERSION | cut -d '.' -f1` -lt 7 ];  then \
+        apt-get install -y --no-install-recommends openjdk-11-jre-headless ; \
+    fi && \
+    apt-get install -y --no-install-recommends \
         # Elasticsearch
         # do this in a separate step because it pre-depends on jre
         # but the package isn't built that well to indicate that
         elasticsearch=${ELASTICSEARCH_VERSION} && \
+    # install some useful tools when $PROD is not set
     if [ -z "$PROD" ]; then \
     apt-get install -y --no-install-recommends \
         htop \
         ne \
-        wget \
-        net-tools ; \
+        vim \
+        wget ; \
     fi \
-    && apt-get clean && \
+    && apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 # cerebro
-# In the future, we can get the latest release ver. from GitHub APIs
-ARG CEREBRO_VERSION=0.9.4
 WORKDIR /tmp
 RUN curl -LO \
     https://github.com/lmenezes/cerebro/releases/download/v${CEREBRO_VERSION}/cerebro-${CEREBRO_VERSION}.tgz \
@@ -134,7 +151,6 @@ fi
 
 # Clean up ansible_playbook
 WORKDIR /tmp
-ARG PROD
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
