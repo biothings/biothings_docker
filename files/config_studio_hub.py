@@ -1,4 +1,4 @@
-from biothings import ConfigurationError, ConfigurationDefault, ConfigurationValue
+from biothings.utils.configuration import ConfigurationError, ConfigurationDefault, ConfigurationValue
 
 # ######### #
 # HUB VARS  #
