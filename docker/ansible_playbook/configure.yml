@@ -49,34 +49,9 @@
 - name: nginx logs directory
   file: path=/data/logs/nginx state=directory owner=www-data group=www-data
 
-##################################################
-# Install python virtualenv
-##################################################
-
-- name: Install virtualenv
-  pip: name=virtualenv executable=pip3
-  become: yes
-
 ###################################################
 # Setup home directory, biothings app codebase
 ###################################################
-
-- name: biothings group
-  group: name=biothings
-
-- name: biothings user
-  # biothings/biothings
-  user: name=biothings group=biothings shell=/bin/bash password="$6$ErzOioVY$jPVZ68Lb6eUZ3cy5cYvkrHjXJOQqvyUzBxXa7u2QkQxEZtPcSMeZvoVaJ1BTNAqTEr3Kby6lMMd1kZpQNp/0r1"
-
-- name: Create home directory structure
-  file: path=/home/biothings state=directory owner=biothings group=biothings
-  become_user: "biothings"
-  become: true
-
-- name: Manually create the initial virtualenv
-  command: virtualenv /home/biothings/pyenv -p python3 creates="/home/biothings/pyenv"
-  become_user: "biothings"
-  become: true
 
 - name: bashrc
   lineinfile: path=/home/biothings/.bashrc line='source $HOME/pyenv/bin/activate'

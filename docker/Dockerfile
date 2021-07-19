@@ -1,7 +1,5 @@
-#FROM adoptopenjdk/openjdk11
-#java:oracle-java8
-
-FROM node:14 AS build
+# Build WebApp
+FROM node:14 AS build-webapp
 
 ARG WEBAPP_GIT=https://github.com/biothings/biothings_studio.git
 ARG WEBAPP_VERSION=master
@@ -12,7 +10,13 @@ RUN git checkout ${WEBAPP_VERSION}
 WORKDIR /build/src/github.com/biothings/biothings_studio/webapp
 RUN npm install && npm run build --legacy-peer-deps
 
+# Build Python wheels
+FROM ubuntu:20.04 AS build-wheels
+WORKDIR /build/wheels
+RUN apt update && apt install -y --no-install-recommends python3 python3-pip python3-dev gcc
+RUN python3 -m pip wheel bitarray==0.8.1
 
+# Build Final Image
 FROM ubuntu:20.04
 LABEL maintainer "help@biothings.io"
 
@@ -97,7 +101,9 @@ RUN apt-get -qq -y update && \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
-        python3-pip && \
+        python3-pip \
+		# Virtualenv
+		python3-virtualenv && \
     # install JDK only when ES < v7
     if [ `echo $ELASTICSEARCH_VERSION | cut -d '.' -f1` -lt 7 ];  then \
         apt-get install -y --no-install-recommends openjdk-11-jre-headless ; \
@@ -126,6 +132,16 @@ RUN curl -LO \
     && ln -s /usr/local/cerebro-${CEREBRO_VERSION} /usr/local/cerebro \
     && rm -rf /tmp/cerebro*
 
+
+RUN useradd -m biothings -s /bin/bash
+WORKDIR /home/biothings
+USER biothings
+COPY --from=build-wheels --chown=biothings:biothings /build/wheels /home/biothings/wheels
+RUN virtualenv -p python3 /home/biothings/pyenv \
+	&& /home/biothings/pyenv/bin/pip3 install /home/biothings/wheels/*.whl
+USER root
+RUN rm -rf /home/biothings/wheels
+
 # vscode code-server for remote code editing
 # Commented out on May 12, 2021 -- not frequently used as VSC remote works better
 # RUN wget https://github.com/cdr/code-server/releases/download/3.1.1/code-server-3.1.1-linux-x86_64.tar.gz
@@ -144,7 +160,7 @@ ENV PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
 ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
-COPY --from=build --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
+COPY --from=build-webapp --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
 
 ARG GITHASH
 RUN echo "GITHASH = $GITHASH"
