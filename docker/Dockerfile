@@ -1,5 +1,18 @@
 #FROM adoptopenjdk/openjdk11
 #java:oracle-java8
+
+FROM node:14 AS build
+
+ARG WEBAPP_GIT=https://github.com/biothings/biothings_studio.git
+ARG WEBAPP_VERSION=master
+
+WORKDIR /build/src/github.com/biothings/biothings_studio
+RUN git clone ${WEBAPP_GIT} .
+RUN git checkout ${WEBAPP_VERSION}
+WORKDIR /build/src/github.com/biothings/biothings_studio/webapp
+RUN npm install && npm run build --legacy-peer-deps
+
+
 FROM ubuntu:20.04
 LABEL maintainer "help@biothings.io"
 
@@ -130,6 +143,8 @@ ENV PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
 
 ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
+
+COPY --from=build --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
 
 ARG GITHASH
 RUN echo "GITHASH = $GITHASH"
