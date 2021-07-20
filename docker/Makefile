@@ -6,9 +6,10 @@
 
 STUDIO_VERSION ?= master
 BIOTHINGS_VERSION ?= master
+DOCKER_BUILD_EXTRA_OPTS ?= --force-rm
 
 biothings-studio:
-	docker build \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg GITHASH=$$(git rev-parse --short HEAD) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
@@ -16,7 +17,7 @@ biothings-studio:
     -t biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4mygene:
-	docker build --force-rm \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_NAME=mygene.info \
@@ -24,7 +25,7 @@ studio4mygene:
     -t studio4mygene:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4myvariant:
-	docker build --force-rm \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_NAME=myvariant.info \
@@ -45,7 +46,7 @@ studio4myvariant:
 	##docker commit tmpstudio studio4myvariant:master
 
 studio4mychem:
-	docker build --force-rm \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_NAME=mychem.info \
