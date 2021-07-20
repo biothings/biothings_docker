@@ -173,8 +173,6 @@ ADD inventory /etc/ansible/hosts
 
 COPY --from=build-webapp --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
 
-ARG GITHASH
-RUN echo "GITHASH = $GITHASH"
 WORKDIR /tmp/ansible_playbook
 RUN if [ -n "$API_NAME" ]; \
     then \

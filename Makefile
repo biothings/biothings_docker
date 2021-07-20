@@ -10,7 +10,6 @@ DOCKER_BUILD_EXTRA_OPTS ?= --force-rm
 
 biothings-studio:
 	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
-    --build-arg GITHASH=$$(git rev-parse --short HEAD) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg PROD=1 \
