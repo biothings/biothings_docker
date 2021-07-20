@@ -12,9 +12,15 @@ RUN npm install && npm run build --legacy-peer-deps
 
 # Build Python wheels
 FROM ubuntu:20.04 AS build-wheels
+ARG API_NAME
 WORKDIR /build/wheels
 RUN apt update && apt install -y --no-install-recommends python3 python3-pip python3-dev gcc
-RUN python3 -m pip wheel bitarray==0.8.1
+RUN echo "$API_NAME"
+# If we only intend to install on specific APIs, we only build for that
+RUN if [ "$API_NAME" = "myvariant.info" ]; \
+	then \
+		python3 -m pip wheel bitarray==0.8.1; \
+	fi;
 
 # Build Final Image
 FROM ubuntu:20.04
@@ -25,6 +31,7 @@ ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
 ARG API_NAME
 ARG API_VERSION
+
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
@@ -137,8 +144,12 @@ RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
 USER biothings
 COPY --from=build-wheels --chown=biothings:biothings /build/wheels /home/biothings/wheels
-RUN virtualenv -p python3 /home/biothings/pyenv \
-	&& /home/biothings/pyenv/bin/pip3 install /home/biothings/wheels/*.whl
+RUN virtualenv -p python3 /home/biothings/pyenv
+# Check for potentially empty list of wheels
+RUN for whl_file in /home/biothings/wheels/*.whl; \
+	do \
+		test ! -f "$whl_file" || /home/biothings/pyenv/bin/pip3 install "$whl_file"; \
+	done
 USER root
 RUN rm -rf /home/biothings/wheels
 
