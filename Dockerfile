@@ -150,6 +150,10 @@ RUN for whl_file in /home/biothings/wheels/*.whl; \
 	do \
 		test ! -f "$whl_file" || /home/biothings/pyenv/bin/pip3 install "$whl_file"; \
 	done
+ADD --chown=biothings:biothings \
+	files \
+	/home/biothings/biothings_studio
+RUN ls -lR /home/biothings/biothings_studio/ && sleep 30
 USER root
 RUN rm -rf /home/biothings/wheels
 

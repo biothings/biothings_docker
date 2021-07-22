@@ -99,13 +99,6 @@
 - name: mongodb data directory
   file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
 
-
-
-- name: Pull studio app source from github repo
-  git: repo={{ software.web_node.studio_repository }} dest=/home/biothings/{{ app_name }} version={{software.web_node.studio_git_version}}
-  become_user: "biothings"
-  become: true
-
 - name: biothings (override requirement_web.txt version)
   git: repo=https://github.com/biothings/biothings.api.git dest=/home/biothings/biothings.api version={{ software.web_node.biothings_git_version }}
   become_user: "biothings"
