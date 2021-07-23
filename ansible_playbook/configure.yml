@@ -117,11 +117,6 @@
   become_user: "biothings"
   become: true
 
-- name: Create ssh keys
-  shell: echo "y\n" | ssh-keygen -f /home/biothings/{{ app_name }}/bin/ssh_host_key -q -N ""
-  become_user: "biothings"
-  become: true
-
 - name: pretty mongo shell
   lineinfile: dest=/home/biothings/.mongorc.js line="DBQuery.prototype._prettyShell = true" mode=0644 owner=biothings group=biothings insertafter=EOF create=yes
 

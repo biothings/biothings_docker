@@ -67,7 +67,3 @@
   file: src=/home/biothings/{{ api_name }}/src/plugins dest=/data/{{ app_name }}/plugins state=link
   when: plugins_exists.stat.exists == True
 
-- name: Generate RSA host key
-  command : ssh-keygen -q -t rsa -f /home/biothings/{{ api_name }}/src/bin/ssh_host_key -C "" -N "" creates=/home/biothings/{{ api_name }}/src/bin/ssh_host_key
-  become_user: "biothings"
-  become: true

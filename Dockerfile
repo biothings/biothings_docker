@@ -93,7 +93,7 @@ RUN apt-get -qq -y update && \
         # ssh is no longer used
         # openssh-server \
         # client is for ssh-keygen
-        openssh-client \
+        # openssh-client \
         # only used to add repo, now we just append to the file
         # this pulls in dbus and therefore pulls in systemd
         # software-properties-common \
@@ -150,9 +150,10 @@ RUN for whl_file in /home/biothings/wheels/*.whl; \
 	do \
 		test ! -f "$whl_file" || /home/biothings/pyenv/bin/pip3 install "$whl_file"; \
 	done
-ADD --chown=biothings:biothings \
-	files \
-	/home/biothings/biothings_studio
+COPY --chown=biothings:biothings files/biothings_studio	/home/biothings/biothings_studio
+COPY --chown=biothings:biothings \
+	files/ssh-keygen.py \
+	/home/biothings/utilities/
 USER root
 RUN rm -rf /home/biothings/wheels
 
@@ -191,6 +192,11 @@ RUN if [ -n "$API_NAME" ]; \
             -e "studio_version=$STUDIO_VERSION" \
             -c local; \
 fi
+
+RUN if [ -n "${API_NAME}" ]; \
+	then \
+		ln -s /home/biothings/biothings_studio/bin/ssh_host_key "/home/biothings/${API_NAME}/src/bin/ssh_host_key"; \
+	fi
 
 # Clean up ansible_playbook
 WORKDIR /tmp

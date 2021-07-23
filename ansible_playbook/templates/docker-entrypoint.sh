@@ -9,6 +9,12 @@ arg1="$1"
 
 set -u
 
+if [ ! -f /home/biothings/biothings_studio/bin/ssh_host_key ]
+then
+	echo "SSH keys not yet created, creating"
+	su biothings -c "/home/biothings/pyenv/bin/python /home/biothings/utilities/ssh-keygen.py /home/biothings/biothings_studio/bin/ssh_host_key"
+fi
+
 # mongodb only uses systemd but using docker,
 # process 1 can be /bin/bash, not sysctl, so it would
 # just fail, we need to run it manually
