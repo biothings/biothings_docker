@@ -136,8 +136,6 @@
   file: path=/home/biothings/bin state=directory owner=biothings group=biothings
 - name: Template out update_biothings
   template: mode=0755 src=templates/update_biothings dest=/home/biothings/bin/update_biothings
-- name: Template out update_studio
-  template: mode=0755 src=templates/update_studio dest=/home/biothings/bin/update_studio
 - name: Template out run_studio
   template: mode=0755 src=templates/run_studio dest=/home/biothings/bin/run_studio
 

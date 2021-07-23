@@ -77,12 +77,6 @@ else
         echo "Fatal error updating biothings SDK"
         exit 255
     fi
-    su - biothings -c "./bin/update_studio || exit 255"
-    if [ "$?" != "0" ]
-    then
-        echo "Fatal error updating Studio"
-        exit 255
-    fi
 fi
 
 if [ "X{{ api_name | default('') }}" = "X" ]

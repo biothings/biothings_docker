@@ -1,4 +1,0 @@
-#!/bin/bash
-source ~/pyenv/bin/activate
-pushd ~/{{ app_name }} && git reset --hard && git pull && popd
-
