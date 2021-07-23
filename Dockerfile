@@ -153,7 +153,6 @@ RUN for whl_file in /home/biothings/wheels/*.whl; \
 ADD --chown=biothings:biothings \
 	files \
 	/home/biothings/biothings_studio
-RUN ls -lR /home/biothings/biothings_studio/ && sleep 30
 USER root
 RUN rm -rf /home/biothings/wheels
 
