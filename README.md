@@ -21,3 +21,5 @@ prerequisite:  docker, make
   (using https://github.com/sirloon/mvcgi datasource). Tests the whole process
 - https://github.com/sirloon/gwascatalog for dumper custom release
 - https://github.com/sirloon/FIRE for parallelization
+
+Tests are located in the `tests` directory.
