@@ -52,6 +52,14 @@ studio4mychem:
     --build-arg API_VERSION=master \
     -t studio4mychem:$$(git branch | grep ^\* | sed "s#\* ##") .
 
+studio4mydisease:
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+    --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
+    --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
+    --build-arg API_NAME=mydisease.info \
+    --build-arg API_VERSION=master \
+    -t studio4mydisease:$$(git branch | grep ^\* | sed "s#\* ##") .
+
 run:
 	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##")
 
