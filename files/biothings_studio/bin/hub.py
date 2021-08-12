@@ -2,8 +2,8 @@
 
 import biothings
 import config
-import hub.dataload.sources
 from biothings.hub import HubServer
+import hub.dataload.sources
 from biothings.utils.version import set_versions
 import os
 import logging
