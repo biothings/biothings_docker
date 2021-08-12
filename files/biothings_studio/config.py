@@ -30,6 +30,8 @@ logger = setup_default_log("hub", LOG_FOLDER)
 RELEASE_PATH = "/data/biothings_studio/release"
 CACHE_FOLDER = "/data/biothings_studio/cache"
 
+ES_BACKUPS_FOLDER = "/data/biothings_studio/es_backups"
+
 RUN_DIR = '/data/run'
 CONFIG_READONLY = False
 
