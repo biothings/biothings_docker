@@ -85,39 +85,7 @@ INDEX_CONFIG = {
         }
 
 # Snapshot environment configuration
-SNAPSHOT_CONFIG = {
-        "env" : {
-            "localhub_fs" : {
-                "repository" : {
-                    "name" : "%(build_config.name)s_repository",
-                    "type" : "fs",
-                    "settings" : {
-                        "location" : "%(build_config.name)s/%(_meta.build_version)s",
-                        },
-                    # for s3, bucket policy
-                    #"acl" : "private",
-                    # for fs, root folder containing backups
-                    "es_backups_folder" : ConfigurationValue("""ES_BACKUPS_FOLDER"""),
-                    },
-                "indexer" : {
-                    # reference to INDEX_CONFIG
-                    "env" : "localhub",
-                    # or use specific definition
-                    #"host" : "localhost:9200",
-                    #"args" : {
-                    #    "timeout" : 300,
-                    #    "retry_on_timeout" : True,
-                    #    "max_retries" : 10,
-                    #    },
-                    },
-                # when creating a snapshot, how long should we wait before querying ES
-                # to check snapshot status/completion ? (in seconds)
-                # Since myvariant's indices are pretty big, a whole snaphost won't happen in few secs,
-                # let's just monitor the status every 5min
-                "monitor_delay" : 10,
-                },
-            }
-        }
+SNAPSHOT_CONFIG = {}
 
 # reporting diff results, number of IDs to consider (to avoid too much mem usage)
 MAX_REPORTED_IDS = 1000
