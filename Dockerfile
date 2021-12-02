@@ -163,7 +163,7 @@ RUN rm -rf /home/biothings/wheels
 # RUN tar xzf code-server-3.1.1-linux-x86_64.tar.gz -C /usr/local
 # RUN ln -s /usr/local/code-server-3.1.1-linux-x86_64 /usr/local/code-server
 
-RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
+RUN git clone http://github.com/ansible/ansible.git -b stable-2.12 /tmp/ansible
 WORKDIR /tmp/ansible
 # workaround for ansible, still invokes python command
 RUN ln -sv /usr/bin/python3 bin/python
