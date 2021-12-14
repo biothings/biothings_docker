@@ -127,8 +127,15 @@ RUN apt-get -qq -y update && \
         ne \
         vim \
         wget ; \
-    fi \
-    && apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
+    fi && \
+    # for building orjson on aarch64. Somehow the wheel does not work so
+    # it has to be built from scratch
+    if [ $(dpkg --print-architecture)=='arm64' ]; then \
+    apt-get install -y --no-install-recommends \
+      rustc \
+      cargo ; \
+    fi && \
+    apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 # cerebro
