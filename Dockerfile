@@ -130,7 +130,7 @@ RUN apt-get -qq -y update && \
     fi && \
     # for building orjson on aarch64. Somehow the wheel does not work so
     # it has to be built from scratch
-    if [ $(dpkg --print-architecture) == 'arm64' ]; then \
+    if [ $(dpkg --print-architecture)=='arm64' ]; then \
     apt-get install -y --no-install-recommends \
       rustc \
       cargo ; \
