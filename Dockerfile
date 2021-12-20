@@ -133,7 +133,8 @@ RUN apt-get -qq -y update && \
     if [ $(dpkg --print-architecture)=='arm64' ]; then \
     apt-get install -y --no-install-recommends \
       rustc \
-      cargo ; \
+      cargo \
+      python3-dev ;\
     fi && \
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
