@@ -36,10 +36,10 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ELASTICSEARCH_VERSION=7.13.*         # use to specify a specific Elasticsearch version to install
+ARG ELASTICSEARCH_VERSION=7.16.*         # use to specify a specific Elasticsearch version to install
 ARG ELASTICSEARCH_VERSION_REPO=7.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
-ARG MONGODB_VERSION=4.4.*                # use to specify a specific MongoDB version to install
-ARG MONGODB_VERSION_REPO=4.4             # use to specify a specific MongoDB version repo to load
+ARG MONGODB_VERSION=5.0.*                # use to specify a specific MongoDB version to install
+ARG MONGODB_VERSION_REPO=5.0             # use to specify a specific MongoDB version repo to load
 # In the future, we can get the latest release ver. from GitHub APIs
 ARG CEREBRO_VERSION=0.9.4
 
