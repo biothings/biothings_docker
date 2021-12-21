@@ -126,9 +126,12 @@ else
   # mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
   # /usr/sbin/sshd -D
   echo "use docker exec to connect"
+  echo "to view the hub process in the tmux session:"
+  echo -e "\t sudo su biothings"
+  echo -e "\t tmux a"
+  echo "(the Hub is running on tmux pane 0)"
   # somehow prevent this script from exiting -- for a while
   # no idea how long "infinity" means, it's actually finite
   # good enough for dev use
   sleep infinity
 fi
-
