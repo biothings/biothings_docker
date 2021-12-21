@@ -9,3 +9,5 @@ HUB_VERSION = "master"
 
 USE_RELOADER = True # so no need to restart hub when a datasource has changed
 
+# Skip dumping sources automatically
+SKIP_DUMPER_SCHEDULE = True
