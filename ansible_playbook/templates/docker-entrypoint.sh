@@ -127,9 +127,12 @@ else
   # /usr/sbin/sshd -D
   echo "use docker exec to connect"
   echo "to view the hub process in the tmux session:"
-  echo -e "\t sudo su biothings"
+  echo -e "\t su biothings"
   echo -e "\t tmux a"
-  echo "(the Hub is running on tmux pane 0)"
+  echo "Tmux help:"
+  echo -e "\t check out https://tmuxcheatsheet.com"
+  echo -e "\t we remapped ctrl-a as the prefix key, instead of the default ctrl-b"
+  echo -e "\t the Hub is running on tmux pane 0"
   # somehow prevent this script from exiting -- for a while
   # no idea how long "infinity" means, it's actually finite
   # good enough for dev use
