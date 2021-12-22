@@ -123,9 +123,19 @@ else
   # until it dies
   # mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
   # /usr/sbin/sshd -D
+
+  # Show some help msg
   su - biothings -c "./bin/show_help_msg"
+
+  # Pipe the hub stdout/stderr from its tmux pane to a file pipe
+  su - biothings -c "rm -f /tmp/hub_pipe && mkfifo /tmp/hub_pipe && tmux pipe-pane -t hub -o 'cat >> /tmp/hub_pipe'"
+  # Now we can monitor the hub stdout/stderr:
+  su - biothings -c "cat /tmp/hub_pipe"
+
   # somehow prevent this script from exiting -- for a while
   # no idea how long "infinity" means, it's actually finite
   # good enough for dev use
+  # It may not be needed any more, since "cat" command above
+  # should run forever, but keep it here just in case
   sleep infinity
 fi
