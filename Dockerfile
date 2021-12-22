@@ -163,10 +163,10 @@ COPY --chown=biothings:biothings \
 	files/ssh-keygen.py \
 	/home/biothings/utilities/
 # Setup bash & tmux for biothings user
-RUN wget https://www.dropbox.com/s/lgq7ip4wzxhrz8z/.tmux.conf \
-    && wget https://www.dropbox.com/s/o6mswwxfz5z8051/.inputrc \
-    && wget https://www.dropbox.com/s/cd6d1pwreuzotft/.git_aliases \
-    && bash -c "echo -e '\nsource ~/.git_aliases\n' >> ~/.bashrc"
+COPY --chown=biothings:biothings files/.tmux.conf	/home/biothings/.tmux.conf
+COPY --chown=biothings:biothings files/.inputrc	/home/biothings/.inputrc
+COPY --chown=biothings:biothings files/.git_aliases	/home/biothings/.git_aliases
+RUN bash -c "echo -e '\nalias psg=\"ps aux|grep\"\nsource ~/.git_aliases\n' >> ~/.bashrc"
 USER root
 RUN rm -rf /home/biothings/wheels
 
