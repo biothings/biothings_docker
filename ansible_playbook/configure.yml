@@ -133,7 +133,8 @@
   template: mode=0755 src=templates/update_biothings dest=/home/biothings/bin/update_biothings
 - name: Template out run_studio
   template: mode=0755 src=templates/run_studio dest=/home/biothings/bin/run_studio
-
+- name: Template out show_help_msg
+  template: mode=0755 src=templates/show_help_msg dest=/home/biothings/bin/show_help_msg
 
 ################################################
 # Update elasticsearch.yml

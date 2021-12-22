@@ -62,7 +62,6 @@ else
     /usr/local/cerebro/bin/cerebro
 fi
 netstat -tnlp | grep 9000
-
 ret=$?
 while [ "$ret" != "0" ]
 do
@@ -104,7 +103,6 @@ then
     exit 255
 fi
 
-echo "now run webapp"
 # We have TTY, so probably an interactive container...
 if test -t 0; then
   echo "probably an interactive container"
@@ -121,18 +119,11 @@ if test -t 0; then
 
 # Detached mode
 else
-  echo "not interactive"
+  echo "probably a non-interactive (detached) container"
   # until it dies
   # mkdir -p /var/run/sshd # prevent "Missing privilege separation directory" error
   # /usr/sbin/sshd -D
-  echo "use docker exec to connect"
-  echo "to view the hub process in the tmux session:"
-  echo -e "\t su biothings"
-  echo -e "\t tmux a"
-  echo "Tmux help:"
-  echo -e "\t check out https://tmuxcheatsheet.com"
-  echo -e "\t we remapped ctrl-a as the prefix key, instead of the default ctrl-b"
-  echo -e "\t the Hub is running on tmux pane 0"
+  su - biothings -c "./bin/show_help_msg"
   # somehow prevent this script from exiting -- for a while
   # no idea how long "infinity" means, it's actually finite
   # good enough for dev use

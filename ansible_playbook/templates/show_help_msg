@@ -1,0 +1,26 @@
+#!/bin/bash
+
+cat <<EOF
+                ╔╗ ┬┌─┐╔╦╗┬ ┬┬┌┐┌┌─┐┌─┐  ╦ ╦╦ ╦╔╗
+                ╠╩╗││ │ ║ ├─┤│││││ ┬└─┐  ╠═╣║ ║╠╩╗
+                ╚═╝┴└─┘ ╩ ┴ ┴┴┘└┘└─┘└─┘  ╩ ╩╚═╝╚═╝
+                           .-"""-.
+                          / .===. \\
+                          \/ 6 6 \/
+                          ( \___/ )
+      ___________ooo_______\_____/_______________________
+     /                                                   \\
+    |  BioThings Hub is started now.                      |
+    |                                                     |
+    |  To connect to docker container:                    |
+    |      docker exec -it <container_name> /bin/bash     |
+    |                                                     |
+    |  To view the hub process in the tmux session:       |
+    |      su biothings                                   |
+    |      tmux a                                         |
+    |  Check out https://tmuxcheatsheet.com               |
+    |  Note that we remapped ctrl-a as the prefix key,    |
+    |  instead of the default ctrl-b.                     |
+    |  the Hub is running on tmux pane 0.                 |
+     \____________________________________ooo____________/
+EOF
