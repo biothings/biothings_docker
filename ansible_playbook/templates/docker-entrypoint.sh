@@ -55,7 +55,7 @@ if [[ -f "/usr/share/elasticsearch/jdk/bin/java" ]]; then
 #   see more at https://github.com/lmenezes/cerebro/issues/514
   start-stop-daemon --start -c elasticsearch -b --exec \
     /usr/bin/env bundled_jvm="/usr/share/elasticsearch/jdk/" \
-                 JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED" \
+    JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-exports java.base/sun.net.www.protocol.file=ALL-UNNAMED" \
     /usr/local/cerebro/bin/cerebro
 else
   start-stop-daemon --start -c elasticsearch -b --exec \
