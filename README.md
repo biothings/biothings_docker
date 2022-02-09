@@ -17,7 +17,7 @@ prerequisite:  docker, make
 
 
 # Testing
-- Follow tutorial http://docs.biothings.io/en/latest/doc/studio_tutorial.html
+- Follow tutorial http://docs.biothings.io/en/latest/tutorial/studio.html
   (using https://github.com/sirloon/mvcgi datasource). Tests the whole process
 - https://github.com/sirloon/gwascatalog for dumper custom release
 - https://github.com/sirloon/FIRE for parallelization
