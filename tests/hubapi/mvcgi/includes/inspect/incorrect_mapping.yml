@@ -1,0 +1,4 @@
+taxid:
+  type: integer
+uniprot_name:
+  type: invalid

@@ -3,47 +3,54 @@ test_name: Upload data source
 
 stages:
   - name: Check upload auto-triggered after dump
-    delay_before: 10
+    delay_before: !float "{sleep_long_time}"
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi"
+      url: "{hub_api_host}/source/uniprot_species"
       method: GET
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
-          _id: mvcgi
-          name: mvcgi
-          download: !anydict
-          data_plugin: !anydict
-          count: 323
+          _id: uniprot_species
+          name: uniprot_species
+          count: !anyint
+          download:
+            status: success
+            time: !anystr
+            started_at: !anystr
+            release: !anystr
+            data_folder: !anystr
+            dumper:
+              name: biothings_hub.dataload.sources.uniprot.dumper.UniprotSpeciesDumper
+              bases:
+                - biothings.hub.dataload.dumper.FTPDumper
+              manual: false
           upload:
             sources:
-              mvcgi:
+              uniprot_species:
                 status: success
                 time: !anystr
                 started_at: !anystr
                 release: !anystr
                 data_folder: !anystr
-                count: 323
+                count: !anyint
                 uploader:
-                  name: biothings.hub.dataplugin.assistant.AssistedUploader_mvcgi
+                  name: biothings_hub.dataload.sources.uniprot.uploader.UniprotSpeciesUploader
                   bases:
-                    - biothings.hub.dataplugin.assistant.AssistedUploader
-                    - mvcgi.MvcgiUploader
+                    - biothings.hub.dataload.uploader.BaseSourceUploader
                   dummy: false
-          __metadata__:
-            license_url: https://www.cancergenomeinterpreter.org/faq#q11c
-            licence: CC BY-NC 4.0
-            url: https://www.cancergenomeinterpreter.org
+          mapping:
+            uniprot_species: !anydict
+          __metadata__: !anydict
 
   - name: Re-trigger upload manually
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi/upload"
+      url: "{hub_api_host}/source/uniprot_species/upload"
       method: PUT
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
           cmd: !anystr
@@ -51,20 +58,20 @@ stages:
           id: !anyint
           is_done: false
       save:
-        body:
+        json:
           returned_id: result.id
-    delay_after: 10 # should be enough to upload data, it's small
+    delay_after: !float "{sleep_long_time}"
 
   - name: check command completion
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/command/{returned_id}"
+      url: "{command_url}/{returned_id}"
       method: GET
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
-          cmd: !raw "upload(src='mvcgi')"
+          cmd: !raw "upload(src='uniprot_species')"
           started_at: !anyfloat
           id: !int "{returned_id}"
           is_done: true

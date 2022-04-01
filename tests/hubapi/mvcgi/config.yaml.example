@@ -1,0 +1,18 @@
+name: Common configurations
+
+variables:
+  hub_api_host: <HUB_API_HOST>
+  source_url: <HUB_API_HOST>/source/uniprot_species
+  command_url: <HUB_API_HOST>/command
+  buildconf_url: <HUB_API_HOST>/buildconf
+  build_manager_url: <HUB_API_HOST>/build_manager
+  build_url: <HUB_API_HOST>/builds
+
+  plugin_id: pharmgkb
+  plugin_url: https://github.com/sirloon/pharmgkb.git
+
+  es_primary_host: <FIRST_ELASTIC_SERVER_HOST>
+  es_secondary_host: <SECOND_ELASTIC_SERVER_HOST>
+
+  sleep_short_time: 5
+  sleep_long_time: 20

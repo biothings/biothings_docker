@@ -1,0 +1,125 @@
+---
+test_name: Manipulate build configuration.
+
+stages:
+  - name: Create main build configuration
+    request:
+      url: "{buildconf_url}"
+      method: POST
+      json: !include includes/build_configuration/main.yaml
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+
+  - name: Create existing build configuration
+    request:
+      url: "{buildconf_url}"
+      method: POST
+      json: !include includes/build_configuration/main.yaml
+    response:
+      status_code: 500
+      json:
+        status: "error"
+        code: 500
+        error: Configuration named 'main_build_configuration' already exists
+
+  - name: Create secondary build configuration
+    request:
+      url: "{buildconf_url}"
+      method: POST
+      json: !include includes/build_configuration/secondary.yaml
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+
+  - name: Create third build configuration
+    request:
+      url: "{buildconf_url}"
+      method: POST
+      json: !include includes/build_configuration/third_active.yaml
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+
+  - name: Make archive third build configuration 
+    request:
+      url: "{buildconf_url}"
+      method: PUT
+      json: !include includes/build_configuration/third_archive.yaml
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+
+  - name: List all available build configurations
+    request:
+      url: "{build_manager_url}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          builder_classes: !anydict
+          build_configs:
+            main_build_configuration:
+              archived: false
+              source_backend: !anydict
+              target_backend: !anydict
+              mapper: !anydict
+              build_config:
+                _id: main_build_configuration
+                name: main_build_configuration
+                doc_type: main_build_configuration
+                sources:
+                  - uniprot_species
+                root:
+                  - uniprot_species
+                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+            secondary_build_configuration:
+              archived: false
+              source_backend: !anydict
+              target_backend: !anydict
+              mapper: !anydict
+              build_config:
+                _id: secondary_build_configuration
+                name: secondary_build_configuration
+                doc_type: secondary_build_configuration
+                sources:
+                  - uniprot_species
+                root:
+                  - uniprot_species
+                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+            third_build_configuration:
+              archived: true
+              source_backend: !anydict
+              target_backend: !anydict
+              mapper: !anydict
+              build_config:
+                _id: third_build_configuration
+                name: third_build_configuration
+                doc_type: third_build_configuration
+                sources:
+                  - uniprot_species
+                root:
+                  - uniprot_species
+                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+
+  - name: Delete a build configuration
+    request:
+      url: "{buildconf_url}"
+      method: DELETE
+      json:
+        name: "third_build_configuration"
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null

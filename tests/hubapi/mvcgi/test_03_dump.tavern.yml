@@ -4,13 +4,13 @@ test_name: Dump data source
 stages:
   - name: trigger dump
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi/dump"
+      url: "{hub_api_host}/source/uniprot_species/dump"
       method: PUT
       json:
         force: true # just to be sure...
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
           cmd: !anystr
@@ -18,20 +18,20 @@ stages:
           id: !anyint
           is_done: false
       save:
-        body:
+        json:
           returned_id: result.id
-    delay_after: 10 # should be enough to download data, it's small
+    delay_after: !float "{sleep_long_time}"
 
   - name: check command completion
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/command/{returned_id}"
+      url: "{command_url}/{returned_id}"
       method: GET
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
-          cmd: !raw "dump(src='mvcgi',force=True)"
+          cmd: !raw "dump(src='uniprot_species',force=True)"
           started_at: !anyfloat
           id: !int "{returned_id}"
           is_done: true
@@ -42,19 +42,16 @@ stages:
 
   - name: Verify some data has been downloaded
     request:
-      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi"
+      url: "{hub_api_host}/source/uniprot_species"
       method: GET
     response:
       status_code: 200
-      body:
+      json:
         status: "ok"
         result:
-          _id: mvcgi
-          name: mvcgi
+          _id: uniprot_species
+          name: uniprot_species
           count: !anyint
-          upload: !anydict
-          data_plugin: !anydict
-          __metadata__: !anydict
           download:
             status: success
             time: !anystr
@@ -62,9 +59,24 @@ stages:
             release: !anystr
             data_folder: !anystr
             dumper:
-              name: biothings.hub.dataplugin.assistant.AssistedDumper_mvcgi
+              name: biothings_hub.dataload.sources.uniprot.dumper.UniprotSpeciesDumper
               bases:
-                - biothings.hub.dataplugin.assistant.AssistedDumper
-                - mvcgi.MvcgiDumper
+                - biothings.hub.dataload.dumper.FTPDumper
               manual: false
-
+          upload: 
+            sources:
+              uniprot_species:
+                time: !anystr
+                status: success
+                count: !anyint
+                started_at: !anystr
+                release: !anystr
+                data_folder: !anystr
+                uploader:
+                  name: biothings_hub.dataload.sources.uniprot.uploader.UniprotSpeciesUploader
+                  bases:
+                    - biothings.hub.dataload.uploader.BaseSourceUploader
+                  dummy: false
+          mapping:
+            uniprot_species: !anydict
+          __metadata__: !anydict

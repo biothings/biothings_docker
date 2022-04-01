@@ -1,0 +1,8 @@
+name: main_build_configuration
+doc_type: main_build_configuration
+sources:
+  - uniprot_species
+roots:
+  - uniprot_species
+builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+archived: false

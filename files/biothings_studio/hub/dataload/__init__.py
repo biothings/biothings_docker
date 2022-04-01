@@ -5,3 +5,6 @@
 #    #"hub.dataload.sources.my_source"
 #    ]
 
+__sources__ = [
+   "dataload.sources.uniprot",
+]

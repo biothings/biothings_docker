@@ -49,11 +49,13 @@ RUN apt-get -qq -y update && \
     apt-get install -y --no-install-recommends \
     gnupg1 \
     curl \
+    wget \
     ca-certificates \
     lsb-release && \
     release=`lsb_release -sc` && \
     # Add repo for MongoDB
-    curl "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
+    wget "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" -O mongo-server-${MONGODB_VERSION_REPO}.asc && \
+    apt-key add mongo-server-${MONGODB_VERSION_REPO}.asc && \
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     # echo "deb http://repo.mongodb.org/apt/ubuntu /mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${release}/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \

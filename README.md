@@ -52,3 +52,17 @@ the new version.
 longer compatible. In this case just fix the config files. Some of them come from 
 Ansible making patches here and there but most of the file should be what you see in the
 repos.
+
+
+# update README: How to run integration tests
+
+Step 1: Setup environment
+
+Step 2: Run biothings studio, and make sure the webapp and hub are running
+
+Step 3: Start secondary ES server for testing restore function
+
+Step 4: Create config.yaml and update the variables
+
+Step 5: Run tests
+
