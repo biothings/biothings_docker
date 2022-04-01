@@ -34,4 +34,3 @@ ES_BACKUPS_FOLDER = "/data/biothings_studio/es_backups"
 
 RUN_DIR = '/data/run'
 CONFIG_READONLY = False
-

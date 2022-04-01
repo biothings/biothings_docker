@@ -82,7 +82,7 @@ stages:
                   - uniprot_species
                 root:
                   - uniprot_species
-                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+                builder_class: hub.databuild.builder.TaxonomyDataBuilder
             secondary_build_configuration:
               archived: false
               source_backend: !anydict
@@ -96,7 +96,7 @@ stages:
                   - uniprot_species
                 root:
                   - uniprot_species
-                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+                builder_class: hub.databuild.builder.TaxonomyDataBuilder
             third_build_configuration:
               archived: true
               source_backend: !anydict
@@ -110,7 +110,7 @@ stages:
                   - uniprot_species
                 root:
                   - uniprot_species
-                builder_class: biothings_hub.databuild.builder.TaxonomyDataBuilder
+                builder_class: hub.databuild.builder.TaxonomyDataBuilder
 
   - name: Delete a build configuration
     request:
