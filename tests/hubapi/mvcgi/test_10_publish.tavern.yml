@@ -39,7 +39,7 @@ stages:
       save:
         json:
           returned_id: result.id
-    delay_after: !float "{sleep_short_time}"
+    delay_after: !float "{sleep_long_time}"
 
   - name: check command completion
     request:
@@ -98,7 +98,7 @@ stages:
       save:
         json:
           returned_id: result.id
-    delay_after: !float "{sleep_short_time}"
+    delay_after: !float "{sleep_long_time}"
 
   - name: check command completion
     request:

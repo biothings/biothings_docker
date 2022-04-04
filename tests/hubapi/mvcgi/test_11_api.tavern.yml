@@ -96,7 +96,7 @@ stages:
     response:
       status_code: 200
       json:
-        biothing_type: null
+        biothing_type: !anystr
         build_date: !anystr
         build_version: !anystr
         src: !anydict

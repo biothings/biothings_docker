@@ -135,7 +135,7 @@ stages:
                 url: !anystr
       save:
         json:
-          snapshot_version: "result.results[0][0].build_version"
+          snapshot_version: "result.results[0][-1].build_version"
 
   - name: Get version's info
     request:
@@ -202,7 +202,7 @@ stages:
       save:
         json:
           returned_id: result.id
-    delay_after: !float "{sleep_long_time}"
+    delay_after: !float "{sleep_very_long_time}"
 
   - name: check command completion
     request:

@@ -16,3 +16,4 @@ variables:
 
   sleep_short_time: 5
   sleep_long_time: 20
+  sleep_very_long_time: 60
