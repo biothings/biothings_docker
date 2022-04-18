@@ -31,6 +31,8 @@ ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
 ARG API_NAME
 ARG API_VERSION
+ARG AWS_ACCESS_KEY
+ARG AWS_SECRET_KEY
 
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
@@ -54,8 +56,7 @@ RUN apt-get -qq -y update && \
     lsb-release && \
     release=`lsb_release -sc` && \
     # Add repo for MongoDB
-    wget "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" -O mongo-server-${MONGODB_VERSION_REPO}.asc && \
-    apt-key add mongo-server-${MONGODB_VERSION_REPO}.asc && \
+    curl -L "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     # echo "deb http://repo.mongodb.org/apt/ubuntu /mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${release}/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
@@ -111,6 +112,8 @@ RUN apt-get -qq -y update && \
         python3-yaml \
         python3-jinja2 \
         python3-pip \
+		# FTP server
+		vsftpd \
 		# Virtualenv
 		python3-virtualenv && \
     # install JDK only when ES < v7
@@ -149,6 +152,10 @@ RUN curl -LO \
     && ln -s /usr/local/cerebro-${CEREBRO_VERSION} /usr/local/cerebro \
     && rm -rf /tmp/cerebro*
 
+# ES plugins
+RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3
+RUN echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key
+RUN echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key
 
 RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
@@ -168,6 +175,10 @@ COPY --chown=biothings:biothings \
 COPY --chown=biothings:biothings files/.tmux.conf	/home/biothings/.tmux.conf
 COPY --chown=biothings:biothings files/.inputrc	/home/biothings/.inputrc
 COPY --chown=biothings:biothings files/.git_aliases	/home/biothings/.git_aliases
+
+# TODO: fix some issue about setup ftp server and move this line to docker-compose using mount volumn
+COPY --chown=ftp:ftp fixtures/*	/srv/ftp/
+
 RUN bash -c "echo -e '\nalias psg=\"ps aux|grep\"\nsource ~/.git_aliases\n' >> ~/.bashrc"
 USER root
 RUN rm -rf /home/biothings/wheels

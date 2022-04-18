@@ -163,3 +163,12 @@
     - {"line": "path.data: /data/elasticsearch", "re": "^path.data.*$"}
     - {"line": "path.logs: /data/logs/elasticsearch", "re": "^path.logs.*$"}
 
+################################################
+# Update FTP server config
+################################################
+- name: es backups data directory (repo type fs)
+  file: path=/var/ftp mode=0777 state=directory owner=nobody group=nogroup
+
+- name: update FPT server config
+  template: mode=0644 src=templates/vsftpd.conf dest=/etc/vsftpd.conf
+
