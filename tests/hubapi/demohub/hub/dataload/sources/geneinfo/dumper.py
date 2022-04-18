@@ -5,21 +5,21 @@ biothings.config_for_app(config)
 
 from config import DATA_ARCHIVE_ROOT
 from biothings.hub.dataload.dumper import FTPDumper
-from biothings.utils.common import untargzall
+from biothings.utils.common import gunzipall
 
 
-class TaxonomyDumper(FTPDumper):
+class GeneInfoDumper(FTPDumper):
 
-    SRC_NAME = "taxonomy"
+    SRC_NAME = "geneinfo"
     SRC_ROOT_FOLDER = os.path.join(DATA_ARCHIVE_ROOT, SRC_NAME)
-    FTP_HOST = 'ftp.ncbi.nih.gov'
-    CWD_DIR = '/pub/taxonomy'
+    FTP_HOST = 'localhost'
+    CWD_DIR = ''
     SUFFIX_ATTR = "timestamp"
 
-    SCHEDULE = "0 9 * * *"
+    SCHEDULE = "0 10 * * *"
 
     def create_todump_list(self, force=False):
-        file_to_dump = "taxdump.tar.gz"
+        file_to_dump = "gene_info.gz"
         new_localfile = os.path.join(self.new_data_folder,file_to_dump)
         try:
             current_localfile = os.path.join(self.current_data_folder, file_to_dump)
@@ -31,4 +31,4 @@ class TaxonomyDumper(FTPDumper):
             self.to_dump.append({"remote": file_to_dump, "local":new_localfile})
 
     def post_dump(self, *args, **kwargs):
-        untargzall(self.new_data_folder)
+        gunzipall(self.new_data_folder)

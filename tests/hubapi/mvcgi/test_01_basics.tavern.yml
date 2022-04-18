@@ -13,7 +13,7 @@ stages:
         result:
           name: !anystr
           biothings_version: !anydict
-          app_version: null
+          app_version: !anydict
           icon: !anystr
           now: !anystr
           features: ["config","job","dump","upload","dataplugin","source","build","diff","index","snapshot","release","inspect","sync","api","terminal","reloader","dataupload","ws","upgrade","autohub"]

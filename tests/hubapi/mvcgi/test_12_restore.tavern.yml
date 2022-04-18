@@ -50,7 +50,7 @@ stages:
         result:
           - name: production
             url: !anystr
-  
+
   - name: list all backend
     request:
       url: "{hub_api_host}/standalone/production/backend"
@@ -190,12 +190,13 @@ stages:
       json:
         version: "{snapshot_version}"
         force: 1
+        dry: false
     response:
       status_code: 200
       json:
         status: "ok"
         result:
-          cmd: "install(src_name='production',version='{snapshot_version}',force=1)"
+          cmd: "install(src_name='production',version='{snapshot_version}',dry=False,force=1)"
           started_at: !anyfloat
           id: !anyint
           is_done: false
@@ -214,7 +215,7 @@ stages:
         status: "ok"
         result:
           id: !int "{returned_id}"
-          cmd: "install(src_name='production',version='{snapshot_version}',force=1)"
+          cmd: "install(src_name='production',version='{snapshot_version}',dry=False,force=1)"
           started_at: !anyfloat
           finished_at: !anyfloat
           is_done: true

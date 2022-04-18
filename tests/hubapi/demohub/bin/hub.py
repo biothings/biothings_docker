@@ -1,12 +1,16 @@
 #!/usr/bin/env python
+from functools import partial
+import os
+import logging
 
 import biothings
 import config
 from biothings.hub import HubServer
-import hub.dataload.sources
 from biothings.utils.version import set_versions
-import os
-import logging
+import hub.dataload.sources
+from hub.databuild.mapper import HasGeneMapper
+from hub.databuild.builder import TaxonomyDataBuilder
+
 # shut some mouths
 logging.getLogger("botocore").setLevel(logging.ERROR)
 logging.getLogger("boto3").setLevel(logging.ERROR)
@@ -19,7 +23,17 @@ set_versions(config, app_folder)
 biothings.config_for_app(config)
 logging = config.logger
 
-server = HubServer(hub.dataload.sources, name="BioThings Studio")
+hasgene = HasGeneMapper(name="has_gene")
+pbuilder = partial(TaxonomyDataBuilder,mappers=[hasgene])
+server = HubServer(
+    hub.dataload.sources,
+    name="BioThings Studio",
+    managers_custom_args={
+        "build": {
+            "builder_class": pbuilder
+        }
+    }
+)
 
 # import ptvsd
 
