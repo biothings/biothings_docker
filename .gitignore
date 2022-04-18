@@ -133,6 +133,7 @@ apps/bin/ssh_host_key*
 
 .vscode/*
 .notes
+.idea
 
 # ignore configuration files
 config.py

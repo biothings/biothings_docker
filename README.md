@@ -56,13 +56,17 @@ repos.
 
 # update README: How to run integration tests
 
-Step 1: Setup environment
+Step 1: Install Docker, tavern-ci
 
-Step 2: Run biothings studio, and make sure the webapp and hub are running
+Step 2: Run `copy .env.example .env`, edit `.env` file (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
-Step 3: Start secondary ES server for testing restore function
+Step 3: Load environment vars: `source .env`
 
-Step 4: Create config.yaml and update the variables
+Step 4: Run `docker-compose build biothings-studio-test`
 
-Step 5: Run tests
+Step 5: Run `docker-compose up`
+
+Step 6: Create `tests/hubapi/mvcgi/config.yaml` and update the variables
+
+Step 7: Run tests `tavern-ci tests/hubapi/mvcgi/`
 

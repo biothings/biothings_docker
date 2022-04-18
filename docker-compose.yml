@@ -1,0 +1,52 @@
+version: "3.3"
+
+services:
+  biothings-studio-test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - BIOTHINGS_VERSION=${BIOTHINGS_VERSION}
+        - STUDIO_VERSION=${STUDIO_VERSION}
+        - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+        - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+    container_name: biothings-studio-test
+    image: biothings-studio:latest
+    hostname: localhost
+    restart: always
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+      - "7022:7022"
+      - "7080:7080"
+      - "9200:9200"
+      - "9000:9000"
+      - "27017:27017"
+
+    depends_on:
+      - elasticsearch_2
+    network_mode: bridge
+    volumes:
+      - type: bind
+        source: ./tests/hubapi/demohub
+        target: /home/biothings/biothings_studio
+#      - type: bind
+#        source: ./fixtures
+#        target: /srv/ftp
+
+  elasticsearch_2:
+    container_name: elasticsearch_2
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+    network_mode: bridge
+    image: elasticsearch:7.16.3
+    ports:
+     - "9300:9200"
+    volumes:
+      - type: bind
+        source: ./files/docker-entrypoint-es-plugins.sh
+        target: /usr/share/elasticsearch/docker-entrypoint-es-plugins.sh
+    command: ["sh", "/usr/share/elasticsearch/docker-entrypoint-es-plugins.sh"]
