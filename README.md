@@ -58,13 +58,13 @@ repos.
 
 Step 1: Install Docker, tavern-ci
 
-Step 2: Run `copy .env.example .env`, edit `.env` file (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
+Step 2: Run `copy .env.example .env.local`, edit `.env.local` file (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
-Step 3: Load environment vars: `source .env`
+Step 3: Load environment vars: `source .env.local`
 
-Step 4: Run `docker-compose build biothings-studio-test`
+Step 4: Run `make demohub`
 
-Step 5: Run `docker-compose up`
+Step 5: Run `make start_demohub`, and waiting services fully boot up
 
 Step 6: Create `tests/hubapi/mvcgi/config.yaml` and update the variables
 

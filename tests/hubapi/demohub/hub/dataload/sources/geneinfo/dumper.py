@@ -12,9 +12,11 @@ class GeneInfoDumper(FTPDumper):
 
     SRC_NAME = "geneinfo"
     SRC_ROOT_FOLDER = os.path.join(DATA_ARCHIVE_ROOT, SRC_NAME)
-    FTP_HOST = 'localhost'
+    FTP_HOST = 'ftp_server'
     CWD_DIR = ''
     SUFFIX_ATTR = "timestamp"
+    FTP_USER = 'test'
+    FTP_PASSWD = 'test'
 
     SCHEDULE = "0 10 * * *"
 

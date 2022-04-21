@@ -50,6 +50,8 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+tests/hubapi/demohub/bin/ssh_host_key.pub
+tests/hubapi/demohub/bin/ssh_host_key
 
 # Translations
 *.mo
@@ -103,6 +105,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
 .venv
 env/
 venv/

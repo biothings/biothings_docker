@@ -36,7 +36,6 @@ done
 
 service elasticsearch start
 service nginx start
-service vsftpd start
 
 # don't start hub until ES is ready
 netstat -tnlp | grep 9200

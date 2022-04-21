@@ -11,11 +11,11 @@ class UniprotSpeciesDumper(FTPDumper):
 
     SRC_NAME = "uniprot_species"
     SRC_ROOT_FOLDER = os.path.join(DATA_ARCHIVE_ROOT, SRC_NAME)
-    FTP_HOST = 'localhost'
-    FTP_USER = ''
-    FTP_PASSWD = ''
+    FTP_HOST = 'ftp_server'
     CWD_DIR = ''
     SUFFIX_ATTR = "timestamp"
+    FTP_USER = 'test'
+    FTP_PASSWD = 'test'
 
     SCHEDULE = "0 9 * * *"
 

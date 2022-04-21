@@ -27,6 +27,7 @@ FROM ubuntu:20.04
 LABEL maintainer "help@biothings.io"
 
 ARG PROD
+ARG TEST
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
 ARG API_NAME
@@ -51,7 +52,6 @@ RUN apt-get -qq -y update && \
     apt-get install -y --no-install-recommends \
     gnupg1 \
     curl \
-    wget \
     ca-certificates \
     lsb-release && \
     release=`lsb_release -sc` && \
@@ -112,8 +112,6 @@ RUN apt-get -qq -y update && \
         python3-yaml \
         python3-jinja2 \
         python3-pip \
-		# FTP server
-		vsftpd \
 		# Virtualenv
 		python3-virtualenv && \
     # install JDK only when ES < v7
@@ -152,10 +150,10 @@ RUN curl -LO \
     && ln -s /usr/local/cerebro-${CEREBRO_VERSION} /usr/local/cerebro \
     && rm -rf /tmp/cerebro*
 
-# ES plugins
-RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3
-RUN echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key
-RUN echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key
+# Setup ES plugins for testing
+RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3; fi
+RUN if [ -n "$TEST" ]; then echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key; fi
+RUN if [ -n "$TEST" ]; then echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key; fi
 
 RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
@@ -175,10 +173,6 @@ COPY --chown=biothings:biothings \
 COPY --chown=biothings:biothings files/.tmux.conf	/home/biothings/.tmux.conf
 COPY --chown=biothings:biothings files/.inputrc	/home/biothings/.inputrc
 COPY --chown=biothings:biothings files/.git_aliases	/home/biothings/.git_aliases
-
-# TODO: fix some issue about setup ftp server and move this line to docker-compose using mount volumn
-COPY --chown=ftp:ftp fixtures/*	/srv/ftp/
-
 RUN bash -c "echo -e '\nalias psg=\"ps aux|grep\"\nsource ~/.git_aliases\n' >> ~/.bashrc"
 USER root
 RUN rm -rf /home/biothings/wheels
