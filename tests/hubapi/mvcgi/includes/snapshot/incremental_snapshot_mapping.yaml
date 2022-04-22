@@ -1,8 +1,0 @@
-results:
-  mapping:
-    has_gene:
-      type: boolean
-    taxid:
-      type: integer
-    uniprot_name:
-      type: text

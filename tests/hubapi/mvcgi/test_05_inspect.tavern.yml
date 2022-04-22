@@ -5,16 +5,16 @@ stages:
 
   - name: Trigger inspection for mapping generation
     request:
-      url: "{hub_api_host}/inspect"
+      url: "{tavern.env_vars.HUB_API_HOST}/inspect"
       method: PUT
       json:
         data_provider:
           - "src"
-          - "uniprot_species"
+          - "mvcgi"
         mode: mapping
     response:
       status_code: 200
-      json:
+      body:
         status: "ok"
         result:
           cmd: !anystr
@@ -22,20 +22,20 @@ stages:
           id: !anyint
           is_done: false
       save:
-        json:
+        body:
           returned_id: result.id
-    delay_after: !float "{sleep_short_time}"
+    delay_after: 5
 
   - name: check command completion
     request:
-      url: "{command_url}/{returned_id}"
+      url: "{tavern.env_vars.HUB_API_HOST}/command/{returned_id}"
       method: GET
     response:
       status_code: 200
-      json:
+      body:
         status: "ok"
         result:
-          cmd: !raw "inspect(data_provider=['src', 'uniprot_species'],mode='mapping')"
+          cmd: !raw "inspect(data_provider=['src', 'mvcgi'],mode='mapping')"
           started_at: !anyfloat
           id: !int "{returned_id}"
           is_done: true
@@ -46,24 +46,25 @@ stages:
 
   - name: Verify generated mapping
     request:
-      url: "{hub_api_host}/source/uniprot_species"
+      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi"
       method: GET
     response:
       status_code: 200
-      json:
+      body:
         status: "ok"
         result:
-          _id: uniprot_species
-          name: uniprot_species
+          _id: mvcgi
+          name: mvcgi
           count: !anyint
-          download: !anydict
           upload: !anydict
-          mapping: !anydict
+          data_plugin: !anydict
+          __metadata__: !anydict
+          download: !anydict
           inspect:
             sources:
-              uniprot_species:
+              mvcgi:
                 status: "success"
-                step: "uniprot_species"
+                step: "mvcgi"
                 temp_collection: null
                 pid: !anyint
                 logfile: null
@@ -75,92 +76,66 @@ stages:
                 inspect:
                   results:
                     __metadata__:
-                      total_fields: !anyint
-                    mapping: !include includes/inspect/mapping.yml
-                  data_provider: "['src', 'uniprot_species']"
+                      total_fields: 15
+                    mapping: !include cgi_mapping.yml
+                  data_provider: "['src', 'mvcgi']"
                   duration: !anystr
                   started_at: !anystr
-          __metadata__: !anydict
       save:
-        json:
-          returned_mapping: result.inspect.sources.uniprot_species.inspect.results.mapping
+        body:
+          returned_mapping: result.inspect.sources.mvcgi.inspect.results.mapping
 
   - name: Edit mapping (as incorrect)
     request:
-      url: "{hub_api_host}/source/uniprot_species/mapping"
+      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi/mapping"
       method: PUT
       json:
         dest: inspect
-        mapping: !include includes/inspect/incorrect_mapping.yml
+        mapping: !include cgi_incorrect_mapping.yml
     response:
       status_code: 200
-      json:
+      body:
         status: "ok"
         result: null
 
-  - name: Validate incorrect mapping
+  - name: Validate mapping
     request:
-      url: "{hub_api_host}/mapping/validate"
+      url: "{tavern.env_vars.HUB_API_HOST}/mapping/validate"
       method: POST
       json:
-        mapping: !include includes/inspect/incorrect_mapping.yml
+        mapping: !include cgi_incorrect_mapping.yml
         env: localhub # ES locally installed within the hub
     response:
-      status_code: 200
-      json:
-        status: "ok"
-        result:
-          cmd: !anystr
-          started_at: !anyfloat
-          id: !anyint
-          is_done: false
-      save:
-        json:
-          returned_id: result.id
-    delay_after: !float "{sleep_short_time}"
-
-  - name: check command completion
-    request:
-      url: "{command_url}/{returned_id}"
-      method: GET
-    response:
-      status_code: 200
-      json:
-        status: "ok"
-        result:
-          cmd: !anystr
-          started_at: !anyfloat
-          id: !int "{returned_id}"
-          is_done: true
-          failed: true
-          results:
-            - !raw "RequestError(400, 'mapper_parsing_exception', 'No handler for type [invalid] declared on field [uniprot_name]')"
-          finished_at: !anyfloat
-          duration: !anystr
+      status_code: 500
+      body:
+        error: "RequestError(400, 'mapper_parsing_exception', 'normalizer [keyword_uppercase_normalizer] not found for field [protein_change]')"
+        status: error
+        code: 500
+    delay_after: 5
 
   - name: Commit mapping (save in master)
     request:
-      url: "{hub_api_host}/source/uniprot_species/mapping"
+      url: "{tavern.env_vars.HUB_API_HOST}/source/mvcgi/mapping"
       method: PUT
       json:
         dest: master
-        mapping: !include includes/inspect/mapping.yml
+        mapping: !include cgi_mapping.yml
     response:
       status_code: 200
-      json:
+      body:
         status: "ok"
         result: null
 
 # now we have a correct mapping in master (registered) and incorrect one in inspect
   - name: Diff mappings
     request:
-      url: "{hub_api_host}/jsondiff"
+      url: "{tavern.env_vars.HUB_API_HOST}/jsondiff"
       method: POST
       json:
-        src: !include includes/inspect/incorrect_mapping.yml
-        dst: !include includes/inspect/mapping.yml
+        src: !include cgi_incorrect_mapping.yml
+        dst: !include cgi_mapping.yml
     response:
       status_code: 200
-      json:
-        result: !include includes/inspect/diff_mapping.yml
+      body:
+        result: !include cgi_diff_mapping.yml
         status: ok
