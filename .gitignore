@@ -133,6 +133,7 @@ dmypy.json
 
 # ignore ssh key files
 apps/bin/ssh_host_key*
+tests/hubapi/demohub/biothing_studio/bin/ssh_host_key*
 
 .vscode/*
 .notes

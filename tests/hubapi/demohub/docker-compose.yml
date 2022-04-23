@@ -20,7 +20,7 @@ services:
       - ftp_server
     volumes:
       - type: bind
-        source: ./tests/hubapi/demohub
+        source: ./biothing_studio
         target: /home/biothings/biothings_studio
 
   elasticsearch_2:
@@ -35,7 +35,7 @@ services:
      - "9300:9200"
     volumes:
       - type: bind
-        source: ./files/docker-entrypoint-es-plugins.sh
+        source: ./docker-entrypoint-es-plugins.sh
         target: /usr/share/elasticsearch/docker-entrypoint-es-plugins.sh
     command: ["sh", "/usr/share/elasticsearch/docker-entrypoint-es-plugins.sh"]
 

@@ -56,17 +56,20 @@ repos.
 
 # update README: How to run integration tests
 
-Step 1: Install Docker, tavern-ci
+Step 1: Install Docker, tavern-ci, pytest
 
-Step 2: Run `copy .env.example .env.local`, edit `.env.local` file (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
+Step 2: Run `copy tests/hubapi/demohub/biothing_studio/config.py.example tests/hubapi/demohub/biothing_studio/config.py`, edit file `config.py` (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
-Step 3: Load environment vars: `source .env.local`
+Step 3: Run `copy tests/hubapi/demohub/testcases/config.yaml.example tests/hubapi/demohub/testcases/config.yaml`, edit file `config.yaml`
 
-Step 4: Run `make demohub`
+Step 4: Run `copy .env.example .env.local`, edit file `.env.local`  (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
-Step 5: Run `make start_demohub`, and waiting services fully boot up
+Step 5: Load environment vars: `source .env.local`
 
-Step 6: Create `tests/hubapi/mvcgi/config.yaml` and update the variables
+Step 6: Run `make demohub`
 
-Step 7: Run tests `tavern-ci tests/hubapi/mvcgi/`
+Step 7: Run `make start-demohub`, and waiting services fully boot up
 
+Step 8: Create `make test-demohub` for running test
+
+Step 9: Run `make stop-demohub`, and waiting services fully stop

@@ -1,0 +1,224 @@
+---
+test_name: Create an incremental snapshot
+
+stages:
+  - name: Trigger inspection for mapping generation
+    request:
+      url: "{hub_api_host}/inspect"
+      method: PUT
+      json:
+        data_provider: secondary_build
+        mode:
+         - mapping
+         - type
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !anystr
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_short_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "inspect(data_provider='secondary_build',mode=['mapping', 'type'])"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Verify generated mapping
+    request:
+      url: "{hub_api_host}/build/secondary_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          _id: secondary_build
+          inspect: !include includes/snapshot/incremental_snapshot_mapping.yaml
+
+  - name: create a diff
+    request:
+      url: "{hub_api_host}/diff"
+      method: PUT
+      json:
+        diff_type: jsondiff-selfcontained
+        old: main_build
+        new: secondary_build
+        mode: purge
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !raw "diff(diff_type='jsondiff-selfcontained',old='main_build',new='secondary_build',mode='purge')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "diff(diff_type='jsondiff-selfcontained',old='main_build',new='secondary_build',mode='purge')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results:
+            - add: !anyint
+              update: !anyint
+              delete: !anyint
+              mapping_changed: !anybool
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: create release note
+    request:
+      url: "{hub_api_host}/release_note/create"
+      method: PUT
+      json:
+        new: secondary_build
+        old: main_build
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !raw "create_release_note(old='main_build',new='secondary_build')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "create_release_note(old='main_build',new='secondary_build')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: inspect release note
+    request:
+      url: "{hub_api_host}/build/secondary_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:status_code: 200
+      json:
+        status: "ok"
+        result:
+          _id: secondary_build
+          release_note:
+            main_build:
+              created_at: !anystr
+              release_folder: !anystr
+              changes:
+                generated_on: !anystr
+                old:
+                  _version: !anystr
+                  _count: !anyint
+                new:
+                  _version: !anystr
+                  _count: !anyint
+                  _fields: !anydict
+                  _summary:
+                    add: !anyint
+                    update: !anyint
+                    delete: !anyint
+                    mapping_changed: !anybool
+                sources: !anydict
+                stats: !anydict
+
+  - name: Syncing
+    request:
+      url: "{hub_api_host}/sync"
+      method: POST
+      json:
+        backend_type: es
+        new_db_col_names: secondary_build
+        old_db_col_names: main_build
+        target_backend:
+          - "{es_primary_host}"
+          - main_build
+          - main_build_configuration
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !re_search "^sync"
+          cmd: !re_search "backend_type='es',old_db_col_names='main_build',new_db_col_names='secondary_build',target_backend="
+          cmd: !re_search "'main_build', 'main_build_configuration'"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !re_search "^sync"
+          cmd: !re_search "backend_type='es',old_db_col_names='main_build',new_db_col_names='secondary_build',target_backend="
+          cmd: !re_search "'main_build', 'main_build_configuration'"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          finished_at: !anyfloat
+          duration: !anystr
+          results:
+            - metadata_updated: true
+              post-sync: true

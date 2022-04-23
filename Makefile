@@ -70,20 +70,23 @@ studio4mygeneset:
     -t studio4mygeneset:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 demohub:
-	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+	source .env.local && docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_VERSION=master \
     --build-arg TEST=1 \
     --build-arg AWS_ACCESS_KEY=$(AWS_ACCESS_KEY) \
     --build-arg AWS_SECRET_KEY=$(AWS_SECRET_KEY) \
-    -t biothings-studio:$(GIT_BRANCH) .
+    -t demohub:$(GIT_BRANCH) .
 
-start_demohub:
-	docker-compose up -d
+start-demohub:
+	source .env.local && docker-compose --file tests/hubapi/demohub/docker-compose.yml  up -d
 
-stop_demohub:
-	docker-compose down
+stop-demohub:
+	source .env.local && docker-compose --file tests/hubapi/demohub/docker-compose.yml down
+
+test-demohub:
+	pytest --rootdir tests/hubapi/demohub/testcases tests/hubapi/demohub/testcases
 
 run:
 	docker run --rm --name studio -p 8080:8080 -p 7022:7022 -p 7080:7080 -p 9001:9000 -d biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##")
