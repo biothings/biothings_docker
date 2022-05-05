@@ -56,9 +56,28 @@ repos.
 
 # update README: How to run integration tests
 
+Step 0: Prepare your S3 bucket & IAM user:
+   - Create two S3 buckets, we will fill two bucket name the `config.py` at step 2 : <SNAPSHOT_BUCKET_NAME> with default private access and <PUBLISH_BUCKET_NAME> with public read access, example policy:
+   ```{
+    "Version": "2012-10-17",
+    "Id": "Policy1649048240823",
+    "Statement": [
+        {
+            "Sid": "Stmt1649048235557",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::<PUBLISH_BUCKET_NAME>/*"
+        }
+    ]
+    }```
+
+   - Create an IAM user with at least read/wrire permission on two above buckets, or AmazonS3FullAccess - not recommend
+   - Create new Access keys, we will use this info on the step 4.
+
 Step 1: Install Docker, tavern-ci, pytest
 
-Step 2: Run `copy tests/hubapi/demohub/biothing_studio/config.py.example tests/hubapi/demohub/biothing_studio/config.py`, edit file `config.py` (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
+Step 2: Run `copy tests/hubapi/demohub/biothing_studio/config.py.example tests/hubapi/demohub/biothing_studio/config.py`, edit file `config.py` (fill your: SNAPSHOT_BUCKET_NAME, PUBLISH_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 
 Step 3: Run `copy tests/hubapi/demohub/testcases/config.yaml.example tests/hubapi/demohub/testcases/config.yaml`, edit file `config.yaml`
 
