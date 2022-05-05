@@ -1,0 +1,139 @@
+---
+test_name: Publish a snapshot to Amazon S3
+
+stages:
+  - name: Get release manager
+    request:
+      url: "{hub_api_host}/release_manager"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          env:
+            s3_testhub:
+              cloud: !anydict
+              diff: !anydict
+              publish: !anydict
+              release: !anydict
+
+  - name: Publish a full snapshot
+    request:
+      url: "{hub_api_host}/publish/full"
+      method: POST
+      json:
+        build_name: main_build
+        previous_build: none
+        publisher_env: s3_testhub
+        snapshot: main_build
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "publish_snapshot(publisher_env='s3_testhub',snapshot='main_build',build_name='main_build',previous_build='none')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "publish_snapshot(publisher_env='s3_testhub',snapshot='main_build',build_name='main_build',previous_build='none')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Inspect result
+    request:
+      url: "{hub_api_host}/build/main_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        result:
+          _id: main_build
+          publish:
+            full:
+              created_at: !anystr
+              main_build:
+                pre: []
+                post: []
+                conf: !anydict
+                metadata: !anydict
+                release-note: !anydict
+
+  - name: Publish a incremental snapshot
+    request:
+      url: "{hub_api_host}/publish/incremental"
+      method: POST
+      json:
+        build_name: secondary_build
+        previous_build: main_build
+        publisher_env: s3_testhub
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "publish_diff(publisher_env='s3_testhub',build_name='secondary_build',previous_build='main_build')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "publish_diff(publisher_env='s3_testhub',build_name='secondary_build',previous_build='main_build')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: true
+          finished_at: !anyfloat
+          duration: !anystr
+          results:
+            - !re_match ".*prevent publishing to avoid infinite loop while resolving updates in auto-update hub$"
+
+  - name: Inspect result
+    request:
+      url: "{hub_api_host}/build/secondary_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        result:
+          _id: secondary_build
+          publish:
+            incremental:
+              created_at: !anystr
+              main_build:
+                pre: []
+                reset: null
+                upload: null
+                conf: !anydict
+                metadata: !anydict

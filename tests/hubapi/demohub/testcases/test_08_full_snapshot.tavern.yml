@@ -1,0 +1,235 @@
+---
+test_name: Create a full snapshot
+
+stages:
+  - name: Trigger inspection for mapping generation
+    request:
+      url: "{hub_api_host}/inspect"
+      method: PUT
+      json:
+        data_provider: main_build
+        mode:
+         - mapping
+         - type
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !anystr
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_short_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "inspect(data_provider='main_build',mode=['mapping', 'type'])"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Verify generated mapping
+    request:
+      url: "{hub_api_host}/build/main_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          _id: main_build
+          inspect: !include "includes/snapshot/full_snapshot_mapping.yaml"
+
+  - name: create index
+    request:
+      url: "{hub_api_host}/index"
+      method: PUT
+      json:
+        indexer_env: localhub
+        build_name: main_build
+        index_name: null
+        mode: purge
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !raw "index(indexer_env='localhub',build_name='main_build',index_name=None,mode='purge')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "index(indexer_env='localhub',build_name='main_build',index_name=None,mode='purge')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results:
+            - host: !anystr
+              environment: localhub
+              count: !anyint
+              created_at: !anystr
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: create release note
+    request:
+      url: "{hub_api_host}/release_note/create"
+      method: PUT
+      json:
+        old: none
+        new: main_build
+        note: some note
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !raw "create_release_note(old='none',new='main_build',note='some note')"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "create_release_note(old='none',new='main_build',note='some note')"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: inspect release note
+    request:
+      url: "{hub_api_host}/build/main_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:status_code: 200
+      json:
+        status: "ok"
+        result:
+          _id: main_build
+          release_note:
+            none:
+              created_at: !anystr
+              release_folder: !anystr
+              changes:
+                generated_on: !anystr
+                note: some note
+                old:
+                  _version: null
+                  _count: 0
+                new:
+                  _version: !anystr
+                  _count: !anyint
+                  _summary: !anydict
+                  _fields: !anydict
+                sources: !anydict
+                stats: !anydict
+
+  - name: get snapshot manager
+    request:
+      url: "{hub_api_host}/snapshot_manager"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          env:
+            s3_testhub:
+              cloud: !anydict
+              repository: !anydict
+              indexer:
+                args: !anydict
+                name: localhub
+
+  - name: create a full snapshot
+    request:
+      url: "{hub_api_host}/snapshot"
+      method: PUT
+      json:
+        snapshot_env: s3_testhub
+        index: main_build
+        snapshot: null
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          cmd: !raw "snapshot(snapshot_env='s3_testhub',index='main_build',snapshot=None)"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_very_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "snapshot(snapshot_env='s3_testhub',index='main_build',snapshot=None)"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          finished_at: !anyfloat
+          duration: !anystr
+          results:
+            - conf: !anydict
+              indexer_env: localhub
+              environment: s3_testhub
+              index_name: main_build
+              replaced: !anybool
+              created_at: !anystr

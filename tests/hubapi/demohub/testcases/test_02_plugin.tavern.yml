@@ -1,0 +1,72 @@
+---
+test_name: Register data plugin
+
+stages:
+  - name: delete unregistered plugin
+    request:
+      url: "{hub_api_host}/dataplugin/unregister_url"
+      method: DELETE
+      json:
+        url: "{plugin_url}"
+    response:
+      status_code: 500
+      json:
+        status: "error"
+        code: 500
+        error: !re_match "^Plugin is not registered"
+    delay_after: !float "{sleep_long_time}"
+
+  - name: register plugin
+    request:
+      url: "{hub_api_host}/dataplugin/register_url"
+      method: POST
+      json:
+        url: "{plugin_url}"
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !re_match "^register_url"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+    delay_after: !float "{sleep_long_time}"
+
+  - name: register already registered plugin
+    request:
+      url: "{hub_api_host}/dataplugin/register_url"
+      method: POST
+      json:
+        url: "{plugin_url}"
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check datasource is now active
+    request:
+      url: "{hub_api_host}/sources"
+      method: GET
+    response:
+      status_code: 200
+      verify_response_with:
+        function: tests.hubapi.demohub.testcases.utils:validate_plugin_datasource_response
+        extra_kwargs:
+          plugin_id: "{plugin_id}"
+          plugin_url: "{plugin_url}"
+
+  - name: detele previous registered plugin
+    request:
+      url: "{hub_api_host}/dataplugin/unregister_url"
+      method: DELETE
+      json:
+        url: "{plugin_url}"
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+    delay_after: !float "{sleep_long_time}"

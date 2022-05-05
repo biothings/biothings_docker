@@ -1,0 +1,203 @@
+---
+test_name: Manipulate build.
+
+stages:
+  - name: Create a new build
+    request:
+      url: "{hub_api_host}/build/main_build_configuration/new"
+      method: PUT
+      json:
+        target_name: main_build
+        force: false
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='main_build',force=False)"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='main_build',force=False)"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Create secondary build
+    request:
+      url: "{hub_api_host}/build/main_build_configuration/new"
+      method: PUT
+      json:
+        target_name: secondary_build
+        force: false
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='secondary_build',force=False)"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='secondary_build',force=False)"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Create third build
+    request:
+      url: "{hub_api_host}/build/main_build_configuration/new"
+      method: PUT
+      json:
+        target_name: third_build
+        force: false
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='third_build',force=False)"
+          started_at: !anyfloat
+          id: !anyint
+          is_done: false
+      save:
+        json:
+          returned_id: result.id
+    delay_after: !float "{sleep_long_time}"
+
+  - name: check command completion
+    request:
+      url: "{command_url}/{returned_id}"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result:
+          cmd: !raw "merge(build_name='main_build_configuration',target_name='third_build',force=False)"
+          started_at: !anyfloat
+          id: !int "{returned_id}"
+          is_done: true
+          failed: false
+          results: [null]
+          finished_at: !anyfloat
+          duration: !anystr
+
+  - name: Archive a build
+    request:
+      url: "{hub_api_host}/build/third_build/archive"
+      method: POST
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result: null
+
+  - name: List all available builds
+    request:
+      url: "{hub_api_host}/builds"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          - _id: secondary_build
+            target_backend: !anystr
+            target_name: !anystr
+            backend_url: !anystr
+            build_config: !anydict
+            target_backend: !anystr
+            started_at: !anystr
+            jobs:
+              - !anydict
+            merge_stats: !anydict
+            _meta: !anydict
+            status: success
+            count: !anyint
+          - _id: main_build
+            target_backend: !anystr
+            target_name: !anystr
+            backend_url: !anystr
+            build_config: !anydict
+            target_backend: !anystr
+            started_at: !anystr
+            jobs:
+              - !anydict
+            merge_stats: !anydict
+            _meta: !anydict
+            status: success
+            count: !anyint
+
+  - name: Retrieve detail of created build
+    request:
+      url: "{hub_api_host}/build/main_build"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: ok
+        result:
+          _id: main_build
+          target_name: main_build
+          target_backend: !anystr
+          backend_url: !anystr
+          build_config: !anydict
+          sources:
+            - !anystr
+          started_at: !anystr
+          jobs:
+            - !anydict
+          merge_stats:
+            uniprot_species: !anyint
+          mapping: !anydict
+          _meta: !anydict
+          status: success
+          count: !anyint
+
+  - name: Delete an archived build
+    request:
+      url: "{hub_api_host}/build/third_build"
+      method: DELETE
+    response:
+      status_code: 200
+      json:
+        status: "ok"
+        result: null
+

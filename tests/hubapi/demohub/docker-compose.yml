@@ -1,0 +1,55 @@
+version: "3.3"
+
+services:
+  biothings-demohub:
+    container_name: biothings-demohub
+    image: biothings-studio:${GIT_BRANCH}
+    hostname: localhost
+    restart: always
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+      - "7022:7022"
+      - "7080:7080"
+      - "9200:9200"
+      - "9000:9000"
+      - "27017:27017"
+
+    depends_on:
+      - elasticsearch_2
+      - ftp_server
+    volumes:
+      - type: bind
+        source: ./biothing_studio
+        target: /home/biothings/biothings_studio
+
+  elasticsearch_2:
+    container_name: elasticsearch_2
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+    image: elasticsearch:7.16.3
+    ports:
+     - "9300:9200"
+    volumes:
+      - type: bind
+        source: ./docker-entrypoint-es-plugins.sh
+        target: /usr/share/elasticsearch/docker-entrypoint-es-plugins.sh
+    command: ["sh", "/usr/share/elasticsearch/docker-entrypoint-es-plugins.sh"]
+
+  ftp_server:
+    container_name: ftp_server
+    hostname: ftp_server
+    environment:
+      FTP_USER: "test"
+      FTP_PASS: "test"
+      LOG_STDOUT: "yes"
+    image: fauria/vsftpd
+    ports:
+     - "21:21"
+    volumes:
+      - type: bind
+        source: ./fixtures
+        target: /home/vsftpd/test
