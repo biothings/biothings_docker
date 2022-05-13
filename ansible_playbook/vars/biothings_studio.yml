@@ -17,7 +17,7 @@ software:
       elasticsearch_yml:
         - "node.data: true"
         - "node.master: true"
-    studio_repository: "https://github.com/biothings/{{ app_name }}.git" 
+    biothings_repository: "{{ biothings_repository | default('https://github.com/biothings/biothings.api.git') }}"
     studio_git_version: "{{ studio_version | default('master')}}"
     biothings_git_version: "{{ biothings_version | default('master')}}"
   common_configurations:

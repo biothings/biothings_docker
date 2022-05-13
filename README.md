@@ -81,7 +81,10 @@ Step 2: Run `copy tests/hubapi/demohub/biothing_studio/config.py.example tests/h
 
 Step 3: Run `copy tests/hubapi/demohub/testcases/config.yaml.example tests/hubapi/demohub/testcases/config.yaml`, edit file `config.yaml`
 
-Step 4: Run `copy .env.example .env.local`, edit file `.env.local`  (fill: AWS_ACCESS_KEY, AWS_SECRET_KEY)
+Step 4: Run `copy .env.example .env.local`, edit file `.env.local`
+
+  - Fill: AWS_ACCESS_KEY, AWS_SECRET_KEY if you want to test S3 snapshot
+  - Fill: BIOTHINGS_REPOSITORY, BIOTHINGS_VERSION if you want to build a specific Biothing SDK repo/git branch
 
 Step 5: Load environment vars: `source .env.local`
 

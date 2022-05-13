@@ -100,7 +100,7 @@
   file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
 
 - name: biothings (override requirement_web.txt version)
-  git: repo=https://github.com/biothings/biothings.api.git dest=/home/biothings/biothings.api version={{ software.web_node.biothings_git_version }}
+  git: repo={{ biothings_repository }} dest=/home/biothings/biothings.api version={{ software.web_node.biothings_git_version }}
   become_user: "biothings"
   become: true
 

@@ -6,8 +6,8 @@
 
 STUDIO_VERSION ?= master
 BIOTHINGS_VERSION ?= master
+BIOTHINGS_REPOSITORY ?= https://github.com/biothings/biothings.api.git
 DOCKER_BUILD_EXTRA_OPTS ?= --force-rm
-GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 biothings-studio:
 	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
@@ -70,20 +70,21 @@ studio4mygeneset:
     -t studio4mygeneset:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 demohub:
-	source .env.local && docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
+    --build-arg BIOTHINGS_REPOSITORY=$(BIOTHINGS_REPOSITORY) \
     --build-arg API_VERSION=master \
     --build-arg TEST=1 \
     --build-arg AWS_ACCESS_KEY=$(AWS_ACCESS_KEY) \
     --build-arg AWS_SECRET_KEY=$(AWS_SECRET_KEY) \
-    -t demohub:$(GIT_BRANCH) .
+    -t demohub:$(BIOTHINGS_VERSION) .
 
 start-demohub:
-	source .env.local && docker-compose --file tests/hubapi/demohub/docker-compose.yml  up -d
+	docker-compose --file tests/hubapi/demohub/docker-compose.yml  up -d
 
 stop-demohub:
-	source .env.local && docker-compose --file tests/hubapi/demohub/docker-compose.yml down
+	docker-compose --file tests/hubapi/demohub/docker-compose.yml down
 
 test-demohub:
 	pytest --rootdir tests/hubapi/demohub/testcases tests/hubapi/demohub/testcases

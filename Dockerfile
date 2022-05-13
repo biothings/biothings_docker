@@ -28,6 +28,7 @@ LABEL maintainer "help@biothings.io"
 
 ARG PROD
 ARG TEST
+ARG BIOTHINGS_REPOSITORY
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
 ARG API_NAME
@@ -209,6 +210,7 @@ RUN if [ -n "$API_NAME" ]; \
     else \
         ansible-playbook biothings_studio.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
+            -e "biothings_repository=$BIOTHINGS_REPOSITORY" \
             -e "studio_version=$STUDIO_VERSION" \
             -c local; \
 fi
