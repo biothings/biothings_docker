@@ -3,7 +3,7 @@ version: "3.3"
 services:
   biothings-demohub:
     container_name: biothings-demohub
-    image: biothings-studio:${GIT_BRANCH}
+    image: demohub:${BIOTHINGS_VERSION}
     hostname: localhost
     restart: always
     ports:
@@ -22,6 +22,13 @@ services:
       - type: bind
         source: ./biothing_studio
         target: /home/biothings/biothings_studio
+        # enable those lines if you want to pesist data
+#      - type: bind
+#        source: /path/to/your/dir/data/studio
+#        target: /data
+#      - type: bind
+#        source: /path/to/your/dir/data/elasticsearch-9200
+#        target: /usr/share/elasticsearch/data
 
   elasticsearch_2:
     container_name: elasticsearch_2
@@ -37,6 +44,10 @@ services:
       - type: bind
         source: ./docker-entrypoint-es-plugins.sh
         target: /usr/share/elasticsearch/docker-entrypoint-es-plugins.sh
+        # enable those lines if you want to pesist data
+#      - type: bind
+#        source: /path/to/your/dir/data/elasticsearch-9300
+#        target: /usr/share/elasticsearch/data
     command: ["sh", "/usr/share/elasticsearch/docker-entrypoint-es-plugins.sh"]
 
   ftp_server:
