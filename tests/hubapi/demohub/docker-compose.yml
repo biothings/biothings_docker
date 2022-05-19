@@ -29,7 +29,7 @@ services:
 #      - type: bind
 #        source: /path/to/your/dir/data/elasticsearch-9200
 #        target: /usr/share/elasticsearch/data
-
+    command: ["sh", "/docker-entrypoint.sh", "no-update"]
   elasticsearch_2:
     container_name: elasticsearch_2
     environment:
