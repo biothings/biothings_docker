@@ -28,6 +28,7 @@ LABEL maintainer "help@biothings.io"
 
 ARG PROD
 ARG TEST
+ARG PYTHON_VERSION
 ARG BIOTHINGS_REPOSITORY
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
@@ -91,6 +92,11 @@ RUN apt-get -qq -y update && \
         tzdata \
         python3 \
         net-tools \
+        build-essential \
+        libssl-dev \
+        libffi-dev \
+        libsqlite3-dev \
+        liblzma-dev \
         # jdk is no longer needed since Elasticsearch v7, now has
         # since it has a bundled openjdk included.
         # openjdk-8-jre-headless \
@@ -112,7 +118,7 @@ RUN apt-get -qq -y update && \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
-        python3-pip \
+		python3-pip \
 		# Virtualenv
 		python3-virtualenv && \
     # install JDK only when ES < v7
@@ -160,7 +166,18 @@ RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
 USER biothings
 COPY --from=build-wheels --chown=biothings:biothings /build/wheels /home/biothings/wheels
-RUN virtualenv -p python3 /home/biothings/pyenv
+
+RUN if [ -n "$PYTHON_VERSION" ]; then git clone https://github.com/yyuu/pyenv.git ~/.pyenv; fi
+RUN if [ -n "$PYTHON_VERSION" ]; then $HOME/.pyenv/bin/pyenv install $PYTHON_VERSION; fi
+RUN if [ -n "$PYTHON_VERSION" ]; \
+    then \
+      	virtualenv -p $HOME/.pyenv/versions/$PYTHON_VERSION/bin/python /home/biothings/pyenv && \
+    	wget https://bootstrap.pypa.io/get-pip.py && \
+    	/home/biothings/pyenv/bin/python get-pip.py && \
+    	/home/biothings/pyenv/bin/pip install -U setuptools; \
+    else \
+      	virtualenv -p python3 /home/biothings/pyenv; \
+    fi
 # Check for potentially empty list of wheels
 RUN for whl_file in /home/biothings/wheels/*.whl; \
 	do \

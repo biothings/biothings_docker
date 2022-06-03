@@ -8,6 +8,7 @@ STUDIO_VERSION ?= master
 BIOTHINGS_VERSION ?= master
 BIOTHINGS_REPOSITORY ?= https://github.com/biothings/biothings.api.git
 DOCKER_BUILD_EXTRA_OPTS ?= --force-rm
+PYTHON_VERSION ?=
 
 biothings-studio:
 	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
@@ -25,7 +26,7 @@ studio4mygene:
     -t studio4mygene:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4myvariant:
-	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+	DOCKER_BUILDKIT=0 docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_NAME=myvariant.info \
@@ -80,8 +81,20 @@ demohub:
     --build-arg AWS_SECRET_KEY=$(AWS_SECRET_KEY) \
     -t demohub:$(BIOTHINGS_VERSION) .
 
+demohub-test:
+	DOCKER_BUILDKIT=0 docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+    --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
+    --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
+    --build-arg BIOTHINGS_REPOSITORY=$(BIOTHINGS_REPOSITORY) \
+    --build-arg API_VERSION=master \
+    --build-arg TEST=1 \
+    --build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+    --build-arg AWS_ACCESS_KEY=$(AWS_ACCESS_KEY) \
+    --build-arg AWS_SECRET_KEY=$(AWS_SECRET_KEY) \
+    -t demohub:$(BIOTHINGS_VERSION)$(PYTHON_VERSION) .
+
 start-demohub:
-	docker-compose --file tests/hubapi/demohub/docker-compose.yml  up -d
+	docker-compose --file tests/hubapi/demohub/docker-compose.yml  up
 
 stop-demohub:
 	docker-compose --file tests/hubapi/demohub/docker-compose.yml down
