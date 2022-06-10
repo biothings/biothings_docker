@@ -86,6 +86,7 @@ Step 4: Run `copy .env.example .env.local`, edit file `.env.local`
   - Fill: AWS_ACCESS_KEY, AWS_SECRET_KEY if you want to test S3 snapshot
   - Fill: BIOTHINGS_REPOSITORY, BIOTHINGS_VERSION if you want to build a specific Biothing SDK repo/git branch
   - When you want to use a custom python version, use PYTHON_VERSION params, and run `make demohub-test` on step 6.
+  - Supported PYTHON_VERSION from 3.6.2 to 3.10.x
 
 Step 5: Load environment vars: `source .env.local`
 
@@ -95,6 +96,6 @@ Step 6: Run make command to build image
 
 Step 7: Run `make start-demohub`, and waiting services fully boot up
 
-Step 8: Create `make test-demohub` for running test
+Step 8: Create `make run-test-demohub` for running test
 
 Step 9: Run `make stop-demohub`, and waiting services fully stop

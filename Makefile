@@ -26,7 +26,7 @@ studio4mygene:
     -t studio4mygene:$$(git branch | grep ^\* | sed "s#\* ##") .
 
 studio4myvariant:
-	DOCKER_BUILDKIT=0 docker build $(DOCKER_BUILD_EXTRA_OPTS) \
+	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg API_NAME=myvariant.info \
@@ -99,7 +99,7 @@ start-demohub:
 stop-demohub:
 	docker-compose --file tests/hubapi/demohub/docker-compose.yml down
 
-test-demohub:
+run-test-demohub:
 	pytest --rootdir tests/hubapi/demohub/testcases tests/hubapi/demohub/testcases
 
 run:

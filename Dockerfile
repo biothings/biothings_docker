@@ -23,12 +23,12 @@ RUN if [ "$API_NAME" = "myvariant.info" ]; \
 	fi;
 
 # Build Final Image
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer "help@biothings.io"
 
 ARG PROD
 ARG TEST
-ARG PYTHON_VERSION
+
 ARG BIOTHINGS_REPOSITORY
 ARG BIOTHINGS_VERSION
 ARG STUDIO_VERSION
@@ -41,8 +41,8 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ELASTICSEARCH_VERSION=7.16.*         # use to specify a specific Elasticsearch version to install
-ARG ELASTICSEARCH_VERSION_REPO=7.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
+ARG ELASTICSEARCH_VERSION=8.2.*         # use to specify a specific Elasticsearch version to install
+ARG ELASTICSEARCH_VERSION_REPO=8.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
 ARG MONGODB_VERSION=5.0.*                # use to specify a specific MongoDB version to install
 ARG MONGODB_VERSION_REPO=5.0             # use to specify a specific MongoDB version repo to load
 # In the future, we can get the latest release ver. from GitHub APIs
@@ -57,11 +57,14 @@ RUN apt-get -qq -y update && \
     ca-certificates \
     lsb-release && \
     release=`lsb_release -sc` && \
+    # Add repo for libssl1.1 - required by Mongodb 5.x but Ubuntu 22.04 already install libssl3 \
+    echo "deb http://security.ubuntu.com/ubuntu impish-security main" | tee /etc/apt/sources.list.d/impish-security.list && \
     # Add repo for MongoDB
     curl -L "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     # echo "deb http://repo.mongodb.org/apt/ubuntu /mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${release}/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
+    # we temporarily hard code the release=focal util Mongodb 5.x officially supported on Ubuntu 22.04
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
     # Elasticsearch
     curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
@@ -94,6 +97,8 @@ RUN apt-get -qq -y update && \
         net-tools \
         build-essential \
         libssl-dev \
+    	# must use libssl1.1 when install mongodb on Ubuntu 22.04 \
+        libssl1.1 \
         libffi-dev \
         libsqlite3-dev \
         liblzma-dev \
@@ -161,6 +166,7 @@ RUN curl -LO \
 RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3; fi
 RUN if [ -n "$TEST" ]; then echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key; fi
 RUN if [ -n "$TEST" ]; then echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key; fi
+ARG PYTHON_VERSION
 
 RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
@@ -168,13 +174,24 @@ USER biothings
 COPY --from=build-wheels --chown=biothings:biothings /build/wheels /home/biothings/wheels
 
 RUN if [ -n "$PYTHON_VERSION" ]; then git clone https://github.com/yyuu/pyenv.git ~/.pyenv; fi
-RUN if [ -n "$PYTHON_VERSION" ]; then $HOME/.pyenv/bin/pyenv install $PYTHON_VERSION; fi
+
+# Fix builf failed on Python3.6.x https://github.com/pyenv/pyenv/issues/1889#issuecomment-837697366
+COPY alignment.patch /home/biothings/
+
 RUN if [ -n "$PYTHON_VERSION" ]; \
     then \
-      	virtualenv -p $HOME/.pyenv/versions/$PYTHON_VERSION/bin/python /home/biothings/pyenv && \
-    	wget https://bootstrap.pypa.io/get-pip.py && \
-    	/home/biothings/pyenv/bin/python get-pip.py && \
-    	/home/biothings/pyenv/bin/pip install -U setuptools; \
+    	if echo $PYTHON_VERSION | grep -q "3.6.";  \
+    	    then  \
+    			$HOME/.pyenv/bin/pyenv install --patch $PYTHON_VERSION < alignment.patch \
+    			&& virtualenv -p $HOME/.pyenv/versions/$PYTHON_VERSION/bin/python /home/biothings/pyenv \
+    			&& wget https://bootstrap.pypa.io/pip/3.6/get-pip.py;  \
+    		else \
+    			$HOME/.pyenv/bin/pyenv install $PYTHON_VERSION \
+    			&& virtualenv -p $HOME/.pyenv/versions/$PYTHON_VERSION/bin/python /home/biothings/pyenv \
+    			&& wget https://bootstrap.pypa.io/get-pip.py; \
+    	fi \
+    	&& /home/biothings/pyenv/bin/python get-pip.py \
+    	&& /home/biothings/pyenv/bin/pip install --upgrade --force-reinstall setuptools; \
     else \
       	virtualenv -p python3 /home/biothings/pyenv; \
     fi
@@ -193,7 +210,7 @@ COPY --chown=biothings:biothings files/.inputrc	/home/biothings/.inputrc
 COPY --chown=biothings:biothings files/.git_aliases	/home/biothings/.git_aliases
 RUN bash -c "echo -e '\nalias psg=\"ps aux|grep\"\nsource ~/.git_aliases\n' >> ~/.bashrc"
 USER root
-RUN rm -rf /home/biothings/wheels
+RUN rm -rf /home/biothings/wheels && rm -rf /home/biothings/alignment.patch
 
 # vscode code-server for remote code editing
 # Commented out on May 12, 2021 -- not frequently used as VSC remote works better

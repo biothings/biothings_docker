@@ -36,10 +36,11 @@ services:
     container_name: elasticsearch_2
     environment:
       - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-    image: elasticsearch:7.16.3
+    image: elasticsearch:8.2.2
     ports:
      - "9300:9200"
     volumes:
@@ -58,9 +59,12 @@ services:
       FTP_USER: "test"
       FTP_PASS: "test"
       LOG_STDOUT: "yes"
+      PASV_MIN_PORT: "21100"
+      PASV_MAX_PORT: "21110"
     image: fauria/vsftpd
     ports:
      - "21:21"
+     - "21100-21110:21100-21110"
     volumes:
       - type: bind
         source: ./fixtures
