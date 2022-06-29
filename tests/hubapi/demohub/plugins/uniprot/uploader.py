@@ -5,7 +5,7 @@ from .parser import parse_uniprot_speclist
 
 class UniprotSpeciesUploader(uploader.BaseSourceUploader):
 
-    name = "uniprot_species"
+    name = "uniprot"
 
     __metadata__ = {"mapper" : 'has_gene'}
 

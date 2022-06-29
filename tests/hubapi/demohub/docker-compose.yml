@@ -22,10 +22,10 @@ services:
       - type: bind
         source: ./biothing_studio
         target: /home/biothings/biothings_studio
-        # enable those lines if you want to pesist data
-#      - type: bind
-#        source: /path/to/your/dir/data/studio
-#        target: /data
+      - type: bind
+        source: ./plugins
+        target: /data/biothings_studio/plugins
+      # enable those lines if you want to pesist data
 #      - type: bind
 #        source: /path/to/your/dir/data/elasticsearch-9200
 #        target: /usr/share/elasticsearch/data
