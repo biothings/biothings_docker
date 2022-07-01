@@ -14,9 +14,7 @@ software:
         head: "mobz/elasticsearch-head"
         bigdesk: "lukas-vlcek/bigdesk"
       heap_size: "2g"
-      elasticsearch_yml:
-        - "node.data: true"
-        - "node.master: true"
+      node_roles: ['data', 'master']
     biothings_repository: "{{ biothings_repository | default('https://github.com/biothings/biothings.api.git') }}"
     studio_git_version: "{{ studio_version | default('master')}}"
     biothings_git_version: "{{ biothings_version | default('master')}}"

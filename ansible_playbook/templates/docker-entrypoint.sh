@@ -34,7 +34,7 @@ done
 # oplog enabled (not used anymore)
 #mongo < /tmp/rsconfig.js
 
-service elasticsearch start
+sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
 service nginx start
 
 # don't start hub until ES is ready
