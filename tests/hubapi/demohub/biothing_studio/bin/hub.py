@@ -9,6 +9,7 @@ from biothings.hub import HubServer
 from biothings.utils.version import set_versions
 import hub.dataload.sources
 from hub.databuild.mapper import HasGeneMapper
+from hub.databuild.builder import TaxonomyDataBuilder
 
 # shut some mouths
 logging.getLogger("botocore").setLevel(logging.ERROR)
@@ -23,9 +24,15 @@ biothings.config_for_app(config)
 logging = config.logger
 
 hasgene = HasGeneMapper(name="has_gene")
+pbuilder = partial(TaxonomyDataBuilder,mappers=[hasgene])
 server = HubServer(
     hub.dataload.sources,
     name="BioThings Studio",
+    managers_custom_args={
+        "build": {
+            "builder_class": pbuilder
+        }
+    }
 )
 
 # import ptvsd

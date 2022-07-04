@@ -9,7 +9,7 @@ from biothings.hub.dataload.dumper import FTPDumper
 
 class UniprotSpeciesDumper(FTPDumper):
 
-    SRC_NAME = "uniprot"
+    SRC_NAME = "uniprot_species"
     SRC_ROOT_FOLDER = os.path.join(DATA_ARCHIVE_ROOT, SRC_NAME)
     FTP_HOST = 'ftp_server'
     CWD_DIR = ''

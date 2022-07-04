@@ -83,3 +83,34 @@ def parse_refseq_nodes(data_folder):
         d['parent_taxid'] = int(split_line[2])
         d['rank'] = split_line[4]
         yield d
+
+
+def custom_nodes_mapping(klass):
+    return {
+        "rank": {
+            "type": "text"
+            },
+        "taxid": {
+            "copy_to" : ["all"],
+            "type": "long"
+            },
+        "parent_taxid": {
+            "type": "long"
+            },
+        }
+
+
+def custon_names_mapping(klass):
+    return {
+        "scientific_name": {
+            "copy_to" : ["all"],
+            "type": "text"
+            },
+        "common_name": {
+            "copy_to" : ["all"],
+            "type": "text"
+            },
+        "genbank_common_name": {
+            "type": "text"
+            }
+        }
