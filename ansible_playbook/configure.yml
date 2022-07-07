@@ -177,3 +177,9 @@
     - {"line": "", "re": "^cluster.initial_master_nodes.*$"}
     - {"line": "xpack.security.enabled: false", "re": "^xpack.security.enabled.*$"}
 
+- name: update /etc/elasticsearch/jvm.options again replacing min/max heap size
+  replace: dest=/etc/elasticsearch/jvm.options replace="{{ item.line }}" regexp="{{ item.re }}"
+  become: yes
+  with_items:
+    - {"line": "-Xms1g", "re": "^## -Xms4g$"}
+    - {"line": "-Xmx1g", "re": "^## -Xmx4g$"}

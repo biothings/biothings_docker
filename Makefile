@@ -13,6 +13,7 @@ PYTHON_VERSION ?=
 biothings-studio:
 	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
+    --build-arg BIOTHINGS_REPOSITORY=$(BIOTHINGS_REPOSITORY) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg PROD=1 \
     -t biothings-studio:$$(git branch | grep ^\* | sed "s#\* ##") .
