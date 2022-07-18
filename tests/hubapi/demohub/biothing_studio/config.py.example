@@ -109,12 +109,12 @@ STANDALONE_CONFIG = {
     # the first ES server, which create snapshot
     "_default": {
         "es_host": <FIRST_ELASTIC_SERVER_HOST>,
-        "index": "main_build_configuration",
+        "index": "main_build",
     },
     # the Production ES server, or a 2nd ES server in dev setup
     "production": {
         "es_host": <SECOND_ELASTIC_SERVER_HOST>,
-        "index": "main_build_configuration",
+        "index": "main_build",
     }
 }
 
@@ -130,4 +130,9 @@ VERSION_URLS = [
 APP_VERSION = {
     'branch': <replace your branch>,
     'commit': <replace your commit hash>,
+}
+# This config should change to match your testing environment
+BIOTHINGS_VERSION = {
+    'branch': 'branch',
+    'commit': 'commit',
 }

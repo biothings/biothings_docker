@@ -87,7 +87,7 @@ stages:
           duration: !anystr
           results:
             - host: "{es_secondary_host}"
-              index: main_build_configuration
+              index: main_build
               version: null
               count: null
 

@@ -3,12 +3,13 @@ version: "3.3"
 services:
   biothings-demohub:
     container_name: biothings-demohub
-    image: demohub:${BIOTHINGS_VERSION}
+    image: demohub:${BIOTHINGS_VERSION}${PYTHON_VERSION}
     hostname: localhost
     restart: always
     ports:
       - "8000:8000"
       - "8080:8080"
+#      - "8081-8099:8081-8099"
       - "7022:7022"
       - "7080:7080"
       - "9200:9200"
@@ -27,13 +28,19 @@ services:
         target: /data/biothings_studio/plugins
       # enable those lines if you want to pesist data
 #      - type: bind
+#        source: /path/to/your/dir/data/studio
+#        target: /data
+#      - type: bind
 #        source: /path/to/your/dir/data/elasticsearch-9200
 #        target: /usr/share/elasticsearch/data
-    command: ["sh", "/docker-entrypoint.sh", "no-update"]
+#    command: no-update  # this line should be used in MacOS when `no-update` is the param on docker run entrypoint command
+    command: /bin/bash /docker-entrypoint.sh no-update
+
   elasticsearch_2:
     container_name: elasticsearch_2
     environment:
       - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "xpack.security.enabled=false"
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
@@ -45,7 +52,6 @@ services:
       - type: bind
         source: ./docker-entrypoint-es-plugins.sh
         target: /usr/share/elasticsearch/docker-entrypoint-es-plugins.sh
-        # enable those lines if you want to pesist data
 #      - type: bind
 #        source: /path/to/your/dir/data/elasticsearch-9300
 #        target: /usr/share/elasticsearch/data
@@ -58,9 +64,12 @@ services:
       FTP_USER: "test"
       FTP_PASS: "test"
       LOG_STDOUT: "yes"
+      PASV_MIN_PORT: "21100"
+      PASV_MAX_PORT: "21110"
     image: fauria/vsftpd
     ports:
      - "21:21"
+     - "21100-21110:21100-21110"
     volumes:
       - type: bind
         source: ./fixtures
