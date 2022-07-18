@@ -1,0 +1,21 @@
+{
+    "version": "0.2",
+    "dumper" : {
+        "data_url" : ["ftp://test:test@ftp_server/taxdump.tar.gz"],
+        "uncompress" : true,
+        "schedule" : "0 12 * * *"
+    },
+    "uploaders" : [{
+        "name" : "names",
+        "parser" : "parser:parse_refseq_names",
+        "mapping" : "parser:custon_names_mapping",
+        "ignore_duplicates" : false
+    },
+    {
+        "name" : "nodes",
+        "parser" : "parser:parse_refseq_nodes",
+        "mapping" : "parser:custom_nodes_mapping",
+        "ignore_duplicates" : false
+    }
+    ]
+}

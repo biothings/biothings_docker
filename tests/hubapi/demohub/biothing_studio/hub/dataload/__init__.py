@@ -7,6 +7,4 @@
 
 __sources__ = [
     "dataload.sources.geneinfo",
-    "dataload.sources.taxonomy",
-    "dataload.sources.uniprot",
 ]

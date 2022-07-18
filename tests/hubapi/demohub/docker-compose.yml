@@ -23,6 +23,10 @@ services:
       - type: bind
         source: ./biothing_studio
         target: /home/biothings/biothings_studio
+      - type: bind
+        source: ./plugins
+        target: /data/biothings_studio/plugins
+      # enable those lines if you want to pesist data
 #      - type: bind
 #        source: /path/to/your/dir/data/studio
 #        target: /data
@@ -38,9 +42,10 @@ services:
       - "discovery.type=single-node"
       - "xpack.security.enabled=false"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=false"
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-    image: elasticsearch:8.2.2
+    image: elasticsearch:8.2.3
     ports:
      - "9300:9200"
     volumes:

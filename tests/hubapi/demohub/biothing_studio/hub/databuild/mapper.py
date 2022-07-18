@@ -2,7 +2,6 @@ import biothings.utils.mongo as mongo
 from biothings.hub.databuild.mapper import BaseMapper
 
 from hub.dataload.sources.geneinfo.uploader import GeneInfoUploader
-from hub.dataload.sources.taxonomy.uploader import TaxonomyNodesUploader
 
 
 class HasGeneMapper(BaseMapper):
@@ -25,6 +24,7 @@ class HasGeneMapper(BaseMapper):
                 doc["has_gene"] = False
             yield doc
 
+
 class LineageMapper(BaseMapper):
 
     def __init__(self, *args, **kwargs):
@@ -33,7 +33,9 @@ class LineageMapper(BaseMapper):
 
     def load(self):
         if self.cache is None:
-            col = mongo.get_src_db()[TaxonomyNodesUploader.name]
+            # This must be the name of TaxonomyNodesUploader that defined on the taxomony plugin manifest file.
+            # biothings_docker/tests/hubapi/demohub/plugins/taxonomy/manifest.json:9
+            col = mongo.get_src_db()['nodes']
             self.cache = {}
             [self.cache.setdefault(d["_id"],d["parent_taxid"]) for d in col.find({},{"parent_taxid":1})]
 
