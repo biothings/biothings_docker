@@ -231,6 +231,7 @@ ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
 COPY --from=build-webapp --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
+ARG ES_HEAP_SIZE
 
 WORKDIR /tmp/ansible_playbook
 RUN if [ -n "$API_NAME" ]; \
@@ -240,12 +241,14 @@ RUN if [ -n "$API_NAME" ]; \
             -e "studio_version=$STUDIO_VERSION" \
             -e "api_name=$API_NAME" \
             -e "api_version=$API_VERSION" \
+            -e "es_heap_size=$ES_HEAP_SIZE" \
             -c local; \
     else \
         ansible-playbook biothings_studio.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
             -e "biothings_repository=$BIOTHINGS_REPOSITORY" \
             -e "studio_version=$STUDIO_VERSION" \
+            -e "es_heap_size=$ES_HEAP_SIZE" \
             -c local; \
 fi
 

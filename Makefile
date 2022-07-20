@@ -9,6 +9,7 @@ BIOTHINGS_VERSION ?= master
 BIOTHINGS_REPOSITORY ?= https://github.com/biothings/biothings.api.git
 DOCKER_BUILD_EXTRA_OPTS ?= --force-rm
 PYTHON_VERSION ?=
+ES_HEAP_SIZE ?=
 
 biothings-studio:
 	docker build $(DOCKER_BUILD_EXTRA_OPTS) \
@@ -75,6 +76,7 @@ demohub:
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg BIOTHINGS_REPOSITORY=$(BIOTHINGS_REPOSITORY) \
+    --build-arg ES_HEAP_SIZE=512m \
     --build-arg API_VERSION=master \
     --build-arg TEST=1 \
     --build-arg AWS_ACCESS_KEY=$(AWS_ACCESS_KEY) \
@@ -86,6 +88,7 @@ demohub-test:
     --build-arg STUDIO_VERSION=$(STUDIO_VERSION) \
     --build-arg BIOTHINGS_VERSION=$(BIOTHINGS_VERSION) \
     --build-arg BIOTHINGS_REPOSITORY=$(BIOTHINGS_REPOSITORY) \
+    --build-arg ES_HEAP_SIZE=512m \
     --build-arg API_VERSION=master \
     --build-arg TEST=1 \
     --build-arg PYTHON_VERSION=$(PYTHON_VERSION) \

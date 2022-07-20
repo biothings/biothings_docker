@@ -110,8 +110,10 @@
 - name: mongodb data directory
   file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
 
+#- debug: var=software.web_node
+
 - name: biothings (override requirement_web.txt version)
-  git: repo={{ biothings_repository }} dest=/home/biothings/biothings.api version={{ software.web_node.biothings_git_version }}
+  git: repo={{ software.web_node.biothings_repository }} dest=/home/biothings/biothings.api version={{ software.web_node.biothings_git_version }}
   become_user: "biothings"
   become: true
 
@@ -177,3 +179,14 @@
     - {"line": "", "re": "^cluster.initial_master_nodes.*$"}
     - {"line": "xpack.security.enabled: false", "re": "^xpack.security.enabled.*$"}
 
+
+- name: Update /etc/elasticsearch/jvm.options.d/heap.options again replacing min/max heap size
+  when: software.web_node.elasticsearch.heap_size != ''
+  shell:
+    cmd: |
+      cat > /etc/elasticsearch/jvm.options.d/heap.options << EOF
+      -Xms{{ software.web_node.elasticsearch.heap_size }}
+      -Xmx{{ software.web_node.elasticsearch.heap_size }}
+      EOF
+  args:
+    executable: /bin/sh
