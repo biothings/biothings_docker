@@ -11,7 +11,7 @@ WORKDIR /build/src/github.com/biothings/biothings_studio/webapp
 RUN npm install && npm run build --legacy-peer-deps
 
 # Build Python wheels
-FROM ubuntu:20.04 AS build-wheels
+FROM ubuntu:22.04 AS build-wheels
 ARG API_NAME
 WORKDIR /build/wheels
 RUN apt update && apt install -y --no-install-recommends python3 python3-pip python3-dev gcc
@@ -57,8 +57,10 @@ RUN apt-get -qq -y update && \
     ca-certificates \
     lsb-release && \
     release=`lsb_release -sc` && \
-    # Add repo for libssl1.1 - required by Mongodb 5.x but Ubuntu 22.04 already install libssl3 \
-    echo "deb http://security.ubuntu.com/ubuntu impish-security main" | tee /etc/apt/sources.list.d/impish-security.list && \
+    # Install libssl1.1 - required by Mongodb 5.x but Ubuntu 22.04 already install libssl3 \
+	curl -LO http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
+    dpkg -i ./libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
+    rm -f ./libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
     # Add repo for MongoDB
     curl -L "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
@@ -95,13 +97,8 @@ RUN apt-get -qq -y update && \
         tzdata \
         python3 \
         net-tools \
-        build-essential \
-        libssl-dev \
     	# must use libssl1.1 when install mongodb on Ubuntu 22.04 \
         libssl1.1 \
-        libffi-dev \
-        libsqlite3-dev \
-        liblzma-dev \
         # jdk is no longer needed since Elasticsearch v7, now has
         # since it has a bundled openjdk included.
         # openjdk-8-jre-headless \
@@ -167,7 +164,18 @@ RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin in
 RUN if [ -n "$TEST" ]; then echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key; fi
 RUN if [ -n "$TEST" ]; then echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key; fi
 ARG PYTHON_VERSION
-
+# install extra libs for multiple Python versions
+RUN if [ -n "$PYTHON_VERSION" ]; then \
+     apt -y -qq update && \
+     apt -y install --no-install-recommends \
+    	build-essential  \
+		libssl-dev \
+    	libffi-dev \
+    	libsqlite3-dev \
+    	liblzma-dev && \
+		apt clean -y && apt autoclean -y && apt autoremove -y && \
+    	rm -rf /var/lib/apt/lists/* ;\
+	fi
 RUN useradd -m biothings -s /bin/bash
 WORKDIR /home/biothings
 USER biothings
@@ -261,7 +269,6 @@ RUN if [ -n "${API_NAME}" ]; \
 WORKDIR /tmp
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
-
 
 EXPOSE 8080 9200 7022 7080 27017 22 9000
 #VOLUME ["/data"]
