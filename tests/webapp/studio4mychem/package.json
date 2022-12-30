@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "codeceptjs": "^2.3.6",
+    "codeceptjs": "^3.0.0",
     "core-js": "^2.6.5",
     "npx": "^10.2.0",
     "puppeteer": "^2.0.0"
