@@ -43,8 +43,8 @@ RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VER
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ELASTICSEARCH_VERSION=8.2.*         # use to specify a specific Elasticsearch version to install
 ARG ELASTICSEARCH_VERSION_REPO=8.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
-ARG MONGODB_VERSION=5.0.*                # use to specify a specific MongoDB version to install
-ARG MONGODB_VERSION_REPO=5.0             # use to specify a specific MongoDB version repo to load
+ARG MONGODB_VERSION=6.0.*                # use to specify a specific MongoDB version to install
+ARG MONGODB_VERSION_REPO=6.0             # use to specify a specific MongoDB version repo to load
 # In the future, we can get the latest release ver. from GitHub APIs
 ARG CEREBRO_VERSION=0.9.4
 
@@ -57,16 +57,11 @@ RUN apt-get -qq -y update && \
     ca-certificates \
     lsb-release && \
     release=`lsb_release -sc` && \
-    # Install libssl1.1 - required by Mongodb 5.x but Ubuntu 22.04 already install libssl3 \
-	curl -LO http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
-    dpkg -i ./libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
-    rm -f ./libssl1.1_1.1.1-1ubuntu2.1~18.04.20_amd64.deb && \
     # Add repo for MongoDB
     curl -L "https://www.mongodb.org/static/pgp/server-${MONGODB_VERSION_REPO}.asc" | apt-key add - && \
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 && \
     # echo "deb http://repo.mongodb.org/apt/ubuntu /mongodb-org/4.0 multiverse" >> /etc/apt/sources.list.d/mongo-4.0.list && \
-    # we temporarily hard code the release=focal util Mongodb 5.x officially supported on Ubuntu 22.04
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/${MONGODB_VERSION_REPO} multiverse" | tee /etc/apt/sources.list.d/mongodb-org-${MONGODB_VERSION_REPO}.list && \
     # Elasticsearch
     curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
@@ -97,8 +92,6 @@ RUN apt-get -qq -y update && \
         tzdata \
         python3 \
         net-tools \
-    	# must use libssl1.1 when install mongodb on Ubuntu 22.04 \
-        libssl1.1 \
         # jdk is no longer needed since Elasticsearch v7, now has
         # since it has a bundled openjdk included.
         # openjdk-8-jre-headless \
