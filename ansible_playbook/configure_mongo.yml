@@ -1,0 +1,18 @@
+##################################################
+# Install mongodb
+##################################################
+
+- name: template out mongod.conf
+  template: src=templates/mongod.conf dest=/etc/mongod.conf owner=root group=root mode=0644
+  become: yes
+
+- name: template out rsconfig
+  template: src=templates/rsconfig.js dest=/tmp/rsconfig.js owner=root group=root mode=0644
+  become: yes
+
+- name: mongodb logs directory
+  file: path="{{ software.common_configurations.mongodb.logpath }}" state=directory owner=mongodb group=mongodb
+
+- name: mongodb data directory
+  file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
+  

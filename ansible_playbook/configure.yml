@@ -27,18 +27,6 @@
     owner: elasticsearch
 
 ##################################################
-# Install mongodb
-##################################################
-
-- name: template out mongod.conf
-  template: src=templates/mongod.conf dest=/etc/mongod.conf owner=root group=root mode=0644
-  become: yes
-
-- name: template out rsconfig
-  template: src=templates/rsconfig.js dest=/tmp/rsconfig.js owner=root group=root mode=0644
-  become: yes
-
-##################################################
 # Install nginx
 ##################################################
 
@@ -88,8 +76,6 @@
   file: path=/data/logs/supervisor state=directory owner=www-data group=www-data
 - name: elasticsearch logs directory
   file: path=/data/logs/elasticsearch state=directory owner=elasticsearch group=elasticsearch
-- name: mongodb logs directory
-  file: path="{{ software.common_configurations.mongodb.logpath }}" state=directory owner=mongodb group=mongodb
 # studio/api folder
 - name: app data directory
   file: path=/data/{{ app_name }} state=directory owner=biothings group=biothings
@@ -107,8 +93,6 @@
 # database data folders
 - name: elasticsearch data directory
   file: path=/data/elasticsearch state=directory owner=elasticsearch group=elasticsearch
-- name: mongodb data directory
-  file: path="{{ software.common_configurations.mongodb.dbpath }}" state=directory owner=mongodb group=mongodb
 
 #- debug: var=software.web_node
 
@@ -133,10 +117,12 @@
 - name: pretty mongo shell
   lineinfile: dest=/home/biothings/.mongorc.js line="DBQuery.prototype._prettyShell = true" mode=0644 owner=biothings group=biothings insertafter=EOF create=yes
 
-#- name: Template out config.py file
-#  template: owner=biothings group=biothings mode=0640 src=templates/config.py dest=/home/biothings/{{ app_name }}/src/config.py
-#  become_user: "biothings"
-#  become: true
+- name: Inject docker mongo uri into config.py
+  lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
+  with_items:
+    - {"line":"HUB_DB_BACKEND['uri'] = 'mongodb://mongo'"} # mongodb url for mongo container: have to point to mongo instead of localhost
+    - {"line":"DATA_SRC_SERVER = 'mongo'"} 
+    - {"line":"DATA_TARGET_SERVER = 'mongo'"} 
 
 - name: Template out docker entry point
   template: mode=0755 src=templates/docker-entrypoint.sh dest=/docker-entrypoint.sh

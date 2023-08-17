@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  biothings-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - STUDIO_VERSION=master
+        - BIOTHINGS_VERSION=master
+        - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
+        - PROD=1
+    container_name: biothings_studio
+    restart: unless-stopped
+    ports:
+      - 22:22
+      - 7022:7022
+      - 7080:7080
+      - 8080:8080
+      - 9000:9000
+      - 9200:9200
+
+  mongo:
+    build:
+      context: .
+      dockerfile: Dockerfile.mongo
+    container_name: mongo
+    restart: unless-stopped
+    ports: 
+      - 17017:27017
