@@ -1,7 +1,15 @@
-# Building an image
-docker build --force-rm -t biothings_studio .
-# run image
-docker run --rm --name studio -p 8000:8000 -p 8080:8080 -p 7022:7022 -p 7080:7080 -d biothings_studio
+# BioThings Docker
+
+## Build complete BioThings Studio + Hub
+1. `docker compose build`
+2. `docker compose up`
+3. Visit `localhost:8080` for Biothings Studio
+4. Connect to `localhost:7080` for local Biothings Hub
+
+## Build BioThings Studio only
+1. `docker compose build biothings-studio-webapp`
+2. `docker compose up biothings-studio-webapp`
+3. Visit `localhost:8080` for Biothings Studio
 
 # or, using Makefile
 make biothings_studio       # build image

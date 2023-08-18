@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo ARG $@
 # manuall stora arg before "set -u"
 # if no arg is passed, $1 is unbound and raise
@@ -35,7 +34,7 @@ fi
 #mongo < /tmp/rsconfig.js
 
 sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
-service nginx start
+# service nginx start
 
 # don't start hub until ES is ready
 netstat -tnlp | grep 9200

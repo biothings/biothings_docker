@@ -26,17 +26,6 @@
     path: /usr/local/cerebro
     owner: elasticsearch
 
-##################################################
-# Install nginx
-##################################################
-
-- name: Template out nginx.conf to server
-  template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
-  become: yes
-
-- name: nginx logs directory
-  file: path=/data/logs/nginx state=directory owner=www-data group=www-data
-
 ###################################################
 ## Install elasticsearch
 ###################################################
@@ -70,8 +59,6 @@
 # Logs folder
 - name: logs directory
   file: path=/data/logs state=directory
-- name: nginx logs directory
-  file: path=/data/logs/nginx state=directory owner=www-data group=www-data
 - name: supervisor logs directory
   file: path=/data/logs/supervisor state=directory owner=www-data group=www-data
 - name: elasticsearch logs directory

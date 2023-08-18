@@ -28,7 +28,7 @@ RUN ansible-playbook biothings_studio_mongo.yml \
 
 # Clean up ansible_playbook
 WORKDIR /tmp
-RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
-RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
+RUN rm -rf /tmp/ansible_playbook
+RUN rm -rf /tmp/ansible
 
 EXPOSE 27017

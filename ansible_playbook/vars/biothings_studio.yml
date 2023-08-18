@@ -16,7 +16,6 @@ software:
       heap_size: "{{ es_heap_size | default('')}}"
       node_roles: ['data', 'master']
     biothings_repository: "{{ biothings_repository | default('https://github.com/biothings/biothings.api.git', true) }}"
-    studio_git_version: "{{ studio_version | default('master')}}"
     biothings_git_version: "{{ biothings_version | default('master')}}"
   common_configurations:
     elasticsearch:

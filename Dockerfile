@@ -1,15 +1,3 @@
-# Build WebApp
-FROM node:18 AS build-webapp
-
-ARG WEBAPP_GIT=https://github.com/biothings/biothings_studio.git
-ARG WEBAPP_VERSION=master
-
-WORKDIR /build/src/github.com/biothings/biothings_studio
-RUN git clone ${WEBAPP_GIT} .
-RUN git checkout ${WEBAPP_VERSION}
-WORKDIR /build/src/github.com/biothings/biothings_studio/webapp
-RUN npm install && npm run build --legacy-peer-deps
-
 # Build Python wheels
 FROM ubuntu:22.04 AS build-wheels
 ARG API_NAME
@@ -31,14 +19,12 @@ ARG TEST
 
 ARG BIOTHINGS_REPOSITORY
 ARG BIOTHINGS_VERSION
-ARG STUDIO_VERSION
 ARG API_NAME
 ARG API_VERSION
 ARG AWS_ACCESS_KEY
 ARG AWS_SECRET_KEY
 
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
-RUN if [ -z "$STUDIO_VERSION" ]; then echo "NOT SET - use --build-arg STUDIO_VERSION=..."; exit 1; else : ; fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ELASTICSEARCH_VERSION=8.2.*         # use to specify a specific Elasticsearch version to install
@@ -96,7 +82,7 @@ RUN apt-get -qq -y update && \
         # this pulls in dbus and therefore pulls in systemd
         # software-properties-common \
         # Nginx
-        nginx \
+        # nginx \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
@@ -218,7 +204,6 @@ ENV PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
 ADD ansible_playbook /tmp/ansible_playbook
 ADD inventory /etc/ansible/hosts
 
-COPY --from=build-webapp --chown=root:www-data /build/src/github.com/biothings/biothings_studio/webapp/dist /srv/www/webapp
 ARG ES_HEAP_SIZE
 
 WORKDIR /tmp/ansible_playbook
@@ -226,7 +211,6 @@ RUN if [ -n "$API_NAME" ]; \
     then \
         ansible-playbook studio4api.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
-            -e "studio_version=$STUDIO_VERSION" \
             -e "api_name=$API_NAME" \
             -e "api_version=$API_VERSION" \
             -e "es_heap_size=$ES_HEAP_SIZE" \
@@ -235,7 +219,6 @@ RUN if [ -n "$API_NAME" ]; \
         ansible-playbook biothings_studio.yml \
             -e "biothings_version=$BIOTHINGS_VERSION" \
             -e "biothings_repository=$BIOTHINGS_REPOSITORY" \
-            -e "studio_version=$STUDIO_VERSION" \
             -e "es_heap_size=$ES_HEAP_SIZE" \
             -c local; \
 fi
@@ -250,6 +233,6 @@ WORKDIR /tmp
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
-EXPOSE 8080 9200 7022 7080 27017 22 9000
+EXPOSE 9200 7022 7080 27017 22 9000
 #VOLUME ["/data"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
