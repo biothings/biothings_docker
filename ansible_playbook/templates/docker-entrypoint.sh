@@ -47,28 +47,28 @@ do
   ret=$?
 done
 
-# start Cerebro under elasticsearch user
-if [[ -f "/usr/share/elasticsearch/jdk/bin/java" ]]; then
-# use bundled jvm if available, $bundled_jvm variable is checked in cerebro start script
-# the JAVA_OPTS below prevents a java error when starting cerebro with ES7's bundled jvm
-#   see more at https://github.com/lmenezes/cerebro/issues/514
-  start-stop-daemon --start -c elasticsearch -b --exec \
-    /usr/bin/env bundled_jvm="/usr/share/elasticsearch/jdk/" \
-    JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-exports java.base/sun.net.www.protocol.file=ALL-UNNAMED" \
-    /usr/local/cerebro/bin/cerebro
-else
-  start-stop-daemon --start -c elasticsearch -b --exec \
-    /usr/local/cerebro/bin/cerebro
-fi
-netstat -tnlp | grep 9000
-ret=$?
-while [ "$ret" != "0" ]
-do
-  echo Waiting for cerebro
-  sleep 5
-  netstat -tnlp | grep 9000
-  ret=$?
-done
+# # start Cerebro under elasticsearch user
+# if [[ -f "/usr/share/elasticsearch/jdk/bin/java" ]]; then
+# # use bundled jvm if available, $bundled_jvm variable is checked in cerebro start script
+# # the JAVA_OPTS below prevents a java error when starting cerebro with ES7's bundled jvm
+# #   see more at https://github.com/lmenezes/cerebro/issues/514
+#   start-stop-daemon --start -c elasticsearch -b --exec \
+#     /usr/bin/env bundled_jvm="/usr/share/elasticsearch/jdk/" \
+#     JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-exports java.base/sun.net.www.protocol.file=ALL-UNNAMED" \
+#     /usr/local/cerebro/bin/cerebro
+# else
+#   start-stop-daemon --start -c elasticsearch -b --exec \
+#     /usr/local/cerebro/bin/cerebro
+# fi
+# netstat -tnlp | grep 9000
+# ret=$?
+# while [ "$ret" != "0" ]
+# do
+#   echo Waiting for cerebro
+#   sleep 5
+#   netstat -tnlp | grep 9000
+#   ret=$?
+# done
 
 # Launch hub in a tmux session
 if [ "X$arg1" = "Xno-update" ]

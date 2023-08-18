@@ -8,24 +8,7 @@
   with_items:
     - {"line":"elasticsearch soft nofile {{ software.common_configurations.elasticsearch.soft_file_limit }}"}
     - {"line":"elasticsearch hard nofile {{ software.common_configurations.elasticsearch.hard_file_limit }}"}
-
-###################
-# Install Cerebro #
-###################
-
-- name: Configure Cerebro
-  lineinfile: dest=/usr/local/cerebro/conf/application.conf line="{{ item }}" mode=0644 owner=root group=root insertafter="^hosts ="
-  with_items:
-    - '},'
-    - '  name = "BioThings Studio"'
-    - '  host = "http://localhost:9200"'
-    - '{'
-
-- name: make sure Cerebro (make sure what??)
-  file:
-    path: /usr/local/cerebro
-    owner: elasticsearch
-
+    
 ###################################################
 ## Install elasticsearch
 ###################################################
@@ -107,7 +90,7 @@
 - name: Inject docker mongo uri into config.py
   lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
   with_items:
-    - {"line":"HUB_DB_BACKEND['uri'] = 'mongodb://mongo'"} # mongodb url for mongo container: have to point to mongo instead of localhost
+    - {"line":"HUB_DB_BACKEND['uri'] = 'mongodb://mongo'"} # mongodb url for mongo docker container: have to point to mongo instead of localhost
     - {"line":"DATA_SRC_SERVER = 'mongo'"} 
     - {"line":"DATA_TARGET_SERVER = 'mongo'"} 
 

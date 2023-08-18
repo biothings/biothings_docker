@@ -1,0 +1,13 @@
+FROM ghcr.io/lmenezes/cerebro-docker:latest
+
+USER root
+
+# Add biothings studio to hosts
+RUN sed -i '/^hosts = \[$/a \
+  { \
+    host = "http://biothings:9200", \
+    "name" = "BioThings Studio" \
+  }' /opt/cerebro/conf/application.conf && \
+  cat /opt/cerebro/conf/application.conf
+
+EXPOSE 9000

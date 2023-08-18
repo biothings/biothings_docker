@@ -8,10 +8,10 @@ services:
     container_name: biothings_studio_webapp
     ports:
       - 8080:8080
-    # volumes:
-    #   - nginx:/logs/data/nginx
+    volumes:
+      - nginx:/logs/data/nginx
 
-  biothings-hub:
+  biothings:
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,14 +19,22 @@ services:
         - BIOTHINGS_VERSION=master
         - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
         - PROD=1
-    container_name: biothings_hub
+    container_name: biothings
     restart: unless-stopped
     ports:
       - 22:22
       - 7022:7022 # hub ssh
       - 7080:7080 # hub api
-      - 9000:9000 # cerebro
       - 9200:9200 # es
+
+  cerebro:
+    build:
+      context: .
+      dockerfile: Dockerfile.cerebro
+    container_name: cerebro
+    restart: unless-stopped
+    ports:
+      - 9000:9000
 
   mongo:
     build:
@@ -36,3 +44,7 @@ services:
     restart: unless-stopped
     ports: 
       - 27017:27017
+
+
+volumes:
+  nginx:

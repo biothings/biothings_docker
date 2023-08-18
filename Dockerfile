@@ -29,8 +29,6 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ELASTICSEARCH_VERSION=8.2.*         # use to specify a specific Elasticsearch version to install
 ARG ELASTICSEARCH_VERSION_REPO=8.x       # use to specify a specific Elasticsearch version repo to load, e.g. 6.x or 7.x
-# In the future, we can get the latest release ver. from GitHub APIs
-ARG CEREBRO_VERSION=0.9.4
 
 # both curl & gpg used by apt-key, gpg1 pulls in less deps than gpg2
 # lsb-release is used to get the ubuntu code name like focal
@@ -44,16 +42,6 @@ RUN apt-get -qq -y update && \
     # Elasticsearch
     curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
-    # PPA Nginx
-    # NOTES:
-    #  - adding the PPA repo is now done manually (w/o apt-add-repository)
-    #  - will definetly need to update the repo when base image is updated
-    #  - may need to fix the key down the line
-    # QUESTIONS:
-    #  - Why do we need this? this PPA has the same version as the ubuntu repos
-    # Comment out Nginx PPA repo below, can be re-enabled when we need a newer version of Nginx
-    # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C && \
-    # echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu focal main" >> /etc/apt/sources.list.d/ppa-nginx-stable.list && \
     apt-get -y -qq update && \
     # no longer doing upgrades as per:
     #  - codacy's nagging
@@ -81,8 +69,6 @@ RUN apt-get -qq -y update && \
         # only used to add repo, now we just append to the file
         # this pulls in dbus and therefore pulls in systemd
         # software-properties-common \
-        # Nginx
-        # nginx \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
@@ -116,14 +102,6 @@ RUN apt-get -qq -y update && \
     fi && \
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
-
-# cerebro
-WORKDIR /tmp
-RUN curl -LO \
-    https://github.com/lmenezes/cerebro/releases/download/v${CEREBRO_VERSION}/cerebro-${CEREBRO_VERSION}.tgz \
-    && tar xzf cerebro-${CEREBRO_VERSION}.tgz -C /usr/local \
-    && ln -s /usr/local/cerebro-${CEREBRO_VERSION} /usr/local/cerebro \
-    && rm -rf /tmp/cerebro*
 
 # Setup ES plugins for testing
 RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3; fi
