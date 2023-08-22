@@ -40,8 +40,8 @@ RUN apt-get -qq -y update && \
     lsb-release && \
     release=`lsb_release -sc` && \
     # Elasticsearch
-    curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
-    echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
+    # curl https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
+    # echo "deb https://artifacts.elastic.co/packages/${ELASTICSEARCH_VERSION_REPO}/apt stable main" >> /etc/apt/sources.list.d/elasticsearch-${ELASTICSEARCH_VERSION_REPO}.list && \
     apt-get -y -qq update && \
     # no longer doing upgrades as per:
     #  - codacy's nagging
@@ -76,14 +76,14 @@ RUN apt-get -qq -y update && \
 		# Virtualenv
 		python3-virtualenv && \
     # install JDK only when ES < v7
-    if [ `echo $ELASTICSEARCH_VERSION | cut -d '.' -f1` -lt 7 ];  then \
-        apt-get install -y --no-install-recommends openjdk-11-jre-headless ; \
-    fi && \
-    apt-get install -y --no-install-recommends \
-        # Elasticsearch
-        # do this in a separate step because it pre-depends on jre
-        # but the package isn't built that well to indicate that
-        elasticsearch=${ELASTICSEARCH_VERSION} && \
+    # if [ `echo $ELASTICSEARCH_VERSION | cut -d '.' -f1` -lt 7 ];  then \
+    #     apt-get install -y --no-install-recommends openjdk-11-jre-headless ; \
+    # fi && \
+    # apt-get install -y --no-install-recommends \
+    #     # Elasticsearch
+    #     # do this in a separate step because it pre-depends on jre
+    #     # but the package isn't built that well to indicate that
+    #     elasticsearch=${ELASTICSEARCH_VERSION} && \
     # install some useful tools when $PROD is not set
     if [ -z "$PROD" ]; then \
     apt-get install -y --no-install-recommends \
@@ -104,9 +104,9 @@ RUN apt-get -qq -y update && \
     rm -rf /var/lib/apt/lists/*
 
 # Setup ES plugins for testing
-RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3; fi
-RUN if [ -n "$TEST" ]; then echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key; fi
-RUN if [ -n "$TEST" ]; then echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key; fi
+# RUN if [ -n "$TEST" ]; then /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-s3; fi
+# RUN if [ -n "$TEST" ]; then echo $AWS_ACCESS_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key; fi
+# RUN if [ -n "$TEST" ]; then echo $AWS_SECRET_KEY | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key; fi
 ARG PYTHON_VERSION
 # install extra libs for multiple Python versions
 RUN if [ -n "$PYTHON_VERSION" ]; then \
@@ -211,6 +211,6 @@ WORKDIR /tmp
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
-EXPOSE 9200 7022 7080 27017 22 9000
+EXPOSE 7022 7080 27017 22
 #VOLUME ["/data"]
 ENTRYPOINT ["/docker-entrypoint.sh"]

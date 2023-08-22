@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.webapp
     container_name: biothings_studio_webapp
+    restart: unless-stopped
     ports:
       - 8080:8080
     volumes:
@@ -25,7 +26,29 @@ services:
       - 22:22
       - 7022:7022 # hub ssh
       - 7080:7080 # hub api
-      - 9200:9200 # es
+      # - 9200:9200 # es
+
+  elasticsearch:
+    image: elasticsearch:8.8.1
+    container_name: elasticsearch
+    restart: unless-stopped
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - cluster.name=biothings
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # uncomment to change ES heap size
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 32000
+        hard: 65536
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
   cerebro:
     build:
@@ -44,7 +67,13 @@ services:
     restart: unless-stopped
     ports: 
       - 27017:27017
+    volumes:
+      - mongo:/data/mongodb
+      - mongologs:/data/logs/mongodb
 
 
 volumes:
   nginx:
+  esdata:
+  mongo:
+  mongologs:

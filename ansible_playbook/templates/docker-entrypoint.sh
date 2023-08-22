@@ -33,19 +33,19 @@ fi
 # oplog enabled (not used anymore)
 #mongo < /tmp/rsconfig.js
 
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
-# service nginx start
+# sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
+# # service nginx start
 
-# don't start hub until ES is ready
-netstat -tnlp | grep 9200
-ret=$?
-while [ "$ret" != "0" ]
-do
-  echo Waiting for ES
-  sleep 5
-  netstat -tnlp | grep 9200
-  ret=$?
-done
+# # don't start hub until ES is ready
+# netstat -tnlp | grep 9200
+# ret=$?
+# while [ "$ret" != "0" ]
+# do
+#   echo Waiting for ES
+#   sleep 5
+#   netstat -tnlp | grep 9200
+#   ret=$?
+# done
 
 # # start Cerebro under elasticsearch user
 # if [[ -f "/usr/share/elasticsearch/jdk/bin/java" ]]; then

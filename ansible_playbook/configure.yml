@@ -2,12 +2,12 @@
 # Update security/limits.conf
 #####################################################################
 
-- name: Update /etc/security/limits.conf
-  lineinfile: dest=/etc/security/limits.conf insertbefore="^# End of file" line="{{ item.line }}" mode=0644 owner=root group=root
-  become: yes
-  with_items:
-    - {"line":"elasticsearch soft nofile {{ software.common_configurations.elasticsearch.soft_file_limit }}"}
-    - {"line":"elasticsearch hard nofile {{ software.common_configurations.elasticsearch.hard_file_limit }}"}
+# - name: Update /etc/security/limits.conf
+#   lineinfile: dest=/etc/security/limits.conf insertbefore="^# End of file" line="{{ item.line }}" mode=0644 owner=root group=root
+#   become: yes
+#   with_items:
+#     - {"line":"elasticsearch soft nofile {{ software.common_configurations.elasticsearch.soft_file_limit }}"}
+#     - {"line":"elasticsearch hard nofile {{ software.common_configurations.elasticsearch.hard_file_limit }}"}
     
 ###################################################
 ## Install elasticsearch
@@ -44,8 +44,8 @@
   file: path=/data/logs state=directory
 - name: supervisor logs directory
   file: path=/data/logs/supervisor state=directory owner=www-data group=www-data
-- name: elasticsearch logs directory
-  file: path=/data/logs/elasticsearch state=directory owner=elasticsearch group=elasticsearch
+# - name: elasticsearch logs directory
+#   file: path=/data/logs/elasticsearch state=directory owner=elasticsearch group=elasticsearch
 # studio/api folder
 - name: app data directory
   file: path=/data/{{ app_name }} state=directory owner=biothings group=biothings
@@ -61,8 +61,8 @@
 - name: conf directory
   file: path=/data/conf state=directory
 # database data folders
-- name: elasticsearch data directory
-  file: path=/data/elasticsearch state=directory owner=elasticsearch group=elasticsearch
+# - name: elasticsearch data directory
+#   file: path=/data/elasticsearch state=directory owner=elasticsearch group=elasticsearch
 
 #- debug: var=software.web_node
 
@@ -94,6 +94,16 @@
     - {"line":"DATA_SRC_SERVER = 'mongo'"} 
     - {"line":"DATA_TARGET_SERVER = 'mongo'"} 
 
+- name: Inject docker elasticsearch uri into config.py
+  lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
+  with_items:
+    - {"line":"STANDALONE_CONFIG['_default']['es_host'] = 'elasticsearch:9200'"} 
+
+- name: Inject docker elasticsearch uri into config.py
+  lineinfile: dest=/home/biothings/biothings.api/biothings/web/settings/default.py line="{{ item.line }}" insertbefore=EOF
+  with_items:
+    - {"line":"ES_HOST = 'elasticsearch:9200'"}
+
 - name: Template out docker entry point
   template: mode=0755 src=templates/docker-entrypoint.sh dest=/docker-entrypoint.sh
 - name: home bin
@@ -109,40 +119,40 @@
 # Update elasticsearch.yml
 ################################################
 
-- name: es backups data directory (repo type fs)
-  file: path=/data/es_backups mode=0777 state=directory owner=elasticsearch group=elasticsearch
+# - name: es backups data directory (repo type fs)
+#   file: path=/data/es_backups mode=0777 state=directory owner=elasticsearch group=elasticsearch
 
-- name: Update elasticsearch.yml file
-  lineinfile: dest=/etc/elasticsearch/elasticsearch.yml line="{{ item }}" mode=0644 owner=root group=root insertafter=EOF
-  become: yes
-  with_items:
-    - "#######"
-    - "cluster.name: {{ cluster.name }}"
-    - "node.roles: {{ software.web_node.elasticsearch.node_roles }}"
-    - "{{ software.common_configurations.elasticsearch.elasticsearch_yml }}"
-    # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
-    # (not suitable for production with a cluster)
-    - "discovery.type: single-node"
-    - 'path.repo: ["/data/es_backups"]'
-    - "ingest.geoip.downloader.enabled: false"
+# - name: Update elasticsearch.yml file
+#   lineinfile: dest=/etc/elasticsearch/elasticsearch.yml line="{{ item }}" mode=0644 owner=root group=root insertafter=EOF
+#   become: yes
+#   with_items:
+#     - "#######"
+#     - "cluster.name: {{ cluster.name }}"
+#     - "node.roles: {{ software.web_node.elasticsearch.node_roles }}"
+#     - "{{ software.common_configurations.elasticsearch.elasticsearch_yml }}"
+#     # this will avoid to have max virtual memory areas vm.max_map_count [65530] likely too low
+#     # (not suitable for production with a cluster)
+#     - "discovery.type: single-node"
+#     - 'path.repo: ["/data/es_backups"]'
+#     - "ingest.geoip.downloader.enabled: false"
 
-- name: update elasticsearch.yml again replacing some values
-  replace: dest=/etc/elasticsearch/elasticsearch.yml replace="{{ item.line }}" regexp="{{ item.re }}"
-  become: yes
-  with_items:
-    - {"line": "path.data: /data/elasticsearch", "re": "^path.data.*$"}
-    - {"line": "path.logs: /data/logs/elasticsearch", "re": "^path.logs.*$"}
-    - {"line": "", "re": "^cluster.initial_master_nodes.*$"}
-    - {"line": "xpack.security.enabled: false", "re": "^xpack.security.enabled.*$"}
+# - name: update elasticsearch.yml again replacing some values
+#   replace: dest=/etc/elasticsearch/elasticsearch.yml replace="{{ item.line }}" regexp="{{ item.re }}"
+#   become: yes
+#   with_items:
+#     - {"line": "path.data: /data/elasticsearch", "re": "^path.data.*$"}
+#     - {"line": "path.logs: /data/logs/elasticsearch", "re": "^path.logs.*$"}
+#     - {"line": "", "re": "^cluster.initial_master_nodes.*$"}
+#     - {"line": "xpack.security.enabled: false", "re": "^xpack.security.enabled.*$"}
 
 
-- name: Update /etc/elasticsearch/jvm.options.d/heap.options again replacing min/max heap size
-  when: software.web_node.elasticsearch.heap_size != ''
-  shell:
-    cmd: |
-      cat > /etc/elasticsearch/jvm.options.d/heap.options << EOF
-      -Xms{{ software.web_node.elasticsearch.heap_size }}
-      -Xmx{{ software.web_node.elasticsearch.heap_size }}
-      EOF
-  args:
-    executable: /bin/sh
+# - name: Update /etc/elasticsearch/jvm.options.d/heap.options again replacing min/max heap size
+#   when: software.web_node.elasticsearch.heap_size != ''
+#   shell:
+#     cmd: |
+#       cat > /etc/elasticsearch/jvm.options.d/heap.options << EOF
+#       -Xms{{ software.web_node.elasticsearch.heap_size }}
+#       -Xmx{{ software.web_node.elasticsearch.heap_size }}
+#       EOF
+#   args:
+#     executable: /bin/sh
