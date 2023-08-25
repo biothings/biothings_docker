@@ -17,6 +17,8 @@ services:
       - 22:22
       - 7022:7022 # hub ssh
       - 7080:7080 # hub api
+    volumes:
+      - biothings:/data/biothings_studio/
 
   biothings-studio-webapp:
     build:
@@ -76,6 +78,7 @@ services:
       - mongologs:/var/log/mongodb/
 
 volumes:
+  biothings: 
   nginx:
   esdata:
   eslogs:
