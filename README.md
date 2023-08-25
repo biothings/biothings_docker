@@ -3,13 +3,13 @@
 ## Build complete BioThings Studio + Hub
 1. `docker compose build`
 2. `docker compose up`
-3. Visit `localhost:8080` for Biothings Studio
-4. Connect to `localhost:7080` for local Biothings Hub
+3. Go to `http://localhost:8080/` for Biothings Studio
+4. Connect to `http://localhost:7080` for local Biothings Hub
 
 ## Build BioThings Studio only
 1. `docker compose build biothings-studio-webapp`
 2. `docker compose up biothings-studio-webapp`
-3. Visit `localhost:8080` for Biothings Studio
+3. Go to `http://localhost:8080/` for Biothings Studio
 
 # or, using Makefile
 make biothings_studio       # build image

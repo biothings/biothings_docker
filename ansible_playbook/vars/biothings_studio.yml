@@ -21,6 +21,7 @@ software:
     elasticsearch:
       soft_file_limit: "32000"
       hard_file_limit: "65535"
+      host: "{{ es_host | default('elasticsearch') }}"
       elasticsearch_yml:
         - "network.host: 0.0.0.0"
     mongodb:
@@ -30,3 +31,4 @@ software:
       dbpath: "/data/mongodb"
       logpath: "/data/logs/mongodb"
       replsetname: "monitor"
+      host: "{{ mongo_host | default('mongo') }}"

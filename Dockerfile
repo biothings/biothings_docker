@@ -23,6 +23,8 @@ ARG API_NAME
 ARG API_VERSION
 ARG AWS_ACCESS_KEY
 ARG AWS_SECRET_KEY
+ARG ES_HOST
+ARG MONGO_HOST
 
 RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHINGS_VERSION=..."; exit 1; else : ; fi
 
@@ -198,6 +200,8 @@ RUN if [ -n "$API_NAME" ]; \
             -e "biothings_version=$BIOTHINGS_VERSION" \
             -e "biothings_repository=$BIOTHINGS_REPOSITORY" \
             -e "es_heap_size=$ES_HEAP_SIZE" \
+            -e "es_host=$ES_HOST" \
+            -e "mongo_host=$MONGO_HOST" \
             -c local; \
 fi
 
