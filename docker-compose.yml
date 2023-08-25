@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+  biothings:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BIOTHINGS_VERSION=master
+        - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
+        - ES_HOST=elasticsearch # su06
+        - MONGO_HOST=mongo # su06
+        - PROD=1
+    container_name: biothings
+    restart: unless-stopped
+    ports:
+      - 22:22
+      - 7022:7022 # hub ssh
+      - 7080:7080 # hub api
+
   biothings-studio-webapp:
     build:
       context: .
@@ -12,35 +29,20 @@ services:
     volumes:
       - nginx:/logs/data/nginx
 
-  biothings:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - BIOTHINGS_VERSION=master
-        - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
-        - ES_HOST=elasticsearch
-        - MONGO_HOST=mongo
-        - PROD=1
-    container_name: biothings
-    restart: unless-stopped
-    ports:
-      - 22:22
-      - 7022:7022 # hub ssh
-      - 7080:7080 # hub api
-
   elasticsearch:
     image: elasticsearch:8.8.1
     container_name: elasticsearch
     restart: unless-stopped
     ports:
       - 9200:9200
-      - 9300:9300
+      - 9300:9300 # unused but for es to es communication
     environment:
       - cluster.name=biothings
       - discovery.type=single-node
       - xpack.security.enabled=false
       # - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # uncomment to change ES heap size
+      # - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      # - AWS_SECRET_KEY=${AWS_SECRET_KEY}
     ulimits:
       memlock:
         soft: -1
@@ -50,6 +52,7 @@ services:
         hard: 65536
     volumes:
       - esdata:/usr/share/elasticsearch/data
+      - eslogs:/usr/share/elasticsearch/logs
 
   cerebro:
     build:
@@ -75,5 +78,6 @@ services:
 volumes:
   nginx:
   esdata:
+  eslogs:
   mongo:
   mongologs:
