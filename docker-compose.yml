@@ -63,17 +63,14 @@ services:
       - 9000:9000
 
   mongo:
-    build:
-      context: .
-      dockerfile: Dockerfile.mongo
+    image: mongo:latest
     container_name: mongo
     restart: unless-stopped
     ports: 
       - 27017:27017
     volumes:
-      - mongo:/data/mongodb
-      - mongologs:/data/logs/mongodb
-
+      - mongo:/var/lib/mongodb
+      - mongologs:/var/log/mongodb/
 
 volumes:
   nginx:

@@ -14,62 +14,6 @@ then
 	su biothings -c "/home/biothings/pyenv/bin/python /home/biothings/utilities/ssh-keygen.py /home/biothings/biothings_studio/bin/ssh_host_key"
 fi
 
-# mongodb only uses systemd but using docker,
-# process 1 can be /bin/bash, not sysctl, so it would
-# just fail, we need to run it manually
-# sudo -u mongodb /bin/bash -c "/usr/bin/mongod --fork --config /etc/mongod.conf"
-
-# # don't setup replication until mongo is ready
-# netstat -tnlp | grep {{software.common_configurations.mongodb.port}}
-# ret=$?
-# while [ "$ret" != "0" ]
-# do
-#   echo Waiting for mongo
-#   sleep 5
-#   netstat -tnlp | grep {{software.common_configurations.mongodb.port}}
-#   ret=$?
-# done
-
-# oplog enabled (not used anymore)
-#mongo < /tmp/rsconfig.js
-
-# sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
-# # service nginx start
-
-# # don't start hub until ES is ready
-# netstat -tnlp | grep 9200
-# ret=$?
-# while [ "$ret" != "0" ]
-# do
-#   echo Waiting for ES
-#   sleep 5
-#   netstat -tnlp | grep 9200
-#   ret=$?
-# done
-
-# # start Cerebro under elasticsearch user
-# if [[ -f "/usr/share/elasticsearch/jdk/bin/java" ]]; then
-# # use bundled jvm if available, $bundled_jvm variable is checked in cerebro start script
-# # the JAVA_OPTS below prevents a java error when starting cerebro with ES7's bundled jvm
-# #   see more at https://github.com/lmenezes/cerebro/issues/514
-#   start-stop-daemon --start -c elasticsearch -b --exec \
-#     /usr/bin/env bundled_jvm="/usr/share/elasticsearch/jdk/" \
-#     JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-exports java.base/sun.net.www.protocol.file=ALL-UNNAMED" \
-#     /usr/local/cerebro/bin/cerebro
-# else
-#   start-stop-daemon --start -c elasticsearch -b --exec \
-#     /usr/local/cerebro/bin/cerebro
-# fi
-# netstat -tnlp | grep 9000
-# ret=$?
-# while [ "$ret" != "0" ]
-# do
-#   echo Waiting for cerebro
-#   sleep 5
-#   netstat -tnlp | grep 9000
-#   ret=$?
-# done
-
 # Launch hub in a tmux session
 if [ "X$arg1" = "Xno-update" ]
 then
