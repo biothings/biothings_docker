@@ -77,37 +77,12 @@ RUN apt-get -qq -y update && \
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-ARG PYTHON_VERSION
-
-# Install required packages and create user.
-RUN if [ -n "$PYTHON_VERSION" ]; then \
-        apt update -y -qq && \
-        apt install -y --no-install-recommends \
-            build-essential \
-            libssl-dev \
-            libffi-dev \
-            libsqlite3-dev \
-            liblzma-dev && \
-        apt clean -y && apt autoclean -y && apt autoremove -y && \
-        rm -rf /var/lib/apt/lists/* ; \
-    fi
-
 RUN useradd -m biothings -s /bin/bash
 
 WORKDIR /home/biothings
 USER biothings
 
-# Install pyenv if PYTHON_VERSION is set.
-RUN if [ -n "$PYTHON_VERSION" ]; then \
-        git clone https://github.com/yyuu/pyenv.git ~/.pyenv && \
-        $HOME/.pyenv/bin/pyenv install $PYTHON_VERSION && \
-        virtualenv -p $HOME/.pyenv/versions/$PYTHON_VERSION/bin/python /home/biothings/pyenv && \
-        wget https://bootstrap.pypa.io/get-pip.py && \
-        /home/biothings/pyenv/bin/python get-pip.py && \
-        /home/biothings/pyenv/bin/pip install --upgrade --force-reinstall setuptools; \
-    else \
-        virtualenv -p python3 /home/biothings/pyenv; \
-    fi
+RUN virtualenv -p python3 /home/biothings/pyenv
 
 # Install Python packages from wheels.
 RUN for whl_file in /home/biothings/wheels/*.whl; do \
@@ -178,5 +153,4 @@ RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
 EXPOSE 7022 7080 27017 22
-#VOLUME ["/data"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
