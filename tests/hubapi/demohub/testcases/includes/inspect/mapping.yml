@@ -1,4 +1,0 @@
-taxid:
-  type: integer
-uniprot_name:
-  type: text

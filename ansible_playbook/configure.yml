@@ -70,7 +70,8 @@
 - name: Inject docker elasticsearch uri into config.py
   lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
   with_items:
-    - {"line":"STANDALONE_CONFIG['_default']['es_host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"} 
+    - {"line":"from contextlib import suppress"}
+    - {"line":"with suppress(NameError): STANDALONE_CONFIG['_default']['es_host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"} 
     - {"line":"INDEX_CONFIG['env'].setdefault('localhub', {})['host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"}
     - {"line":"INDEX_CONFIG['env'].setdefault('local', {})['host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"}
 

@@ -1,1 +1,0 @@
-from .dumper import GeneInfoDumper
