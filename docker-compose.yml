@@ -19,6 +19,9 @@ services:
       - 7080:7080 # hub api
     volumes:
       - biothings:/data/biothings_studio/
+    # extra_hosts:
+    #   - "su06:127.0.0.1"  # replace with actual ip of host
+    
 
   biothings-studio-webapp:
     build:
@@ -61,11 +64,13 @@ services:
       context: .
       dockerfile: Dockerfile.cerebro
       args: 
-        - ES_HOST=elasticsearch
+        - ES_HOST=elasticsearch # su06
     container_name: cerebro
     restart: unless-stopped
     ports:
       - 9000:9000
+    # extra_hosts:
+    #   - "su06:127.0.0.1"  # replace with actual ip of host
 
   mongo:
     image: mongo:latest

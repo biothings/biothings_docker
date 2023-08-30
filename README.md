@@ -21,3 +21,8 @@
 2. `docker compose up`
 3. Go to `http://localhost:8080/` for Biothings Studio
 4. Connect to `http://localhost:7080` for local Biothings Hub
+
+## Connect to remote mongodb/elasticsearch hosts
+1. Uncomment the `extra_hosts` sections in `docker-compose.yml` and add your hosts in the format "hostname:ip"
+2. Set the `MONGO_HOST` and `ES_HOST` args in `docker-compose.yml` to the hostnames you added in step 1
+3. Build and run the container as usual
