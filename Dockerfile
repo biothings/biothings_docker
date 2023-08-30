@@ -1,16 +1,3 @@
-# Build Python wheels
-# FROM ubuntu:22.04 AS build-wheels
-# ARG API_NAME
-# WORKDIR /build/wheels
-# RUN apt update && apt install -y --no-install-recommends python3 python3-pip python3-dev gcc
-# RUN echo "$API_NAME"
-# # If we only intend to install on specific APIs, we only build for that
-# RUN if [ "$API_NAME" = "myvariant.info" ]; \
-# 	then \
-# 		python3 -m pip wheel bitarray==0.8.1; \
-# 	fi;
-
-# Build Final Image
 FROM ubuntu:22.04
 LABEL maintainer "help@biothings.io"
 
@@ -30,8 +17,6 @@ RUN if [ -z "$BIOTHINGS_VERSION" ]; then echo "NOT SET - use --build-arg BIOTHIN
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# both curl & gpg used by apt-key, gpg1 pulls in less deps than gpg2
-# lsb-release is used to get the ubuntu code name like focal
 RUN apt-get -qq -y update && \
     apt-get -y install --no-install-recommends \
         # base
@@ -45,13 +30,6 @@ RUN apt-get -qq -y update && \
         tzdata \
         python3 \
         net-tools \
-        # ssh is no longer used
-        # openssh-server \
-        # client is for ssh-keygen
-        # openssh-client \
-        # only used to add repo, now we just append to the file
-        # this pulls in dbus and therefore pulls in systemd
-        # software-properties-common \
         # Ansible dependency
         python3-yaml \
         python3-jinja2 \
@@ -99,13 +77,6 @@ COPY --chown=biothings:biothings files/.inputrc	/home/biothings/.inputrc
 COPY --chown=biothings:biothings files/.git_aliases	/home/biothings/.git_aliases
 RUN bash -c "echo -e '\nalias psg=\"ps aux|grep\"\nsource ~/.git_aliases\n' >> ~/.bashrc"
 USER root
-# RUN rm -rf /home/biothings/wheels
-
-# vscode code-server for remote code editing
-# Commented out on May 12, 2021 -- not frequently used as VSC remote works better
-# RUN wget https://github.com/cdr/code-server/releases/download/3.1.1/code-server-3.1.1-linux-x86_64.tar.gz
-# RUN tar xzf code-server-3.1.1-linux-x86_64.tar.gz -C /usr/local
-# RUN ln -s /usr/local/code-server-3.1.1-linux-x86_64 /usr/local/code-server
 
 RUN git clone http://github.com/ansible/ansible.git -b stable-2.12 /tmp/ansible
 WORKDIR /tmp/ansible
@@ -152,5 +123,5 @@ WORKDIR /tmp
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible_playbook; fi
 RUN if [ -n "$PROD" ]; then rm -rf /tmp/ansible; fi
 
-EXPOSE 7022 7080 27017 22
+EXPOSE 7022 7080 22
 ENTRYPOINT ["/docker-entrypoint.sh"]
