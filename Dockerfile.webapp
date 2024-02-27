@@ -1,0 +1,20 @@
+# Build WebApp
+FROM node:18 as build
+
+ARG WEBAPP_GIT=https://github.com/biothings/biothings_studio.git
+ARG WEBAPP_VERSION=master
+
+WORKDIR /app
+RUN git clone ${WEBAPP_GIT} .
+RUN git checkout ${WEBAPP_VERSION}
+WORKDIR /app/webapp
+RUN npm install && npm run build --legacy-peer-deps
+
+FROM nginx:mainline-alpine
+RUN mkdir -p /data/logs/nginx
+RUN chown -R nginx:nginx /data/logs/nginx
+COPY --from=build --chown=root:www-data /app/webapp/dist /srv/www/webapp
+COPY ./ansible_playbook/templates/nginx.conf /etc/nginx/nginx.conf
+
+# VOLUME [ "/data" ]
+EXPOSE 8080

@@ -1,3 +1,0 @@
-- op: replace
-  path: /uniprot_name/type
-  value: text

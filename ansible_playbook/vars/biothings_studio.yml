@@ -9,25 +9,10 @@ cluster:
 
 software:
   web_node:
-    elasticsearch:
-      plugin:
-        head: "mobz/elasticsearch-head"
-        bigdesk: "lukas-vlcek/bigdesk"
-      heap_size: "{{ es_heap_size | default('')}}"
-      node_roles: ['data', 'master']
     biothings_repository: "{{ biothings_repository | default('https://github.com/biothings/biothings.api.git', true) }}"
-    studio_git_version: "{{ studio_version | default('master')}}"
     biothings_git_version: "{{ biothings_version | default('master')}}"
   common_configurations:
     elasticsearch:
-      soft_file_limit: "32000"
-      hard_file_limit: "65535"
-      elasticsearch_yml:
-        - "network.host: 0.0.0.0"
+      host: "{{ es_host | default('elasticsearch') }}"
     mongodb:
-      port: 27017
-      bindip: "127.0.0.1"
-      oplogsizemb: 50
-      dbpath: "/data/mongodb"
-      logpath: "/data/logs/mongodb"
-      replsetname: "monitor"
+      host: "{{ mongo_host | default('mongo') }}"

@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  biothings:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BIOTHINGS_VERSION=master
+        - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
+        - ES_HOST=elasticsearch # su06
+        - MONGO_HOST=mongo # su06
+        - PROD=1
+    container_name: biothings
+    restart: unless-stopped
+    ports:
+      - 22:22
+      - 7022:7022 # hub ssh
+      - 7080:7080 # hub api
+    volumes:
+      - biothings:/data/biothings_studio/
+    # extra_hosts:
+    #   - "su06:127.0.0.1"  # replace with actual ip of host
+    
+
+  biothings-studio-webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile.webapp
+    container_name: biothings_studio_webapp
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - nginx:/logs/data/nginx
+
+  elasticsearch:
+    image: elasticsearch:8.8.1
+    container_name: elasticsearch
+    restart: unless-stopped
+    ports:
+      - 9200:9200
+      - 9300:9300 # unused but for es to es communication
+    environment:
+      - cluster.name=biothings
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # uncomment to change ES heap size
+      # - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      # - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 32000
+        hard: 65536
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+      - eslogs:/usr/share/elasticsearch/logs
+
+  cerebro:
+    build:
+      context: .
+      dockerfile: Dockerfile.cerebro
+      args: 
+        - ES_HOST=elasticsearch # su06
+    container_name: cerebro
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    # extra_hosts:
+    #   - "su06:127.0.0.1"  # replace with actual ip of host
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
+    ports: 
+      - 27017:27017
+    volumes:
+      - mongo:/var/lib/mongodb
+      - mongologs:/var/log/mongodb/
+
+volumes:
+  biothings: 
+  nginx:
+  esdata:
+  eslogs:
+  mongo:
+  mongologs:

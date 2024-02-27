@@ -1,8 +1,0 @@
-name: third_build_configuration
-doc_type: third_build_configuration
-sources:
-  - uniprot_species
-roots:
-  - uniprot_species
-builder_class: hub.databuild.builder.TaxonomyDataBuilder
-archived: true

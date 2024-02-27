@@ -48,6 +48,7 @@
   with_items:
     - {"line":"from config_api import *"}
     - {"line":"from config_hub import *"}
+    - {"line":"from biothings.utils.loggers import setup_default_log"}
 
 - name: biothings api as subfolder
   file: src=/home/biothings/biothings.api/biothings dest=/home/biothings/{{ api_name }}/src/biothings state=link
@@ -62,8 +63,10 @@
 # First delete directory then symlink
 - name: delete plugins dir
   file: state=absent path=/data/{{ app_name }}/plugins
-  when: plugins_exists.stat.exists == True
+  when: plugins_exists.stat.exists
 - name: symlink APIs plugins
   file: src=/home/biothings/{{ api_name }}/src/plugins dest=/data/{{ app_name }}/plugins state=link
-  when: plugins_exists.stat.exists == True
+  when: plugins_exists.stat.exists
+- debug:
+    var: plugins_exists
 
