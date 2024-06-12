@@ -21,7 +21,7 @@ services:
       - biothings:/data/biothings_studio/
     # extra_hosts:
     #   - "su06:127.0.0.1"  # replace with actual ip of host
-    
+
 
   biothings-studio-webapp:
     build:
@@ -63,7 +63,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cerebro
-      args: 
+      args:
         - ES_HOST=elasticsearch # su06
     container_name: cerebro
     restart: unless-stopped
@@ -76,14 +76,14 @@ services:
     image: mongo:latest
     container_name: mongo
     restart: unless-stopped
-    ports: 
+    ports:
       - 27017:27017
     volumes:
       - mongo:/var/lib/mongodb
       - mongologs:/var/log/mongodb/
 
 volumes:
-  biothings: 
+  biothings:
   nginx:
   esdata:
   eslogs:

@@ -64,21 +64,21 @@
   lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
   with_items:
     - {"line":"HUB_DB_BACKEND['uri'] = 'mongodb://{{ software.common_configurations.mongodb.host }}'"} # mongodb url for mongo docker container: have to point to mongo instead of localhost
-    - {"line":"DATA_SRC_SERVER = '{{ software.common_configurations.mongodb.host }}'"} 
-    - {"line":"DATA_TARGET_SERVER = '{{ software.common_configurations.mongodb.host }}'"} 
+    - {"line":"DATA_SRC_SERVER = '{{ software.common_configurations.mongodb.host }}'"}
+    - {"line":"DATA_TARGET_SERVER = '{{ software.common_configurations.mongodb.host }}'"}
 
 - name: Inject docker elasticsearch uri into config.py
   lineinfile: dest=/home/biothings/biothings_studio/config.py line="{{ item.line }}" insertbefore=EOF
   with_items:
     - {"line":"from contextlib import suppress"}
-    - {"line":"with suppress(NameError): STANDALONE_CONFIG['_default']['es_host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"} 
-    - {"line":"INDEX_CONFIG['env'].setdefault('localhub', {})['host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"}
-    - {"line":"INDEX_CONFIG['env'].setdefault('local', {})['host'] = '{{ software.common_configurations.elasticsearch.host }}:9200'"}
+    - {"line":"with suppress(NameError): STANDALONE_CONFIG['_default']['es_host'] = 'http://{{ software.common_configurations.elasticsearch.host }}:9200'"}
+    - {"line":"INDEX_CONFIG['env'].setdefault('localhub', {})['host'] = 'http://{{ software.common_configurations.elasticsearch.host }}:9200'"}
+    - {"line":"INDEX_CONFIG['env'].setdefault('local', {})['host'] = 'http://{{ software.common_configurations.elasticsearch.host }}:9200'"}
 
 - name: Inject docker elasticsearch uri into config.py
   lineinfile: dest=/home/biothings/biothings.api/biothings/web/settings/default.py line="{{ item.line }}" insertbefore=EOF
   with_items:
-    - {"line":"ES_HOST = '{{ software.common_configurations.elasticsearch.host }}:9200'"}
+    - {"line":"ES_HOST = 'http://{{ software.common_configurations.elasticsearch.host }}:9200'"}
 
 - name: Template out docker entry point
   template: mode=0755 src=templates/docker-entrypoint.sh dest=/docker-entrypoint.sh
