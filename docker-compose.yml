@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - BIOTHINGS_VERSION=master
+        - BIOTHINGS_VERSION=0.12.x
         - BIOTHINGS_REPOSITORY=https://github.com/biothings/biothings.api.git
         - ES_HOST=elasticsearch # su06
         - MONGO_HOST=mongo # su06
