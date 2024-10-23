@@ -8,6 +8,5 @@
     - vars/{{ varfile | default('biothings_studio.yml') }}
 
   tasks:
-    - include: configure.yml
-    - include: configure_api.yml
-
+    - include_tasks: configure.yml
+    - include_tasks: configure_api.yml
